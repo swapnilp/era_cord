@@ -1,0 +1,2 @@
+class AbsentExam < SmsSent
+end
