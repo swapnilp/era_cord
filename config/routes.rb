@@ -3,8 +3,24 @@ Rails.application.routes.draw do
   # See how all your routes lay out with "rake routes".
 
   # You can have the root of your site routed with "
-  root 'home#index'
+  devise_for :users,
+  controllers: {
+    invitations:   'users/invitations',
+    sessions:      'users/sessions',
+    passwords:     'users/passwords',
+    unlocks:       'users/unlocks',
+  },
+  skip: [:confirmations, :registrations]
+  
+  # as :user do
+  #   put 'users/change-password', to: 'users/registrations#update', as: 'user_password_change'
+  # end
 
+  devise_scope :user do
+    root to: "users/sessions#new"
+  end
+  #root 'home#index'
+  
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 

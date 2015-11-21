@@ -30,6 +30,14 @@ gem "twitter-bootstrap-rails"
 gem "font-awesome-rails"
 gem "paperclip", "~> 4.2"
 gem 'ancestry'
+gem 'devise', '~> 3.4.1'
+gem 'rack-cors', require: 'rack/cors'
+gem 'jwt'
+gem 'active_model_serializers'
+gem 'rolify', '~> 3.4.1'
+gem 'cancancan', '~> 1.9.2'
+
+
 
 
 # Use ActiveModel has_secure_password

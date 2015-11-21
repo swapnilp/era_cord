@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151115170255) do
+ActiveRecord::Schema.define(version: 20151120200417) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -452,23 +452,27 @@ ActiveRecord::Schema.define(version: 20151115170255) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string   "email",                  limit: 255, default: "",       null: false
-    t.string   "encrypted_password",     limit: 255, default: "",       null: false
+    t.string   "email",                  limit: 255,   default: "",       null: false
+    t.string   "encrypted_password",     limit: 255,   default: "",       null: false
     t.string   "reset_password_token",   limit: 255
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          limit: 4,   default: 0,        null: false
+    t.integer  "sign_in_count",          limit: 4,     default: 0,        null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip",     limit: 255
     t.string   "last_sign_in_ip",        limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "role",                   limit: 255, default: "parent"
+    t.string   "role",                   limit: 255,   default: "parent"
     t.string   "student_id",             limit: 255
     t.string   "username",               limit: 255
     t.integer  "organisation_id",        limit: 4
-    t.boolean  "is_enable",              limit: 1,   default: true
+    t.boolean  "is_enable",              limit: 1,     default: true
+    t.string   "provider",               limit: 255
+    t.string   "uid",                    limit: 255
+    t.text     "tokens",                 limit: 65535
+    t.datetime "token_expires_at"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
