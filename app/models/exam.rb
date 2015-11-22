@@ -311,5 +311,5 @@ class Exam < ActiveRecord::Base
     url_arry
   end
   
-  handle_asynchronously :send_result_email, :priority => 20
+  #handle_asynchronously :send_result_email, :priority => 20
 end

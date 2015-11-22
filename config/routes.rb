@@ -19,6 +19,18 @@ Rails.application.routes.draw do
   devise_scope :user do
     root to: "users/sessions#new"
   end
+  resources :exams
+
+  get '/organisation_cources' => "organisations#organisation_cources"
+  get '/remaining_cources' => "organisations#remaining_cources"
+  get '/organisations/add_standards' => "organisations#add_standards"
+  get '/organisations/get_clarks' => "organisations#get_clarks"
+  get '/organisations/users/:user_id/get_roles' => "organisations#get_clark_roles"
+  get "/organisations/users/:user_id/toggleEnable" => "organisations#toggle_enable_users"
+  post "/organisations/users/:user_id/update_roles" => "organisations#update_clark_roles"
+
+  
+  get 'index' => "home#index"
   #root 'home#index'
   
   # Example of regular route:

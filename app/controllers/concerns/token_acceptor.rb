@@ -10,7 +10,8 @@ module TokenAcceptor
   def authenticate_with_token!
     token = request.headers['Authorization'].presence
     token = params[:authorization_token] unless token
-    reject_token unless token
+    return reject_token if token.nil?
+
 
     # Since we're sent 'Bearer <token>', get rid of the 'Bearer' part
     token.gsub!(/\ABearer\s/, '')
