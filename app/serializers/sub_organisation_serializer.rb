@@ -7,7 +7,7 @@ class SubOrganisationSerializer < ActiveModel::Serializer
   end
   
   def standards
-    'new one '
+    object.standards_name
   end
   
 end
