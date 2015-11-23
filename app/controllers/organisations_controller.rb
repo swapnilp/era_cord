@@ -49,8 +49,6 @@ class OrganisationsController < ApplicationController
     user = @organisation.users.clarks.where(id: params[:user_id]).first
     user.manage_clark_roles(params[:roles])
     render json: {success: true}
-
-    #redirect_to manage_organisation_path(@organisation)
   end
 
   def toggle_enable_users
@@ -62,6 +60,55 @@ class OrganisationsController < ApplicationController
       render json: {success: false}
     end
   end
+
+  def create_organisation_clark
+    user = @organisation.users.clarks.build(user_params)
+    if user.save
+      user.add_role :clark
+      user.add_clark_roles
+      render json: {success: true}
+    else
+      render json: {success: false, message: user.errors.full_messages.join(' , ')}
+    end
+  end
+
+  def get_user_email
+    user = @organisation.users.clarks.where(id: params[:user_id]).first
+    if user
+      render json: {success: true, email: user.email}
+    else
+      render json: {success: false}
+    end
+  end
+
+  def update_clark_password
+    user = @organisation.users.clarks.where(id: params[:user_id], email: params[:email]).first
+    if user && user.update_attributes(update_password_params)
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+  end
+
+  def delete_clark
+    user = @organisation.users.clarks.where(id: params[:user_id]).first
+    if user
+      user.roles = []
+      user.destroy
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+    
+  end
+
+  def get_organisation_standards
+    standards = @organisation.standards.where("organisation_standards.is_assigned_to_other = ? ", false)
+      .where(id: params[:standards].split(','))
+    render json: standards, each_serializer: StandardSerializer
+  end
+  
+  #################
 
   def new_users
     @user = @organisation.users.clarks.build
@@ -230,10 +277,10 @@ class OrganisationsController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:email, :password, :password_confirmation, :salt, :encrypted_password)
+    params.require(:clark).permit(:email, :password, :password_confirmation, :salt, :encrypted_password)
   end
 
   def update_password_params
-    params.require(:user).permit(:password, :password_confirmation, :salt, :encrypted_password)
+    params.require(:clark).permit(:password, :password_confirmation, :salt, :encrypted_password)
   end
 end

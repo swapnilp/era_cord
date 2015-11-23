@@ -1,5 +1,5 @@
 class OrganisationCoursesSerializer < ActiveModel::Serializer
-  attributes :id, :name, :assign_to, :actions, :last_login
+  attributes :id, :name, :assign_to, :actions, :last_login, :standard_id, :is_selected
 
   def name
     object.standard.std_name
@@ -19,6 +19,10 @@ class OrganisationCoursesSerializer < ActiveModel::Serializer
     else
       ''
     end
+  end
+
+  def is_selected
+    false
   end
 
   

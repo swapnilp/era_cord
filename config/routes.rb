@@ -27,9 +27,13 @@ Rails.application.routes.draw do
   get '/organisations/get_clarks' => "organisations#get_clarks"
   get '/organisations/users/:user_id/get_roles' => "organisations#get_clark_roles"
   get "/organisations/users/:user_id/toggleEnable" => "organisations#toggle_enable_users"
+  get "/organisations/users/:user_id/get_email" => "organisations#get_user_email"
+  get "/organisations/get_standards" => "organisations#get_organisation_standards"
+  post "/organisations/users/:user_id/update_clark_password" => "organisations#update_clark_password"
   post "/organisations/users/:user_id/update_roles" => "organisations#update_clark_roles"
+  post "/organisations/users/create_organisation_clark" => "organisations#create_organisation_clark"
+  delete "/organisations/clarks/:user_id" => "organisations#delete_clark"
 
-  
   get 'index' => "home#index"
   #root 'home#index'
   
