@@ -8,7 +8,7 @@ class Organisation < ActiveRecord::Base
   scope :master_organisations, lambda{ where(master_organisation: nil) }
   
   validates :email, presence: true, format: { with: /\b[A-Z0-9._%a-z\-]+@(?:[A-Z0-9a-z\-]+\.)+[A-Za-z]{2,4}\z/}
-  validates :email, uniqueness: { message: " allready registered. Please check email" }, if: Proc.new { |org| org.parent_id.nil? }
+  validates :email, uniqueness: { message: " allready registered. Please check email" }, if: Proc.new { |org| org.root? }
   validates :name, presence: true
   validates :mobile, presence: true, format: { with: /\d{10}/, message: "should be 10 digit"}
 
@@ -275,9 +275,9 @@ class Organisation < ActiveRecord::Base
           std.jkci_classes.map(&:students).flatten.each{ |record| record.update_attributes({organisation_id: new_sub_organisation_id})}
           std.jkci_classes.map(&:class_students).flatten.each{ |record| record.update_attributes({organisation_id: new_sub_organisation_id})}
           std.jkci_classes.map(&:notifications).flatten.each{ |record| record.update_attributes({organisation_id: new_sub_organisation_id})}
-          OrganisationStandard.unscoped.where(standard_id: std.id, organisation_id: new_organisation.ancestor_ids)
-            .update_all({assigned_organisation_id: new_sub_organisation_id})
         end
+        OrganisationStandard.unscoped.where(standard_id: std.id, organisation_id: new_organisation.ancestor_ids)
+          .update_all({assigned_organisation_id: new_sub_organisation_id})
         std.jkci_classes.update_all({organisation_id: new_sub_organisation_id})
       end
       save!

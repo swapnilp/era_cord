@@ -23,6 +23,7 @@ Rails.application.routes.draw do
 
   get '/organisation_cources' => "organisations#organisation_cources"
   get '/remaining_cources' => "organisations#remaining_cources"
+  get '/organisations/get_sub_organisations' => "organisations#sub_organisations_list"
   get '/organisations/add_standards' => "organisations#add_standards"
   get '/organisations/get_clarks' => "organisations#get_clarks"
   get '/organisations/users/:user_id/get_roles' => "organisations#get_clark_roles"
@@ -32,7 +33,9 @@ Rails.application.routes.draw do
   post "/organisations/users/:user_id/update_clark_password" => "organisations#update_clark_password"
   post "/organisations/users/:user_id/update_roles" => "organisations#update_clark_roles"
   post "/organisations/users/create_organisation_clark" => "organisations#create_organisation_clark"
+  post "/organisations/sub_organisation/launch_organisation" => "organisations#launch_sub_organisation"
   delete "/organisations/clarks/:user_id" => "organisations#delete_clark"
+  delete "/organisations/sub_organisations/:sub_organisation_id" => "organisations#pull_back_sub_organisations"
 
   get 'index' => "home#index"
   #root 'home#index'

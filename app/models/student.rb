@@ -1,6 +1,6 @@
 class Student < ActiveRecord::Base
 
-  paginates_per 30
+  #paginates_per 30
  # attr_accessible :first_name, :middle_name, :last_name, :email, :mobile, :parent_name, :p_mobile, :p_email, :address, :group, :rank
   resourcify
   #has_many

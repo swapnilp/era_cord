@@ -1,4 +1,5 @@
 class OrganisationCoursesSerializer < ActiveModel::Serializer
+  include ActionView::Helpers::DateHelper
   attributes :id, :name, :assign_to, :actions, :last_login, :standard_id, :is_selected
 
   def name
@@ -15,7 +16,7 @@ class OrganisationCoursesSerializer < ActiveModel::Serializer
   
   def last_login
     if object.assigned_organisation.present?
-      distance_of_time_in_words(standard.assigned_organisation.try(:last_signed_in), Time.now)
+      object.assigned_organisation.try(:last_signed_in).nil? ? 'Never' : distance_of_time_in_words(object.assigned_organisation.try(:last_signed_in), Time.now) 
     else
       ''
     end

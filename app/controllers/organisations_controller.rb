@@ -4,7 +4,6 @@ class OrganisationsController < ApplicationController
   #                                          :add_cources, :add_remaining_cources, :new_user,:disable_users, :enable_users 
   #                                          :remaining_cources, :add_remaining_cources, :delete_users, 
   #                                          :edit_password, :update_password, :launch_sub_organisation]
-  
   before_action :authenticate_user!, except: [:new, :create, :regenerate_organisation_code]
 
 
@@ -17,6 +16,11 @@ class OrganisationsController < ApplicationController
   def remaining_cources
     standards = Standard.select([:id, :name, :stream]).where("id not in (?)", ([0] + @organisation.standards.map(&:id)))
     render json: standards, each_serializer: StandardSerializer
+  end
+
+  def sub_organisations_list
+    sub_organisations = @organisation.descendants
+    render json: sub_organisations, each_serializer: SubOrganisationSerializer
   end
 
   def add_standards
@@ -106,6 +110,33 @@ class OrganisationsController < ApplicationController
     standards = @organisation.standards.where("organisation_standards.is_assigned_to_other = ? ", false)
       .where(id: params[:standards].split(','))
     render json: standards, each_serializer: StandardSerializer
+  end
+
+
+  def launch_sub_organisation
+    sub_organisation = @organisation.sub_organisations.build(organisation_params)
+    if sub_organisation.save
+      standard_ids = params[:standard_ids].split(',').map(&:to_i)
+      standards = Standard.where(id: standard_ids)
+      standards.each do |standard|
+        @organisation.launch_sub_organisation(sub_organisation.id, standard)
+      end
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+  end
+
+  def pull_back_sub_organisations
+    if @organisation.descendant_ids.include?(params[:sub_organisation_id].to_i)
+      old_org = @organisation.descendants.where(id: params[:sub_organisation_id]).first 
+    end
+    if old_org
+      @organisation.pull_back_organisation(old_org)
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
   end
   
   #################
@@ -206,11 +237,11 @@ class OrganisationsController < ApplicationController
     end
   end
 
-  def launch_sub_organisation
-    @org = @organisation.sub_organisations.build
-    @standard_ids = params[:standards]
-    @standards = @organisation.standards.where(id: params[:standards].split(','))
-  end
+  #def launch_sub_organisation
+  #  @org = @organisation.sub_organisations.build
+  #  @standard_ids = params[:standards]
+  #  @standards = @organisation.standards.where(id: params[:standards].split(','))
+  #end
 
   def create_sub_organisation
     @org  = Organisation.new(organisation_params)
