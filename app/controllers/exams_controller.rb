@@ -5,8 +5,8 @@ class ExamsController < ApplicationController
 
 
   def index
-    @exams = Exam.all #@organisation.exams.roots.order("id desc").page(params[:page])
-    render json: @exams
+    exams = Exam.all #@organisation.exams.roots.order("id desc").page(params[:page])
+    render json: {success: true, body: ActiveModel::ArraySerializer.new(exams, each_serializer: ExamSerializer).as_json}
   end
   
   def new

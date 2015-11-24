@@ -20,12 +20,13 @@ Rails.application.routes.draw do
     root to: "users/sessions#new"
   end
 
-
+  resources :exams, only: [:index]
+  
   resources :jkci_classes do
     member do
       get 'get_exam_info'
     end
-    resources :exams
+    resources :exams, except: [:index]
   end
 
   get '/organisation_cources' => "organisations#organisation_cources"
