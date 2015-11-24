@@ -19,7 +19,14 @@ Rails.application.routes.draw do
   devise_scope :user do
     root to: "users/sessions#new"
   end
-  resources :exams
+
+
+  resources :jkci_classes do
+    member do
+      get 'get_exam_info'
+    end
+    resources :exams
+  end
 
   get '/organisation_cources' => "organisations#organisation_cources"
   get '/remaining_cources' => "organisations#remaining_cources"

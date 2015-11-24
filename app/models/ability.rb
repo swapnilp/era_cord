@@ -23,6 +23,7 @@ class Ability
       can :read, Subject
       can :read, SubClass
       can :read, JkciClass
+      can :get_exam_info, JkciClass
       can :filter_class_exams, JkciClass
       can :class_daily_teaches, JkciClass
       can :filter_daily_teach, JkciClass

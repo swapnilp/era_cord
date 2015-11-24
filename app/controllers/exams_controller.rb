@@ -47,17 +47,16 @@ class ExamsController < ApplicationController
 
   def create
     params.permit!
-    params[:exam][:class_ids] = (params[:exam][:class_ids].present? && params[:exam][:class_ids].last.present?) ? ","+params[:exam][:class_ids].reject(&:blank?).map(&:to_i).join(',') + ','  : nil
-    params[:exam][:sub_classes] = (params[:exam][:sub_classes].map(&:to_i) - [0]).join(',') if params[:exam][:sub_classes].present? 
-    @exam = @organisation.exams.build(params[:exam])
-    if @exam.save
-      Notification.add_create_exam(@exam.id, @organisation) if @exam.root?
-      redirect_to @exam.root? ? exams_path : exam_path(@exam.root)
+    #params[:exam][:class_ids] = (params[:exam][:class_ids].present? && params[:exam][:class_ids].last.present?) ? ","+params[:exam][:class_ids].reject(&:blank?).map(&:to_i).join(',') + ','  : nil
+    #params[:exam][:sub_classes] = (params[:exam][:sub_classes].map(&:to_i) - [0]).join(',') if params[:exam][:sub_classes].present? 
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: exam.errors.full_messages.join(' , ')} unless jkci_class
+    exam = jkci_class.exams.build(params[:exam])
+    if exam.save
+      Notification.add_create_exam(exam.id, @organisation) if exam.root?
+      render json: {success: true}
     else
-      @jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
-      @sub_classes = @jkci_class.sub_classes.select([:id, :name, :jkci_class_id])
-      @subjects = @jkci_class.standard.subjects
-      render :new
+      render json: {success: false, message: exam.errors.full_messages.join(' , ')}
     end
   end
 

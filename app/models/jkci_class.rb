@@ -9,6 +9,7 @@ class JkciClass < ActiveRecord::Base
   belongs_to :batch
   belongs_to :subject
   belongs_to :standard
+  has_many :subjects, through: :standard
   belongs_to :organisation
   belongs_to :current_chapter, class_name: "Chapter", foreign_key: "current_chapter_id"
   has_many :sub_classes
@@ -17,8 +18,13 @@ class JkciClass < ActiveRecord::Base
   has_many :exam_catlogs
   has_many :notifications
   
-
   has_many :chapters, through: :subject
+
+  validates :class_name, presence: true
+  validates :batch_id, presence: true
+  validates :organisation_id, presence: true
+  validates :standard_id, presence: true, uniqueness: { scope: [:organisation_id, :batch_id],
+    message: "should happen once per organisation per batch" }
   
   #default_scope  {where(is_active: true)} 
   default_scope { where(organisation_id: Organisation.current_id) }

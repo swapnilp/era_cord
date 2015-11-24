@@ -10,7 +10,7 @@ class OrganisationsController < ApplicationController
 
   def organisation_cources
     organisation_standards = @organisation.organisation_standards
-    render json: organisation_standards, each_serializer: OrganisationCoursesSerializer
+    render json: {body: ActiveModel::ArraySerializer.new(organisation_standards, each_serializer: OrganisationCoursesSerializer).as_json }
   end
 
   def remaining_cources
