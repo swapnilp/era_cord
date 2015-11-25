@@ -26,7 +26,11 @@ Rails.application.routes.draw do
     member do
       get 'get_exam_info'
     end
-    resources :exams, except: [:index]
+    resources :exams, except: [:index] do
+      member do
+        post 'upload_paper'
+      end
+    end
   end
 
   get '/organisation_cources' => "organisations#organisation_cources"

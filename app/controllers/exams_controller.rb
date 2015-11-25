@@ -6,35 +6,55 @@ class ExamsController < ApplicationController
 
   def index
     exams = Exam.all #@organisation.exams.roots.order("id desc").page(params[:page])
-    render json: {success: true, body: ActiveModel::ArraySerializer.new(exams, each_serializer: ExamSerializer).as_json}
+    render json: {success: true, body: ActiveModel::ArraySerializer.new(exams, each_serializer: ExamIndexSerializer).as_json}
   end
   
-  def new
-    @jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
-    @exam = @jkci_class.exams.build({daily_teaching_points: ",#{params[:dtp]},"})
-    @exam.is_group = true if params[:grouped_exams].present?
-    @sub_classes = @jkci_class.sub_classes.select([:id, :name, :jkci_class_id])
-    @exam.name = @exam.predict_name
-    @subjects = @jkci_class.standard.subjects
-  end
-
-  def new_grouped_exam
-    @jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
-    @master_exam = @organisation.exams.grouped_exams.where(id: params[:master_exam_id]).first
-    @exam = @master_exam.children.build({exam_date: @master_exam.exam_date, sub_classes: @master_exam.sub_classes, jkci_class_id: @jkci_class.id})
-    @sub_classes = @jkci_class.sub_classes.select([:id, :name, :jkci_class_id])
-    @exam.name = @exam.predict_name
-    @subjects = @jkci_class.standard.subjects
-  end
-
   def show
-    @exam = @organisation.exams.where(id: params[:id]).first
-    @remaining_students = @exam.exam_catlogs.includes([:student]).where(is_present: [nil], marks: nil, is_ingored: [nil, false])
-    @exam_absents = @exam.exam_catlogs.includes([:student, :exam]).where(is_present: false)
-    @ignored_students = @exam.exam_catlogs.includes([:student, :exam]).where(is_ingored: true)
-    @pending_notifications = @exam.notifications.pending
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    exam = @organisation.exams.where(id: params[:id]).first
+    render json: exam
   end
   
+  def create
+    params.permit!
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    exam = jkci_class.exams.build(params[:exam])
+    if exam.save
+      Notification.add_create_exam(exam.id, @organisation) if exam.root?
+      render json: {success: true}
+    else
+      render json: {success: false, message: exam.errors.full_messages.join(' , ')}
+    end
+  end
+
+  def upload_paper
+    params.permit!
+    
+    exam = @organisation.exams.where(id: params[:id]).first
+    document = exam.documents.build
+    document.document = params[:file]
+    if document.save
+      render json: {success: true}
+    else
+      render json: {success: false, message: document.errors.full_messages.join(' , ')}
+    end
+  end
+  
+  def get_catlog
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Calss"} unless jkci_class
+    exam = jkci_class.exams.where(id: params[:id]).first
+    return render json: {success: false, message: "Invalid Exam"} unless exam
+    exam_catlogs = exam.exam_catlogs
+    render json: exam_catlogs 
+  end
+
+  ####################
+  
+
+
   def download_data
     @exam = @organisation.exams.where(id: params[:id]).first
     @exam_catlogs = @exam.exam_table_format
@@ -45,20 +65,6 @@ class ExamsController < ApplicationController
     end
   end
 
-  def create
-    params.permit!
-    #params[:exam][:class_ids] = (params[:exam][:class_ids].present? && params[:exam][:class_ids].last.present?) ? ","+params[:exam][:class_ids].reject(&:blank?).map(&:to_i).join(',') + ','  : nil
-    #params[:exam][:sub_classes] = (params[:exam][:sub_classes].map(&:to_i) - [0]).join(',') if params[:exam][:sub_classes].present? 
-    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
-    return render json: {success: false, message: exam.errors.full_messages.join(' , ')} unless jkci_class
-    exam = jkci_class.exams.build(params[:exam])
-    if exam.save
-      Notification.add_create_exam(exam.id, @organisation) if exam.root?
-      render json: {success: true}
-    else
-      render json: {success: false, message: exam.errors.full_messages.join(' , ')}
-    end
-  end
 
   def edit
     @jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
@@ -241,21 +247,21 @@ class ExamsController < ApplicationController
     render json: {success: true}
   end
 
-  def upload_paper
-    params.permit!
-    attachment = @organisation.documents.build(params[:document])
-    attachment.exam_id= params[:exam_id]
-    if attachment.save     
-      respond_to do |format|
-        format.json {render json: {success: true, id: attachment.id, url: attachment.document.url, name: attachment.document_file_name}}
-      end
-    else
-      Rails.logger.info attachment.errors.inspect
-      respond_to do |format|
-        format.json {render json: {success: false, msg: attachment.errors.messages.values.first.first}}
-      end
-    end
-  end
+  #def upload_paper
+  #  params.permit!
+  #  attachment = @organisation.documents.build(params[:document])
+  #  attachment.exam_id= params[:exam_id]
+  #  if attachment.save     
+  #    respond_to do |format|
+  #      format.json {render json: {success: true, id: attachment.id, url: attachment.document.url, name: attachment.document_file_name}}
+  #    end
+  #  else
+  #    Rails.logger.info attachment.errors.inspect
+  #    respond_to do |format|
+  #      format.json {render json: {success: false, msg: attachment.errors.messages.values.first.first}}
+  #    end
+  #  end
+  #end
 
   def ignore_student
     exam = @organisation.exams.where(id: params[:id]).first

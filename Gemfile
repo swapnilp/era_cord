@@ -29,6 +29,7 @@ gem "less-rails"
 gem "twitter-bootstrap-rails"
 gem "font-awesome-rails"
 gem "paperclip", "~> 4.2"
+gem 'aws-sdk', '< 2.0'
 gem 'ancestry'
 gem 'devise', '~> 3.4.1'
 gem 'rack-cors', require: 'rack/cors'

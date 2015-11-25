@@ -22,7 +22,7 @@ class Document < ActiveRecord::Base
     :s3_credentials => File.join(Rails.root,'config', 's3.yml'),
     :s3_premissions => 'public',
     :s3_protocol => 'http',
-    :bucket => 'jkciphoto'
+    :bucket => 'Eracord'
     
   validates_attachment :document, :content_type => { :content_type => %w(application/pdf application/msword application/vnd.openxmlformats-officedocument.wordprocessingml.document) }
   #after_create :transliterate_file_name
