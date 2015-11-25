@@ -13,3 +13,4 @@
 /tmp
 *.*~
 /config/initializers/00_tokens.rb
+/config/s3.yml
