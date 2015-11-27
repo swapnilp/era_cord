@@ -7,5 +7,3 @@ class SubjectSerializer < ActiveModel::Serializer
   end
   
 end
-
-

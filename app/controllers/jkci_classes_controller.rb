@@ -4,7 +4,7 @@ class JkciClassesController < ApplicationController
 
   def index
     jkci_classes = @organisation.jkci_classes.includes([:batch]).active.all.order("id desc")
-    render json: {body: ActiveModel::ArraySerializer.new(jkci_classes, each_serializer: JkciClassSerializer).as_json}
+    render json: {body: ActiveModel::ArraySerializer.new(jkci_classes, each_serializer: JkciClassIndexSerializer).as_json}
   end
 
   def get_exam_info
@@ -16,27 +16,40 @@ class JkciClassesController < ApplicationController
     end
   end
   
-  def new
-    @standard = Standard.where(id: params[:standard_id]).first
-    if @standard
-      @jkci_class = @organisation.jkci_classes.build
-      @teachers = @organisation.teachers
-      @batches = Batch.all
+  def show
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    #@notifications = @jkci_class.role_exam_notifications(current_user)
+    if jkci_class
+      render json: JkciClassSerializer.new(jkci_class).as_json.merge({success: true})
     else
-      redirect_to standards_path
+      render json: {success: false}
     end
   end
 
-  def show
-    @jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
-    @students = @jkci_class.class_students.joins(:student).select("class_students.roll_number, students.*").where("students.is_disabled = false").order("class_students.roll_number asc, students.first_name asc")
-    @chapters = []
-    @daily_teaching_points = @jkci_class.daily_teaching_points.includes(:class_catlogs).chapters_points.order('id desc').page(params[:page])
-    @teached_chapters = @daily_teaching_points.map(&:chapter_id).uniq
-    @class_exams = @jkci_class.jk_exams.order("updated_at desc").page(params[:page])
-    @notifications = @jkci_class.role_exam_notifications(current_user)
+  def toggle_class_sms
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    if jkci_class && current_user.has_role?(:manage_class_sms)
+      jkci_class.update_attributes({enable_class_sms: params[:value]})
+      render json: {success: true, id: jkci_class.id}
+    else
+      render json: {success: false, message: "Some thing went wrong"}
+    end
+    
   end
 
+  def toggle_exam_sms
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    if jkci_class && current_user.has_role?(:manage_class_sms)
+      jkci_class.update_attributes({enable_exam_sms: params[:value]})
+      render json: {success: true, id: jkci_class.id}
+    else
+      render json: {success: false, message: "Some thing went wrong"}
+    end
+    
+  end
+
+  ####################################
+  
   def create
     params.permit!
     @jkci_class = @organisation.jkci_classes.build(params[:jkci_class])
@@ -62,21 +75,9 @@ class JkciClassesController < ApplicationController
     @students = @jkci_class.class_students.joins(:student).select("class_students.id, students.first_name, students.last_name, class_students.roll_number").order("class_students.roll_number asc, students.first_name asc")
   end
 
-  def toggle_class_sms
-    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
-    if current_user.has_role? :manage_class_sms
-      jkci_class.update_attributes({enable_class_sms: params[:value]})
-    end
-    render json: {success: true, id: jkci_class.id}
-  end
+  
 
-  def toggle_exam_sms
-    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
-    if current_user.has_role? :manage_class_sms
-      jkci_class.update_attributes({enable_exam_sms: params[:value]})
-    end
-    render json: {success: true, id: jkci_class.id}
-  end
+  
   
   def save_roll_number
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first

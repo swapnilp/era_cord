@@ -3,4 +3,6 @@ class ClassExamDataSerializer < ActiveModel::Serializer
 
   has_many :subjects
   has_many :sub_classes
+
+  #this is for exam new 
 end

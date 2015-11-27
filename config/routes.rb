@@ -22,12 +22,27 @@ Rails.application.routes.draw do
 
   resources :exams, only: [:index]
   
+  resources :students
+
+  
+  resources :standards, only: [] do
+    member do
+      get 'optional_subjects'
+    end
+  end
+  
+  
   resources :jkci_classes do
     member do
       get 'get_exam_info'
+      get 'toggle_class_sms'
+      get 'toggle_exam_sms'
     end
     resources :exams, except: [:index] do
       member do
+        get 'get_catlogs'
+        get 'verify_exam'
+        get 'exam_conducted'
         post 'upload_paper'
       end
     end

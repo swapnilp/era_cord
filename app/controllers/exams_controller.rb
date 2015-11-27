@@ -42,13 +42,38 @@ class ExamsController < ApplicationController
     end
   end
   
-  def get_catlog
+  def get_catlogs
     jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
     return render json: {success: false, message: "Invalid Calss"} unless jkci_class
     exam = jkci_class.exams.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Exam"} unless exam
     exam_catlogs = exam.exam_catlogs
-    render json: exam_catlogs 
+    render json: {success: true}
+  end
+
+  def verify_exam
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Calss"} unless jkci_class
+    exam = @organisation.exams.where(id: params[:id]).first
+    if exam
+      exam.verify_exam(@organisation)
+      render json: {success: true}
+    else
+      render json: {success: false, message: "Invalid Exam"}
+    end
+  end
+
+
+  def exam_conducted
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Calss"} unless jkci_class
+    exam = @organisation.exams.where(id: params[:id]).first
+    if exam && exam.create_verification
+      exam.complete_exam unless exam.is_completed
+      render json: {success: true}
+    else
+      render json: {success: false, message: "Something went wrong"}
+    end
   end
 
   ####################
