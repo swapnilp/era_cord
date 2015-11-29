@@ -13,6 +13,7 @@ class ApplicationController < ActionController::Base
     super(options)
     @organisation ||= current_user.organisation
     Organisation.current_id = @organisation.present? ? @organisation.subtree.map(&:id) : nil
+    #@organisation.update_attributes({last_signed_in: Time.now}) if @organisation.present?
   end
 
   def render_422(object, message, opts = {})

@@ -25,7 +25,5 @@ class OrganisationCoursesSerializer < ActiveModel::Serializer
   def is_selected
     false
   end
-
-  
 end
 

@@ -34,7 +34,6 @@ class JkciClassesController < ApplicationController
     else
       render json: {success: false, message: "Some thing went wrong"}
     end
-    
   end
 
   def toggle_exam_sms
@@ -45,7 +44,36 @@ class JkciClassesController < ApplicationController
     else
       render json: {success: false, message: "Some thing went wrong"}
     end
-    
+  end
+  
+  def assign_students
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    selected_students = jkci_class.students.map(&:id)
+    students = jkci_class.standard.students.enable_students.where("id not in (?)", ([0] + selected_students))
+    render json: {success: true, students: ActiveModel::ArraySerializer.new(students, each_serializer: StudentSerializer).as_json}
+  end
+
+  def manage_students
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    sutdents = params[:students_ids].map(&:to_i)  rescue []
+    jkci_class.manage_students(sutdents, @organisation) if jkci_class
+    render json: {success: true, id: jkci_class.id}
+  end
+
+  def students
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    students = jkci_class.students
+    render json: {success: true, students: ActiveModel::ArraySerializer.new(students, each_serializer: StudentSerializer).as_json}
+  end
+
+  def remove_student_from_class
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    jkci_class.remove_student_from_class(params[:student_id], @organisation) if jkci_class
+    render json: {success: true, id: jkci_class.id}
   end
 
   ####################################
@@ -64,11 +92,6 @@ class JkciClassesController < ApplicationController
     @batches = Batch.all
   end
 
-  def assign_students
-    @jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
-    @selected_students = @jkci_class.students.map(&:id)
-    @students = @jkci_class.standard.students.enable_students.where("id not in (?)", ([0] + @selected_students))
-  end
 
   def manage_roll_number
     @jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
@@ -85,18 +108,9 @@ class JkciClassesController < ApplicationController
     redirect_to jkci_class_path(jkci_class)
   end
 
-  def manage_students
-    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
-    sutdents = params[:students_ids].map(&:to_i)  rescue []
-    jkci_class.manage_students(sutdents, @organisation) if jkci_class
-    render json: {success: true, id: jkci_class.id}
-  end
+  
 
-  def remove_student_from_class
-    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
-    jkci_class.remove_student_from_class(params[:student_id], @organisation) if jkci_class
-    render json: {success: true, id: jkci_class.id}
-  end
+  
   
   def update
     params.permit!

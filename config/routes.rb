@@ -37,15 +37,22 @@ Rails.application.routes.draw do
       get 'get_exam_info'
       get 'toggle_class_sms'
       get 'toggle_exam_sms'
+      get 'assign_students'
+      get 'students'
+      post 'manage_students'
+      #delete 'remove_students'
     end
     resources :exams, except: [:index] do
       member do
         get 'get_catlogs'
         get 'verify_exam'
         get 'exam_conducted'
+        post 'add_absunt_students'
         post 'upload_paper'
+        post 'add_exam_results'
       end
     end
+    delete "students/:student_id" => "jkci_classes#remove_student_from_class"
   end
 
   get '/organisation_cources' => "organisations#organisation_cources"

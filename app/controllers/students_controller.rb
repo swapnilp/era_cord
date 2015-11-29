@@ -3,13 +3,9 @@ class StudentsController < ApplicationController
   load_and_authorize_resource param_method: :my_sanitizer
 
   def index
-    @students = @organisation.students.select([:id, :first_name, :last_name, :standard_id, :group, :mobile, :p_mobile, :enable_sms, :gender, :is_disabled]).order("id desc").page(params[:page])
-    @batches = Batch.active
-    @standards = @organisation.standards
-    respond_to do |format|
-      format.html
-      format.json {render json: {success: true, html: render_to_string(:partial => "student.html.erb", :layout => false, locals: {students: @students}), pagination_html: render_to_string(partial: 'pagination.html.erb', layout: false, locals: {students: @students}), css_holder: ".studentsTable tbody"}}
-    end
+    students = @organisation.students.select([:id, :first_name, :last_name, :standard_id, :group, :mobile, :p_mobile, :enable_sms, :gender, :is_disabled, :batch_id, :parent_name]).order("id desc")
+    
+    render json: {success: true, body: ActiveModel::ArraySerializer.new(students, each_serializer: StudentSerializer).as_json}
   end
 
   def new
@@ -26,15 +22,12 @@ class StudentsController < ApplicationController
   
   def create
     params.permit!
-    @student = @organisation.students.build(params[:student])
-    if @student.save
-      @student.add_students_subjects(params[:o_subjects])
-      redirect_to students_path
+    student = @organisation.students.build(params[:student])
+    if student.save
+      student.add_students_subjects(params[:o_subjects])
+      render json: {success: true}
     else
-      @batches = Batch.active
-      @standards = @organisation.standards.active
-      @subjects = @standards.first.try(:subjects).try(:optional) || []
-      render :new
+      render json: {success: false, message: students.errors.full_messages.join(' , ')}
     end
   end
   

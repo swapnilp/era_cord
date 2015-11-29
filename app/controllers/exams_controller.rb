@@ -48,7 +48,7 @@ class ExamsController < ApplicationController
     exam = jkci_class.exams.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Exam"} unless exam
     exam_catlogs = exam.exam_catlogs
-    render json: {success: true}
+    render json: {success: true, catlogs: ActiveModel::ArraySerializer.new(exam_catlogs, each_serializer: ExamCatlogSerializer).as_json}
   end
 
   def verify_exam
@@ -74,6 +74,34 @@ class ExamsController < ApplicationController
     else
       render json: {success: false, message: "Something went wrong"}
     end
+  end
+
+  def add_absunt_students
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Calss"} unless jkci_class
+    exam = @organisation.exams.where(id: params[:id]).first
+    if exam.create_verification && params[:students_ids].present?
+      exam.add_absunt_students(params[:students_ids])
+    end
+    if exam.create_verification && params[:ignoredStudents].present?
+      exam.add_ignore_students(params[:ignoredStudents])
+    end
+    exam_catlogs = exam.exam_catlogs
+    render json: {success: true, catlogs: ActiveModel::ArraySerializer.new(exam_catlogs, each_serializer: ExamCatlogSerializer).as_json}
+  end
+
+  def add_exam_results
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Calss"} unless jkci_class
+    exam = @organisation.exams.where(id: params[:id]).first
+    if exam && exam.create_verification && params[:students_results].present?
+      exam.add_exam_results(params[:students_results])
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+
+
   end
 
   ####################
@@ -160,13 +188,7 @@ class ExamsController < ApplicationController
     redirect_to exam_path(params[:id])
   end
 
-  def add_absunt_students
-    @exam = @organisation.exams.where(id: params[:id]).first
-    if @exam.create_verification && params[:students_ids].present?
-      @exam.add_absunt_students(params[:students_ids].keys)
-    end
-    redirect_to exam_path(@exam)
-  end
+  
 
   def recover_exam
     #@exam = Exam.where(id: params[:id]).first
@@ -181,13 +203,7 @@ class ExamsController < ApplicationController
     @students = @exam.students.where("(exam_catlogs.is_present is ? && exam_catlogs.marks is ? && exam_catlogs.is_ingored is ?) || (exam_catlogs.is_present = ? && exam_catlogs.marks is ? && exam_catlogs.is_recover = ? && exam_catlogs.is_ingored is ?)", nil, nil, nil, false, nil, true, nil)
   end
 
-  def add_exam_results
-    @exam = @organisation.exams.where(id: params[:id]).first
-    if @exam.create_verification && params[:students_results].present?
-      @exam.add_exam_results(params[:students_results])
-    end
-    redirect_to exam_path(@exam)
-  end
+  
 
   def remove_exam_result
     exam = @organisation.exams.where(id: params[:id]).first

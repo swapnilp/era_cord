@@ -68,6 +68,7 @@ class Exam < ActiveRecord::Base
   
   def add_absunt_students(exam_absent_students)
     self.exam_catlogs.where(student_id: exam_absent_students).update_all({is_present: false})
+    self.exam_catlogs.where("student_id not in (?) and absent_sms_sent = ?", exam_absent_students, false).update_all({is_present: nil})
     Notification.add_exam_abesnty(self.id, self.organisation) 
     self.update_attributes({verify_absenty: false, absents_count: self.absent_students.count})
     #exam_students.each do |student|
@@ -107,10 +108,12 @@ class Exam < ActiveRecord::Base
   def add_exam_results(results)
     results.each do |s_id, marks|
       if marks.present?
-        self.exam_catlogs.where(student_id: s_id).first.update_attributes({marks: marks, is_present: true})
+        self.exam_catlogs.where(id: s_id).first.update_attributes({marks: marks, is_present: true})
         #exam_result = ExamResult.new({exam_id: self.id, student_id: id, marks: marks, sms_sent: false, email_sent: false})
         #exam_result.save
         #self.send_result_email(self, exam_result.student)
+      else
+        self.exam_catlogs.where(id: s_id).first.update_attributes({marks: nil, is_present: nil})
       end
     end
     Notification.add_exam_result(self.id, self.organisation)
@@ -129,8 +132,9 @@ class Exam < ActiveRecord::Base
     self.update_attributes({verify_result: false})
   end
 
-  def add_ignore_student(student_id)
-    self.exam_catlogs.where(student_id: student_id).first.update_attributes({is_ingored: true})
+  def add_ignore_students(student_ids)
+    self.exam_catlogs.where(student_id: student_ids).update_all({is_ingored: true})
+    self.exam_catlogs.where("student_id not in (?)",  student_ids).update_all({is_ingored: nil})
   end
 
   def remove_ignore_student(student_id)
