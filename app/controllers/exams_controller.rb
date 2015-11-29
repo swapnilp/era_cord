@@ -100,8 +100,42 @@ class ExamsController < ApplicationController
     else
       render json: {success: false}
     end
+  end
 
+  def publish_exam_result
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Calss"} unless jkci_class
+    exam = @organisation.exams.where(id: params[:id]).first
+    if exam && exam.verify_absenty && exam.verify_result
+      exam.publish_results
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+  end
 
+  def verify_exam_result
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Calss"} unless jkci_class
+    exam = @organisation.exams.where(id: params[:id]).first
+    if exam
+      exam.verify_exam_result
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+  end
+  
+  def verify_exam_absenty
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Calss"} unless jkci_class
+    exam = @organisation.exams.where(id: params[:id]).first
+    if exam
+      exam.verify_presenty(@organisation)
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
   end
 
   ####################
@@ -158,21 +192,9 @@ class ExamsController < ApplicationController
     redirect_to exam_path(exam)
   end
   
-  def verify_exam_absenty
-    exam = @organisation.exams.where(id: params[:id]).first
-    if exam
-      exam.verify_presenty(@organisation)
-    end
-    redirect_to exam_path(exam)
-  end
   
-  def verify_exam_result
-    exam = @organisation.exams.where(id: params[:id]).first
-    if exam
-      exam.verify_exam_result
-    end
-    redirect_to exam_path(exam)
-  end
+  
+  
 
   def absunts_students
     @exam = @organisation.exams.where(id: params[:id]).first
@@ -212,13 +234,7 @@ class ExamsController < ApplicationController
   end
 
 
-  def publish_exam_result
-    @exam = @organisation.exams.where(id: params[:id]).first
-    if @exam && @exam.verify_absenty && @exam.verify_result
-      @exam.publish_results
-    end
-    redirect_to exams_path
-  end
+  
 
   def publish_absent_exam
     @exam = @organisation.exams.where(id: params[:id]).first

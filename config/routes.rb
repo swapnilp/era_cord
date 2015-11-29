@@ -50,6 +50,9 @@ Rails.application.routes.draw do
         post 'add_absunt_students'
         post 'upload_paper'
         post 'add_exam_results'
+        post 'verify_exam_result'
+        post 'verify_exam_absenty'
+        post 'publish_exam_result'
       end
     end
     delete "students/:student_id" => "jkci_classes#remove_student_from_class"
