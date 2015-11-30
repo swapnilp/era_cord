@@ -51,7 +51,7 @@ class Student < ActiveRecord::Base
   def add_students_subjects(o_subjects)
     self.subjects.delete(self.subjects)
     self.subjects << standard.subjects.compulsory
-    self.subjects << standard.subjects.where(id: o_subjects.map(&:to_i)) if o_subjects.present?
+    self.subjects << standard.subjects.where(id: o_subjects.map(&:to_i), is_compulsory: false) if o_subjects.present?
       
   end
 
@@ -153,5 +153,24 @@ class Student < ActiveRecord::Base
       url_arry = [url, message, self.id, self.organisation_id]
     end
     url_arry
+  end
+
+  def as_json(options= {})
+    options.merge({
+                    first_name: first_name, 
+                    last_name: last_name, 
+                    email: email, 
+                    mobile: mobile, 
+                    parent_name: parent_name, 
+                    p_mobile: p_mobile, 
+                    p_email: p_email, 
+                    address: address,  
+                    rank: rank, 
+                    middle_name: middle_name, 
+                    batch_id: batch_id, 
+                    gender: gender, 
+                    initl: initl,
+                    standard_id: standard_id
+                  })
   end
 end

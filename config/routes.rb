@@ -22,7 +22,13 @@ Rails.application.routes.draw do
 
   resources :exams, only: [:index]
   
-  resources :students
+  resources :students, except: [:update] do
+    member do
+      get 'download_report'
+      post 'update'
+
+    end
+  end
 
   
   resources :standards, only: [] do
