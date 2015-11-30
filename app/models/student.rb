@@ -22,7 +22,14 @@ class Student < ActiveRecord::Base
   scope :enable_students, -> { where(is_disabled: false) }
   
   scope :default_students, -> (days) { where("last_present is not ? && last_present < ?", nil, Time.now - days.days) }
-
+  
+  validates :standard_id, presence: true
+  validates :batch_id, presence: true
+  validates :first_name, presence: true
+  validates :last_name, presence: true
+  validates :parent_name, presence: true
+  validates :p_mobile, presence: true
+  
   
   def all_exams
     #Exam.where(std: std, is_active: true)

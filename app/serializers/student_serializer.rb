@@ -10,7 +10,7 @@ class StudentSerializer < ActiveModel::Serializer
   end
 
   def standard
-    object.standard.name
+    object.standard.try(:name)
   end
 
 end

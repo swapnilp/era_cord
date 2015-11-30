@@ -9,9 +9,10 @@ class StudentsController < ApplicationController
   end
 
   def new
-    if params[:standard_id]
-      standard = @organisation.standards.where(id: params[:standard_id]).first
-      subjects = @standard.try(:subjects).try(:optional) || []  
+    if params[:class_id]
+      standards = @organisation.standards.where(id: params[:class_id])
+      subjects = standards.first.try(:subjects).try(:optional) || []  
+      batches = Batch.all
     else
       standards = @organisation.standards.active
       subjects = standards.first.try(:subjects).try(:optional) || []  
