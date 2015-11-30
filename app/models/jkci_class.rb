@@ -165,5 +165,13 @@ class JkciClass < ActiveRecord::Base
     end
     table
   end
+
+  def get_sub_classes(ids)
+    if ids.blank?
+      self.sub_classes.as_json
+    else
+    self.sub_classes.where(id: ids).as_json
+    end
+  end
   
 end

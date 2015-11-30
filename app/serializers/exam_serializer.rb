@@ -1,11 +1,11 @@
 class ExamSerializer < ActiveModel::Serializer
   #attributes :id, :name, :assign_to, :actions, :last_login, :standard_id, :is_selected
-  attributes :id, :name, :marks, :subject, :exam_date, :exam_type, :published_date, :jkci_class_id, :is_group, :verify_result, :verify_absenty, :create_verification, :divisions, :is_completed, :is_result_decleared, :conducted_by, :jkci_class, :duration, :documents
+  attributes :id, :name, :marks, :subject, :exam_date, :exam_type, :published_date, :jkci_class_id, :is_group, :verify_result, :verify_absenty, :create_verification, :divisions, :is_completed, :is_result_decleared, :conducted_by, :jkci_class, :duration, :documents, :is_group, :root
 
   has_many :documents
 
   def subject
-    object.subject.std_name
+    object.is_group ? '' : object.subject.std_name 
   end
 
   def jkci_class
@@ -22,7 +22,6 @@ class ExamSerializer < ActiveModel::Serializer
 
   def divisions
     object.jkci_class.sub_classes.where(id: object.sub_classes).map(&:name).join(', ')
-  end
-  
+  end  
 end
 

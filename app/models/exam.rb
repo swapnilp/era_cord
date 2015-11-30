@@ -314,6 +314,25 @@ class Exam < ActiveRecord::Base
     end
     url_arry
   end
+
+  def divisions
+    self.jkci_class.sub_classes.where(id: self.sub_classes).map(&:name).join(', ')
+  end
+
+  def documents_url
+    self.documents.map(&:document).map(&:url)
+  end
+  
+  def self.json(node)
+    {id: node.id, name: node.name, marks: node.marks, subject: node.subject.try(:std_name), 
+      exam_date: node.exam_date.to_date, exam_type: node.exam_type, 
+      published_date: node.published_date.try(:to_date), jkci_class_id: node.jkci_class_id, 
+      is_group: node.is_group, verify_result: node.verify_result, verify_absenty: node.verify_absenty , 
+      create_verification: node.create_verification, divisions: node.divisions, is_completed: node.is_completed, 
+      is_result_decleared: node.is_result_decleared, conducted_by: node.conducted_by, 
+      jkci_class: node.jkci_class.class_name, duration: node.duration, documents: node.documents_url, is_group: node.is_group, root: node.root?, root_id: node.root_id}
+    
+  end
   
   #handle_asynchronously :send_result_email, :priority => 20
 end

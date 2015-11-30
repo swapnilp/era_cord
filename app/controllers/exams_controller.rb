@@ -5,7 +5,7 @@ class ExamsController < ApplicationController
 
 
   def index
-    exams = Exam.all #@organisation.exams.roots.order("id desc").page(params[:page])
+    exams = Exam.all.order("exam_date desc") #@organisation.exams.roots.order("id desc").page(params[:page])
     render json: {success: true, body: ActiveModel::ArraySerializer.new(exams, each_serializer: ExamIndexSerializer).as_json}
   end
   
@@ -13,7 +13,7 @@ class ExamsController < ApplicationController
     jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     exam = @organisation.exams.where(id: params[:id]).first
-    render json: exam
+    render json: {exam: Exam.json(exam)}
   end
   
   def create
@@ -23,7 +23,7 @@ class ExamsController < ApplicationController
     exam = jkci_class.exams.build(params[:exam])
     if exam.save
       Notification.add_create_exam(exam.id, @organisation) if exam.root?
-      render json: {success: true}
+      render json: {success: true, id: exam.id}
     else
       render json: {success: false, message: exam.errors.full_messages.join(' , ')}
     end
@@ -133,6 +133,17 @@ class ExamsController < ApplicationController
     if exam
       exam.verify_presenty(@organisation)
       render json: {success: true}
+    else
+      render json: {success: false}
+    end
+  end
+
+  def get_exam_info
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Calss"} unless jkci_class
+    exam = @organisation.exams.where(id: params[:id]).first
+    if exam && exam.is_group
+      render json: {success: true, data: GroupExamDataSerializer.new(exam).as_json} 
     else
       render json: {success: false}
     end

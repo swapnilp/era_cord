@@ -47,6 +47,7 @@ Rails.application.routes.draw do
         get 'get_catlogs'
         get 'verify_exam'
         get 'exam_conducted'
+        get 'get_exam_info'
         post 'add_absunt_students'
         post 'upload_paper'
         post 'add_exam_results'
@@ -54,6 +55,7 @@ Rails.application.routes.draw do
         post 'verify_exam_absenty'
         post 'publish_exam_result'
       end
+      resources :exams, only: [:create]
     end
     delete "students/:student_id" => "jkci_classes#remove_student_from_class"
   end

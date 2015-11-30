@@ -12,4 +12,11 @@ class SubClass < ActiveRecord::Base
   def disp_name
     "#{name}-#{self.students.count}"
   end
+
+  def as_json(options= {})
+    options.merge({
+                    id: self.id,
+                    name: name,
+                  })
+  end
 end
