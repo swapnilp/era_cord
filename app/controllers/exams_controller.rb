@@ -8,6 +8,17 @@ class ExamsController < ApplicationController
     exams = Exam.all.order("exam_date desc") #@organisation.exams.roots.order("id desc").page(params[:page])
     render json: {success: true, body: ActiveModel::ArraySerializer.new(exams, each_serializer: ExamIndexSerializer).as_json}
   end
+
+  def get_descendants
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    exam = @organisation.exams.where(id: params[:id]).first
+    if exam
+      render json: {success: true, body: ActiveModel::ArraySerializer.new(exam.descendants, each_serializer: ExamIndexSerializer).as_json}
+    else
+      render json: {success: false}
+    end
+  end
   
   def show
     jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first

@@ -48,6 +48,7 @@ Rails.application.routes.draw do
         get 'verify_exam'
         get 'exam_conducted'
         get 'get_exam_info'
+        get 'get_descendants'
         post 'add_absunt_students'
         post 'upload_paper'
         post 'add_exam_results'
