@@ -15,7 +15,7 @@ class JkciClassesController < ApplicationController
       render json: {success: false}
     end
   end
-  
+
   def show
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     #@notifications = @jkci_class.role_exam_notifications(current_user)
@@ -65,7 +65,7 @@ class JkciClassesController < ApplicationController
   def students
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
-    students = jkci_class.students
+    students = jkci_class.students.includes([:subjects, :standard, :batch])
     render json: {success: true, students: ActiveModel::ArraySerializer.new(students, each_serializer: StudentSerializer).as_json}
   end
 
@@ -74,6 +74,15 @@ class JkciClassesController < ApplicationController
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     jkci_class.remove_student_from_class(params[:student_id], @organisation) if jkci_class
     render json: {success: true, id: jkci_class.id}
+  end
+
+  def get_chapters
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    
+    chapters = jkci_class.subjects.where(id:  params[:subject_id]).first.chapters.select([:id, :name])
+    render json: {success: true, chapters: chapters} 
+
   end
 
   ####################################
@@ -129,16 +138,7 @@ class JkciClassesController < ApplicationController
     end
   end
 
-  def chapters
-    @jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
-    @chapters = @jkci_class.chapters.select([:id, :name])
-    @points = @chapters.first.chapters_points.select([:id, :name]) rescue []
-    
-    respond_to do |format|
-      format.html
-      format.json {render json: {success: true, chapters: @chapters,  points: @points} }
-    end
-  end
+
   
   def filter_class
     jkci_classes = @organisation.jkci_classes.includes([:batch]).all.order("id desc").page(params[:page])

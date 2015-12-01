@@ -26,18 +26,15 @@ Rails.application.routes.draw do
     member do
       get 'download_report'
       post 'update'
-
     end
   end
 
-  
   resources :standards, only: [] do
     member do
       get 'optional_subjects'
     end
   end
-  
-  
+
   resources :jkci_classes do
     member do
       get 'get_exam_info'
@@ -45,10 +42,12 @@ Rails.application.routes.draw do
       get 'toggle_exam_sms'
       get 'assign_students'
       get 'students'
+      get 'get_chapters'
       post 'manage_students'
       #delete 'remove_students'
     end
-    resources :exams, except: [:index, :update] do
+    resources :daily_teachs
+    resources :exams, except: [:update] do
       member do
         get 'get_catlogs'
         get 'verify_exam'
@@ -66,6 +65,12 @@ Rails.application.routes.draw do
       resources :exams, only: [:create]
     end
     delete "students/:student_id" => "jkci_classes#remove_student_from_class"
+  end
+
+  resources :chapters, only: [:index] do
+    member do
+      get 'get_points'
+    end
   end
 
   get '/organisation_cources' => "organisations#organisation_cources"

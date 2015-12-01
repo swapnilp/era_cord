@@ -11,7 +11,7 @@ class DailyTeachingPoint < ActiveRecord::Base
   
   default_scope { where(organisation_id: Organisation.current_id) }
   scope :chapters_points, -> { where("chapter_id is not ?", nil) }
-  after_save :add_current_chapter
+  #after_save :add_current_chapter
   
 
   def absent_count
@@ -97,6 +97,18 @@ class DailyTeachingPoint < ActiveRecord::Base
       end
     end
     url_arry
+  end
+
+  def as_json(options= {})
+    options.merge({
+                    id: id,
+                    date: date.to_date,
+                    subject: subject.name,
+                    chapter: chapter.name,
+                    points: 'asdads',
+                    absents: class_catlogs.only_absents.count,
+                    is_sms_sent: is_sms_sent
+                  })
   end
 
   
