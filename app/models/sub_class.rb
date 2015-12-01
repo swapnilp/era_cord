@@ -14,9 +14,19 @@ class SubClass < ActiveRecord::Base
   end
 
   def as_json(options= {})
-    options.merge({
-                    id: self.id,
-                    name: name,
-                  })
+    output = if options[:selected].present?
+               options.merge({
+                               id: self.id,
+                               name: name,
+                               ticked: options[:selected].include?(id)
+                             })
+             else
+               options.merge({
+                               id: self.id,
+                               name: name
+                             })
+             end
+    output.tap{|x| x.delete(:selected)} 
+    
   end
 end

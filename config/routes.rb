@@ -48,13 +48,14 @@ Rails.application.routes.draw do
       post 'manage_students'
       #delete 'remove_students'
     end
-    resources :exams, except: [:index] do
+    resources :exams, except: [:index, :update] do
       member do
         get 'get_catlogs'
         get 'verify_exam'
         get 'exam_conducted'
         get 'get_exam_info'
         get 'get_descendants'
+        post 'update'
         post 'add_absunt_students'
         post 'upload_paper'
         post 'add_exam_results'

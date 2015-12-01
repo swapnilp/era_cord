@@ -160,6 +160,31 @@ class ExamsController < ApplicationController
     end
   end
 
+  def edit
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Calss"} unless jkci_class
+    exam = jkci_class.exams.where(id: params[:id]).first
+    sub_classes = jkci_class.sub_classes.select([:id, :name, :jkci_class_id])
+    subjects = jkci_class.standard.subjects
+    
+    if exam && !exam.is_completed
+      render json: {success: true, exam: exam, 
+        sub_classes: sub_classes.as_json({selected: exam.sub_classes.split(',').map(&:to_i)}), 
+        subjects: subjects.as_json({selected: [exam.subject_id]})}
+    else
+      render json: {success: false}
+    end
+  end
+
+  def update
+    exam = @organisation.exams.where(id: params[:id]).first
+    if exam && exam.update(update_params)
+      render json: {success: true, id: exam.id}
+    else
+      render json: {success: false}
+    end
+  end
+
   ####################
   
 
@@ -175,28 +200,9 @@ class ExamsController < ApplicationController
   end
 
 
-  def edit
-    @jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
-    @exam = @jkci_class.exams.where(id: params[:id]).first
-    @sub_classes = @jkci_class.sub_classes.select([:id, :name, :jkci_class_id])
-    @subjects = @jkci_class.standard.subjects
-    redirect_to exams_path if @exam.is_completed
-  end
   
-  def update
-    params.permit!
-    params[:exam][:class_ids] =  (params[:exam][:class_ids].present? && params[:exam][:class_ids].last.present?) ? ","+params[:exam][:class_ids].reject(&:blank?).map(&:to_i).join(',') + ','  : nil
-    params[:exam][:sub_classes] = (params[:exam][:sub_classes].map(&:to_i) - [0]).join(',') if params[:exam][:sub_classes].present? 
-    @exam = @organisation.exams.where(id: params[:id]).first
-    if @exam && @exam.update(params[:exam])
-      redirect_to exams_path
-    else
-      @jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
-      @sub_classes = @jkci_class.sub_classes.select([:id, :name, :jkci_class_id])
-      @subjects = @jkci_class.standard.subjects
-      render :edit
-    end
-  end
+  
+  
 
   def destroy
     jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
@@ -363,6 +369,10 @@ class ExamsController < ApplicationController
   def my_sanitizer
     #params.permit!
     params.require(:exam).permit!
+  end
+
+  def update_params
+    params.require(:exam).permit(:name, :marks, :subject_id, :exam_date, :exam_type, :jkci_class_id, :is_group, :conducted_by, :duration, :sub_classes)
   end
 
 end

@@ -333,6 +333,32 @@ class Exam < ActiveRecord::Base
       jkci_class: node.jkci_class.class_name, duration: node.duration, documents: node.documents_url, is_group: node.is_group, root: node.root?, root_id: node.root_id}
     
   end
+
+  def as_json(options= {})
+    if self.is_group
+      options.merge({
+                      name: name, 
+                      exam_date: exam_date.to_datetime, 
+                      jkci_class_id: jkci_class_id, 
+                      is_group: is_group, 
+                      divisions: divisions, 
+                      conducted_by: conducted_by, 
+                    })
+    else
+      options.merge({
+                      name: name, 
+                      marks: marks, 
+                      subject_id: subject_id,
+                      exam_date: exam_date.to_datetime, 
+                      exam_type: exam_type, 
+                      jkci_class_id: jkci_class_id, 
+                      is_group: is_group, 
+                      divisions: divisions, 
+                      conducted_by: conducted_by, 
+                      duration: duration
+                    })
+    end
+  end
   
   #handle_asynchronously :send_result_email, :priority => 20
 end

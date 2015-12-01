@@ -16,10 +16,20 @@ class Subject < ActiveRecord::Base
   end
 
   def as_json(options= {})
-    options.merge({
-                    id: self.id,
-                    std_name: std_name,
-                    name: name
-                  })
+    output = if options[:selected].present?
+               options.merge({
+                               id: self.id,
+                               std_name: std_name,
+                               name: name,
+                               ticked: options[:selected].include?(id)
+                             })
+             else
+               options.merge({
+                               id: self.id,
+                               std_name: std_name,
+                               name: name
+                             })
+             end
+    output.tap{|x| x.delete(:selected)} 
   end
 end
