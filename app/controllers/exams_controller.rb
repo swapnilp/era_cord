@@ -8,11 +8,11 @@ class ExamsController < ApplicationController
     if params[:jkci_class_id].present?
       jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
       return render json: {success: false, message: "Invalid Class"} unless jkci_class
-      exams = jkci_class.exams.includes([:subject, :exam_catlogs]).order("exam_date desc") #@organisation.exams.roots.order("id desc").page(params[:page])
+      exams = jkci_class.exams.includes([:subject, :exam_catlogs]).order("exam_date desc").page(params[:page]) #@organisation.exams.roots.order("id desc").page(params[:page])
     else
-      exams = Exam.all.order("exam_date desc") #@organisation.exams.roots.order("id desc").page(params[:page])
+      exams = Exam.all.order("exam_date desc").page(params[:page]) #@organisation.exams.roots.order("id desc").page(params[:page])
     end
-    render json: {success: true, body: ActiveModel::ArraySerializer.new(exams, each_serializer: ExamIndexSerializer).as_json}
+    render json: {success: true, body: ActiveModel::ArraySerializer.new(exams, each_serializer: ExamIndexSerializer).as_json, count: exams.total_count}
   end
 
   def get_descendants

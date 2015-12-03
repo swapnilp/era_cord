@@ -46,7 +46,14 @@ Rails.application.routes.draw do
       post 'manage_students'
       #delete 'remove_students'
     end
-    resources :daily_teachs
+    resources :daily_teachs, except: [:update] do
+      member do
+        get 'get_catlogs'
+        get 'class_absent_verification'
+        post 'fill_catlog'
+        post 'update'
+      end
+    end
     resources :exams, except: [:update] do
       member do
         get 'get_catlogs'

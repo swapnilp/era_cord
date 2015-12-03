@@ -26,6 +26,17 @@ class ClassCatlog < ActiveRecord::Base
   def is_absent?
     return self.is_present == false
   end
+
+  def as_json(options= {})
+    options.merge({
+                    id: id,
+                    student: student.name,
+                    p_mobile: student.p_mobile,
+                    is_present: is_present,
+                    sms_sent: sms_sent,
+                    student_id: student_id
+                  })
+  end
   
 end
   

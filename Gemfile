@@ -42,7 +42,7 @@ gem "delayed_job_web", "~> 1.2.9"
 #gem "prawn", '~>2.0.2'
 #gem "prawn-table", '~>0.2.2'
 gem 'prawn-rails'
-
+gem 'kaminari'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'

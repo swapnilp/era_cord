@@ -6,4 +6,13 @@ class Chapter < ActiveRecord::Base
   def points_name
     self.chapters_points.map(&:name).join(",    ")
   end
+
+  def as_json(options = {})
+    options.merge({
+                    id: id,
+                    name: name,
+                    chapt_no: chapt_no
+                  })
+  end
+  
 end

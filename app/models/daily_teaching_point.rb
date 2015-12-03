@@ -64,13 +64,8 @@ class DailyTeachingPoint < ActiveRecord::Base
 
   def fill_catlog(present_list,  date)
     self.update_attributes({is_fill_catlog: true, verify_absenty: false})
-    class_catlogs.each do |class_catlog|
-      if present_list.map(&:to_i).include?(class_catlog.student_id)
-        class_catlog.update_attributes({is_present: false, date: date})
-      else
-        class_catlog.update_attributes({is_present: true, date: date})
-      end
-    end
+    class_catlogs.where(student_id: present_list).update_all({is_present: false, date: date})
+    class_catlogs.where("student_id not in (?)", present_list).update_all({is_present: true, date: date})
   end
 
   def add_current_chapter
@@ -103,11 +98,23 @@ class DailyTeachingPoint < ActiveRecord::Base
     options.merge({
                     id: id,
                     date: date.to_date,
-                    subject: subject.name,
-                    chapter: chapter.name,
+                    subject: subject.try(:name),
+                    chapter: chapter.try(:name),
                     points: 'asdads',
                     absents: class_catlogs.only_absents.count,
-                    is_sms_sent: is_sms_sent
+                    is_sms_sent: is_sms_sent,
+                    jkci_class: jkci_class.class_name,
+                    verify_absenty: verify_absenty
+                  })
+  end
+
+  def edit_json(options= {})
+    options.merge({
+                    id: id,
+                    date: date,
+                    subject_id: subject_id,
+                    chapter_id: chapter_id,
+                    chapters_point_id: chapters_point_id.split(',').map(&:to_i)
                   })
   end
 
