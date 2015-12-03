@@ -1,6 +1,8 @@
 class StudentsController < ApplicationController
   before_action :authenticate_user!
+  skip_before_filter :authenticate_with_token!, only: [:download_report]
   load_and_authorize_resource param_method: :my_sanitizer
+  
 
   def index
     students = @organisation.students.select([:id, :first_name, :last_name, :standard_id, :group, :mobile, :p_mobile, :enable_sms, :gender, :is_disabled, :batch_id, :parent_name]).order("id desc")
@@ -71,7 +73,7 @@ class StudentsController < ApplicationController
     @dtps = @student.class_catlogs.absent
     filename = "#{@student.name}.xls"
     respond_to do |format|
-      format.xls { headers["Content-Disposition"] = "attachment; filename=\"#{filename}\"" }
+      #format.xls { headers["Content-Disposition"] = "attachment; filename=\"#{filename}\"" }
       format.pdf { render :layout => false }
     end
   end
