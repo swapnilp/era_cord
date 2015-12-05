@@ -65,8 +65,8 @@ class JkciClassesController < ApplicationController
   def students
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
-    students = jkci_class.students.includes([:subjects, :standard, :batch])
-    render json: {success: true, students: ActiveModel::ArraySerializer.new(students, each_serializer: StudentSerializer).as_json}
+    students = jkci_class.students.includes([:subjects, :standard, :batch]).page(params[:page])
+    render json: {success: true, students: ActiveModel::ArraySerializer.new(students, each_serializer: StudentSerializer).as_json, count: students.total_count}
   end
 
   def remove_student_from_class
@@ -80,7 +80,7 @@ class JkciClassesController < ApplicationController
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     
-    chapters = jkci_class.subjects.where(id:  params[:subject_id]).first.chapters.select([:id, :name])
+    chapters = jkci_class.subjects.where(id:  params[:subject_id]).first.chapters.select([:id, :name, :chapt_no])
     render json: {success: true, chapters: chapters} 
   end
 
