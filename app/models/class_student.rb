@@ -15,4 +15,14 @@ class ClassStudent < ActiveRecord::Base
     sub_classes.delete(sub_class_id)
     self.update_attributes({sub_class: ",#{sub_classes.uniq.join(',')},"})
   end
+
+  def subject_json(options= {})
+    options.merge({
+                    id: id,
+                    student_id: student_id, 
+                    roll_number: roll_number,
+                    name: student.name,
+                    o_subjects: student.subjects.optional.map(&:id)
+                  })
+  end
 end

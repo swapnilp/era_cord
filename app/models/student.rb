@@ -173,4 +173,12 @@ class Student < ActiveRecord::Base
                     standard_id: standard_id
                   })
   end
+
+  def subject_json(options= {})
+    options.merge({
+                    id: id,
+                    name: name,
+                    o_subjects: subjects.optional.map(&:id)
+                  })
+  end
 end

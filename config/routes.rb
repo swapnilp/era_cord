@@ -43,6 +43,8 @@ Rails.application.routes.draw do
       get 'assign_students'
       get 'students'
       get 'get_chapters'
+      get 'manage_student_subject'
+      post 'save_student_subjects'
       post 'manage_students'
       #delete 'remove_students'
     end

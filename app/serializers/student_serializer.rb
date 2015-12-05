@@ -1,6 +1,7 @@
 class StudentSerializer < ActiveModel::Serializer
-  attributes :id, :name, :batch, :standard, :parent_name, :p_mobile, :mobile, :subjects
+  attributes :id, :name, :batch, :standard, :parent_name, :p_mobile, :mobile, :subjects, :class_names
 
+  
   def name
     object.name
   end
@@ -15,6 +16,10 @@ class StudentSerializer < ActiveModel::Serializer
 
   def subjects
     object.subjects.map(&:std_name).join(', ')
+  end
+
+  def class_names
+    object.jkci_classes.map(&:class_name).join(", ")
   end
 
 end

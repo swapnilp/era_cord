@@ -82,7 +82,36 @@ class JkciClassesController < ApplicationController
     
     chapters = jkci_class.subjects.where(id:  params[:subject_id]).first.chapters.select([:id, :name])
     render json: {success: true, chapters: chapters} 
+  end
 
+  def manage_student_subject
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    subjects = jkci_class.subjects.optional
+    students = jkci_class.class_students
+    render json: {success: true, subjects: subjects, students: students.map(&:subject_json), jkci_class: jkci_class.subject_json} 
+  end
+
+  def save_student_subjects
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+
+    if jkci_class
+      params[:students].each do |p_student|
+        student = jkci_class.students.where(id: p_student['student_id']).first
+        student.add_students_subjects(p_student["o_subjects"]) if student
+      end
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+
+    #students = jkci_class.students(params[:students].keys).each do |student|
+    #  student.add_students_subjects(params[:students][student.id.to_s].split(','))
+    #end
+    #respond_to do |format|
+    #  format.json {render json: {success: true, id: @jkci_class.id}}
+    #end
   end
 
   ####################################
@@ -221,21 +250,7 @@ class JkciClassesController < ApplicationController
     end
   end
 
-  def manage_student_subject
-    @jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
-    @subjects = @jkci_class.standard.subjects.optional
-    @students = @jkci_class.class_students
-  end
-
-  def save_student_subjects
-    @jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
-    students = @jkci_class.students(params[:students].keys).each do |student|
-      student.add_students_subjects(params[:students][student.id.to_s].split(','))
-    end
-    respond_to do |format|
-      format.json {render json: {success: true, id: @jkci_class.id}}
-    end
-  end
+  
   
   def my_sanitizer
     #params.permit!

@@ -173,5 +173,13 @@ class JkciClass < ActiveRecord::Base
     self.sub_classes.where(id: ids).as_json
     end
   end
+
+  def subject_json(options={})
+    options.merge({
+                    id: id,
+                    name: class_name,
+                    o_subjects: subjects.optional.as_json
+                  })
+  end
   
 end
