@@ -205,6 +205,21 @@ class ExamsController < ApplicationController
     end
   end
 
+  def group_exam_report
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Calss"} unless jkci_class
+    
+    exam = @organisation.exams.where(id: params[:id]).first
+    if exam
+      table_head = exam.grouped_exam_report_table_head
+      table_data = exam.grouped_exam_report
+      render json: {success: true, table_head: table_head, table_data: table_data}
+    else
+      render json: {success: false}
+    end
+    
+  end
+
   ####################
   
 

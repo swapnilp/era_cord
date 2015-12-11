@@ -75,6 +75,7 @@ Rails.application.routes.draw do
         get 'exam_conducted'
         get 'get_exam_info'
         get 'get_descendants'
+        get 'group_exam_report'
         post 'remove_exam_result'
         post 'update'
         post 'add_absunt_students'
