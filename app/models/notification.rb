@@ -125,4 +125,14 @@ class Notification < ActiveRecord::Base
       org.notifications.build({object_type: "DailyTeaching_point", object_id: obj_id, message: "Publish absenty for  #{dtp.jkci_class.class_name}", url: "/daily_teachs/#{obj_id}?&notification=true", jkci_class_id: dtp.jkci_class_id}).save
     end
   end
+
+  def as_json(options = {})
+    options.merge({
+                    id: id,
+                    message: message,
+                    object_type: object_type,
+                    object_id: object_id,
+                    url: url
+                  })
+  end
 end

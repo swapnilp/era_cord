@@ -105,13 +105,36 @@ class JkciClassesController < ApplicationController
     else
       render json: {success: false}
     end
+  end
 
-    #students = jkci_class.students(params[:students].keys).each do |student|
-    #  student.add_students_subjects(params[:students][student.id.to_s].split(','))
-    #end
-    #respond_to do |format|
-    #  format.json {render json: {success: true, id: @jkci_class.id}}
-    #end
+  def manage_roll_number
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    if jkci_class
+      jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+      students = jkci_class.class_students.joins(:student)
+      render json: {success: true, students: students.map(&:roll_number_json)}
+    else
+      render json: {success: false}
+    end
+  end
+
+  def save_roll_number
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    if jkci_class
+      jkci_class.save_class_roll_number(params[:roll_number])
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+  end
+
+  def get_notifications
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    
+    notifications = jkci_class.role_exam_notifications(current_user).page(params[:page])
+    render json: {success: true, notifications: notifications, count: notifications.total_count}
   end
 
   ####################################
@@ -131,20 +154,13 @@ class JkciClassesController < ApplicationController
   end
 
 
-  def manage_roll_number
-    @jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
-    @students = @jkci_class.class_students.joins(:student).select("class_students.id, students.first_name, students.last_name, class_students.roll_number").order("class_students.roll_number asc, students.first_name asc")
-  end
+  
 
   
 
   
   
-  def save_roll_number
-    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
-    jkci_class.save_class_roll_number(params[:roll_number])
-    redirect_to jkci_class_path(jkci_class)
-  end
+  
 
   
 

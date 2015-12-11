@@ -104,8 +104,8 @@ class JkciClass < ActiveRecord::Base
   end
 
   def save_class_roll_number(roll_numbers)
-    roll_numbers.each do |key, value|
-      self.class_students.where(id: key).first.update_attributes({roll_number: value.present? ? value : nil})
+    roll_numbers.each do |roll_number|
+      self.class_students.where(id: roll_number["id"]).first.update_attributes({roll_number: roll_number["roll_number"].present? ? roll_number["roll_number"] : nil})
     end
   end
   

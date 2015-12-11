@@ -25,4 +25,14 @@ class ClassStudent < ActiveRecord::Base
                     o_subjects: student.subjects.optional.map(&:id)
                   })
   end
+
+  def roll_number_json(options= {})
+    options.merge({
+                    id: id,
+                    student_id: student_id,
+                    student: student.name,
+                    roll_number: roll_number
+                  })
+  end
+  
 end

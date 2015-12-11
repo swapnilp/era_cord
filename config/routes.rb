@@ -44,9 +44,21 @@ Rails.application.routes.draw do
       get 'students'
       get 'get_chapters'
       get 'manage_student_subject'
+      get 'manage_roll_number'
+      get 'get_notifications'
       post 'save_student_subjects'
       post 'manage_students'
+      post 'save_roll_number'
       #delete 'remove_students'
+    end
+
+    resources :sub_classes, only: [:index, :create, :show] do
+      member do
+        get 'students'
+        get 'remaining_students'
+        post 'add_students'
+        delete 'remove_student'
+      end
     end
     resources :daily_teachs, except: [:update] do
       member do
@@ -63,6 +75,7 @@ Rails.application.routes.draw do
         get 'exam_conducted'
         get 'get_exam_info'
         get 'get_descendants'
+        post 'remove_exam_result'
         post 'update'
         post 'add_absunt_students'
         post 'upload_paper'

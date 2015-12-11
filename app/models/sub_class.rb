@@ -23,10 +23,19 @@ class SubClass < ActiveRecord::Base
              else
                options.merge({
                                id: self.id,
-                               name: name
+                               name: name,
+                               class_name: jkci_class.class_name
                              })
              end
     output.tap{|x| x.delete(:selected)} 
     
+  end
+
+  def index_json(options= {})
+    options.merge({
+                    id: self.id,
+                    name: name,
+                    students_count: students.count
+                  })
   end
 end
