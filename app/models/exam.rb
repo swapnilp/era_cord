@@ -143,17 +143,17 @@ class Exam < ActiveRecord::Base
 
   def publish_results
     self.update_attributes({is_result_decleared: true, is_completed: true, published_date: Time.now})
-    if self.jkci_class.enable_exam_sms  
-      if self.root?
+    if self.root?
+      if self.jkci_class.enable_exam_sms  
         if self.is_group
           Delayed::Job.enqueue GroupExamResultSmsSend.new(self.group_result_message_send)
         else
           Delayed::Job.enqueue ExamAbsentSmsSend.new(self.absenty_message_send)  
           Delayed::Job.enqueue ExamResultSmsSend.new(self.result_message_send)
         end
-      else
-        self.root.publish_results unless self.root.children.map(&:is_result_decleared).include?(nil)
       end
+    else
+      self.root.publish_results unless self.root.children.map(&:is_result_decleared).include?(nil)
     end
     Notification.publish_exam(self.id, self.organisation) if self.root?
   end
@@ -192,7 +192,9 @@ class Exam < ActiveRecord::Base
   end
 
   def exam_status
-    if is_result_decleared == true
+    if is_completed == nil && exam_date < Date.today 
+      return "Pass date"
+    elsif is_result_decleared == true
       return "Published"
     elsif verify_result  == true
       return "Result verified"

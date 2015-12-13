@@ -65,7 +65,7 @@ class JkciClassesController < ApplicationController
   def students
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
-    students = jkci_class.students.includes([:subjects, :standard, :batch]).page(params[:page])
+    students = jkci_class.students.includes([:subjects, :standard, :batch]).select("class_students.roll_number, students.*").page(params[:page])
     render json: {success: true, students: ActiveModel::ArraySerializer.new(students, each_serializer: StudentSerializer).as_json, count: students.total_count}
   end
 
