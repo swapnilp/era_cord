@@ -1,6 +1,6 @@
 class JkciClassesController < ApplicationController
   before_action :authenticate_user!
-  skip_before_filter :authenticate_with_token!, only: [:sub_organisation_class_report]
+  skip_before_filter :authenticate_with_token!, only: [:sub_organisation_class_report, :download_class_catlog, :download_class_syllabus, :download_class_student_list]
   #load_and_authorize_resource param_method: :my_sanitizer
 
   def index
@@ -153,6 +153,32 @@ class JkciClassesController < ApplicationController
     end
   end
 
+  def download_class_catlog
+    @jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    @catlogs = @jkci_class.students_table_format(params[:subclass])
+    respond_to do |format|
+      format.pdf { render :layout => false }
+    end
+  end
+
+  def download_class_syllabus
+    @jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    @subjects = @jkci_class.standard.subjects
+    #@subject = @jkci_class.standard.subjects.where(id: params[:subject]).first
+    #@chapters_table = @jkci_class.chapters_table_format(@subject)
+    respond_to do |format|
+      format.pdf { render :layout => false }
+    end
+  end
+
+  def download_class_student_list
+    @jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    @students_table_format = @jkci_class.class_students_table_format
+    respond_to do |format|
+      format.pdf { render :layout => false }
+    end
+  end
+
   ####################################
   
   def create
@@ -246,31 +272,7 @@ class JkciClassesController < ApplicationController
     end
   end
 
-  def download_class_catlog
-    @jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
-    @catlogs = @jkci_class.students_table_format(params[:subclass])
-    respond_to do |format|
-      format.pdf { render :layout => false }
-    end
-  end
-
-  def download_class_syllabus
-    @jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
-    @subjects = @jkci_class.standard.subjects
-    #@subject = @jkci_class.standard.subjects.where(id: params[:subject]).first
-    #@chapters_table = @jkci_class.chapters_table_format(@subject)
-    respond_to do |format|
-      format.pdf { render :layout => false }
-    end
-  end
-
-  def download_class_student_list
-    @jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
-    @students_table_format = @jkci_class.class_students_table_format
-    respond_to do |format|
-      format.pdf { render :layout => false }
-    end
-  end
+  
   
   def my_sanitizer
     #params.permit!

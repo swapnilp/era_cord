@@ -148,15 +148,15 @@ class JkciClass < ActiveRecord::Base
   def students_table_format(sub_class_ids)
     table = [["Id", "Name", "Parent Mobile", "Is Present", "", "Id", "Name", "Parent Mobile", "Is Present", ""]]
     if sub_class_ids.present?
-      c_students = self.sub_classes_students(sub_class_ids.split(','))
+      c_students = self.sub_classes_students(sub_class_ids.split(',')).select("class_students.roll_number, students.*").order("roll_number asc")
     else
-      c_students = self.students
+      c_students = self.students.select("class_students.roll_number, students.*").order("roll_number asc")
     end
     c_students.in_groups_of(2).each do |student_groups|
       table_group = []
       student_groups.each do |student|
         if student
-          table_group << ["#{student.id}", "#{student.name}", "#{student.p_mobile}", "", ""] 
+          table_group << ["#{student.roll_number}", "#{student.name}", "#{student.p_mobile}", "", ""] 
         else
           table_group << ["", "", "", "", ""] 
         end
