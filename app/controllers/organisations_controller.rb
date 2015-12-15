@@ -15,7 +15,7 @@ class OrganisationsController < ApplicationController
 
   def remaining_cources
     standards = Standard.select([:id, :name, :stream]).where("id not in (?)", ([0] + @organisation.standards.map(&:id)))
-    render json: standards, each_serializer: StandardSerializer
+    render json: {body: ActiveModel::ArraySerializer.new(standards, each_serializer: StandardSerializer).as_json}
   end
 
   def sub_organisations_list

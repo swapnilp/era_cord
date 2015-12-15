@@ -7,5 +7,9 @@ class OrganisationStandard < ActiveRecord::Base
   belongs_to :standard
 
   belongs_to :assigned_organisation, class_name: "Organisation", foreign_key: "assigned_organisation_id"
-
+  
+  after_create :create_organisation_calss
+  
+  def create_organisation_calss
+  end
 end

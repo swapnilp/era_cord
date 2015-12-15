@@ -181,5 +181,17 @@ class JkciClass < ActiveRecord::Base
                     o_subjects: subjects.optional.as_json
                   })
   end
+
+  def unassigned_json(options = {})
+    options.merge({
+                    id: id,
+                    name: class_name,
+                    organisation_id: organisation_id,
+                    organisation_name: organisation.name,
+                    mobile: organisation.mobile,
+                    email: organisation.email
+                    
+                  })
+  end
   
 end

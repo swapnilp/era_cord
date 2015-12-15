@@ -1,10 +1,16 @@
 class JkciClassesController < ApplicationController
   before_action :authenticate_user!
+  skip_before_filter :authenticate_with_token!, only: [:sub_organisation_class_report]
   #load_and_authorize_resource param_method: :my_sanitizer
 
   def index
     jkci_classes = @organisation.jkci_classes.includes([:batch]).active.all.order("id desc")
     render json: {body: ActiveModel::ArraySerializer.new(jkci_classes, each_serializer: JkciClassIndexSerializer).as_json}
+  end
+
+  def get_unassigned_classes
+    jkci_classes = @organisation.descendants.map(&:jkci_classes).flatten
+    render json: {body: jkci_classes.map(&:unassigned_json)}
   end
 
   def get_exam_info
@@ -137,6 +143,16 @@ class JkciClassesController < ApplicationController
     render json: {success: true, notifications: notifications, count: notifications.total_count}
   end
 
+  def sub_organisation_class_report
+    @sub_organisation = @organisation.subtree.where(id: params[:sub_organisation_id]).first
+    @jkci_class = @sub_organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    @exams_table_format = @jkci_class.exams_table_format
+    @daily_teaching_table_format = @jkci_class.daily_teaching_table_format
+    respond_to do |format|
+      format.pdf { render :layout => false }
+    end
+  end
+
   ####################################
   
   def create
@@ -255,18 +271,6 @@ class JkciClassesController < ApplicationController
       format.pdf { render :layout => false }
     end
   end
-
-  def sub_organisation_class_report
-    @sub_organisation = @organisation.subtree.where(id: params[:sub_organisation_id]).first
-    @jkci_class = @sub_organisation.jkci_classes.where(id: params[:jkci_class_id]).first
-    @exams_table_format = @jkci_class.exams_table_format
-    @daily_teaching_table_format = @jkci_class.daily_teaching_table_format
-    respond_to do |format|
-      format.pdf { render :layout => false }
-    end
-  end
-
-  
   
   def my_sanitizer
     #params.permit!

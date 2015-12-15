@@ -35,6 +35,10 @@ Rails.application.routes.draw do
     end
   end
 
+
+  get "get_unassigned_classes" => "jkci_classes#get_unassigned_classes"
+  get "sub_organisation/:sub_organisation_id/class/:jkci_class_id/get_report" => "jkci_classes#sub_organisation_class_report", as: "sub_organisation_class_report"
+  
   resources :jkci_classes do
     member do
       get 'get_exam_info'
