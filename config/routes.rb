@@ -59,7 +59,7 @@ Rails.application.routes.draw do
       #delete 'remove_students'
     end
 
-    resources :sub_classes, only: [:index, :create, :show] do
+    resources :sub_classes, only: [:index, :create, :show, :destroy] do
       member do
         get 'students'
         get 'remaining_students'

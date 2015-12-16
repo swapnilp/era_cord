@@ -75,6 +75,22 @@ class SubClassesController < ApplicationController
     jkci_class.remove_sub_class_students(params[:student_id], params[:id])
     render json: {success: true}
   end
+
+  def destroy
+    jkci_class = JkciClass.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    
+    sub_class = jkci_class.sub_classes.where(id: params[:id]).first
+    if sub_class
+      sub_class.students.select([:id, :organisation_id]).each do |student|
+        jkci_class.remove_sub_class_students(student.id, params[:id])
+      end
+      sub_class.destroy
+      render json: {success: true}
+    else
+      render json: {success: false, message: "Invalid Class"}
+    end
+  end
   
   private
   
