@@ -39,7 +39,10 @@ module Users
     end
 
     def resource_from_credentials
-      data = { email: params[:user][:email], organisation_id: params[:user][:organisation_id] }
+      data = { email: params[:user][:email] }
+      if params[:user][:organisation_id].present?
+        data = data.merge({organisation_id: params[:user][:organisation_id]})
+      end
 
       res = resource_class.find_for_database_authentication(data)
 
