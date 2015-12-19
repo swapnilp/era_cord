@@ -16,6 +16,8 @@ class Exam < ActiveRecord::Base
   has_many :students, through: :exam_catlogs
   has_many :documents
   has_many :notifications, -> {where("notifications.object_type like ?", 'Exam')}, :foreign_key => :object_id
+  has_many :exam_points
+  has_many :chapters_points, through: :exam_points
   
   default_scope { where(is_active: true, organisation_id: Organisation.current_id) }
   
@@ -332,7 +334,8 @@ class Exam < ActiveRecord::Base
       is_group: node.is_group, verify_result: node.verify_result, verify_absenty: node.verify_absenty , 
       create_verification: node.create_verification, divisions: node.divisions, is_completed: node.is_completed, 
       is_result_decleared: node.is_result_decleared, conducted_by: node.conducted_by, 
-      jkci_class: node.jkci_class.class_name, duration: node.duration, documents: node.documents_url, is_group: node.is_group, root: node.root?, root_id: node.root_id}
+      jkci_class: node.jkci_class.class_name, duration: node.duration, documents: node.documents_url, is_group: node.is_group, root: node.root?, root_id: node.root_id,
+      is_point_added: node.is_point_added}
     
   end
 

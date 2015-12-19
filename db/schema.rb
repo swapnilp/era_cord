@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151120200417) do
+ActiveRecord::Schema.define(version: 20151219053731) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -173,6 +173,13 @@ ActiveRecord::Schema.define(version: 20151120200417) do
     t.integer  "organisation_id", limit: 4
   end
 
+  create_table "exam_points", force: :cascade do |t|
+    t.integer  "exam_id",           limit: 4
+    t.integer  "chapters_point_id", limit: 4
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+  end
+
   create_table "exam_results", force: :cascade do |t|
     t.integer  "student_id",      limit: 4
     t.integer  "exam_id",         limit: 4
@@ -214,6 +221,7 @@ ActiveRecord::Schema.define(version: 20151120200417) do
     t.integer  "parent_id",             limit: 4
     t.string   "ancestry",              limit: 255
     t.boolean  "is_group",              limit: 1,   default: false
+    t.boolean  "is_point_added",        limit: 1,   default: false
   end
 
   create_table "galleries", force: :cascade do |t|

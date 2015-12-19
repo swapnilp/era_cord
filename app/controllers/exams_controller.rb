@@ -220,6 +220,44 @@ class ExamsController < ApplicationController
     
   end
 
+  def manage_points
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Calss"} unless jkci_class
+    
+    exam = @organisation.exams.where(id: params[:id]).first
+    if exam
+      render json:{success: true, chapters: exam.subject.chapters.as_json}
+    else
+      render json: {success: false}
+    end
+  end
+
+  def get_chapters_points
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Calss"} unless jkci_class
+    
+    exam = @organisation.exams.where(id: params[:id]).first
+    if exam
+      points = exam.subject.chapters.where(id: params[:chapter_ids].split(',')).first.try(:chapters_points).try(:as_json)
+      render json:{success: true, points: points}
+    else
+      render json: {success: false}
+    end
+  end
+
+  def save_exam_points
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Calss"} unless jkci_class
+    
+    exam = @organisation.exams.where(id: params[:id]).first
+    if exam
+      exam.chapters_points = ChaptersPoint.where(id: params[:point_ids].split(','))
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+  end
+
   ####################
   
 
