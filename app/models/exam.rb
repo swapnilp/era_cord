@@ -335,7 +335,8 @@ class Exam < ActiveRecord::Base
       create_verification: node.create_verification, divisions: node.divisions, is_completed: node.is_completed, 
       is_result_decleared: node.is_result_decleared, conducted_by: node.conducted_by, 
       jkci_class: node.jkci_class.class_name, duration: node.duration, documents: node.documents_url, is_group: node.is_group, root: node.root?, root_id: node.root_id,
-      is_point_added: node.is_point_added}
+      is_point_added: node.is_point_added,
+    chapters_points: node.chapters_points.map(&:chapter_name).join(', ')}
     
   end
 

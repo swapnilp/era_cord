@@ -226,7 +226,9 @@ class ExamsController < ApplicationController
     
     exam = @organisation.exams.where(id: params[:id]).first
     if exam
-      render json:{success: true, chapters: exam.subject.chapters.as_json}
+      points = ChaptersPoint.where(chapter_id: exam.chapters_points.map(&:chapter_id))
+      selected_points = exam.chapters_points.map(&:id)
+      render json:{success: true, chapters: exam.subject.chapters.as_json, selected_chapters: exam.chapters_points.map(&:chapter_id).uniq, points: points.as_json, selected_points: selected_points}
     else
       render json: {success: false}
     end
