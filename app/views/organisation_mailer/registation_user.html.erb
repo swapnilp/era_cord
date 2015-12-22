@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body style="max-width:1145px;margin-left: auto; margin-right: auto;">
+    <div>
+      <h3 style="font-style: italic;">Hi <%= @organisation.name %>,</h3>
+
+      <p style="  line-height: 27px;font-size: 20px;">
+        Please open below link for registation of EraCord organisation 
+	<strong>
+	  <a href="www.jkscience.in/users/sign_up?&email_code=<%= @organisation.email_code %>">Click Here</a>
+	</strong>
+      </p>
+    </div>
+    <div>
+      <p>Regards,</p>
+      <p>&#169; 2015 <a href="http://www.eracord.in">Jkscience.in.</a> ALL RIGHTS RESERVED</p>
+    </div>
+  </body>
+</html>
+
