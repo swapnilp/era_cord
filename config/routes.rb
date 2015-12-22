@@ -9,8 +9,9 @@ Rails.application.routes.draw do
     sessions:      'users/sessions',
     passwords:     'users/passwords',
     unlocks:       'users/unlocks',
+    registrations: 'users/registrations',
   },
-  skip: [:confirmations, :registrations]
+  skip: [:confirmations]
   
   # as :user do
   #   put 'users/change-password', to: 'users/registrations#update', as: 'user_password_change'

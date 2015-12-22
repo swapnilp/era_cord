@@ -149,10 +149,10 @@ class Organisation < ActiveRecord::Base
   end
 
   def send_generated_code
-    org = Organisation.where(email: self.email).first
-    if org.last_sent && ((org.last_sent + 5.hours) > Time.now)
+    #org = Organisation.where(email: self.email).first
+    if self.last_sent && ((self.last_sent + 5.hours) > Time.now)
     else
-      org.update_attributes({last_sent: Time.now})
+      self.update_attributes({last_sent: Time.now})
       Delayed::Job.enqueue OrganisationMailQueue.new(self)
       Delayed::Job.enqueue OrganisationRegistationSms.new(organisation_sms_message)
     end
