@@ -50,6 +50,12 @@ class User < ActiveRecord::Base
       where(conditions.to_h).first
     end
   end
+
+  def self.check_duplicate(warden_conditions, password)
+    conditions = warden_conditions.dup
+    users = where(conditions.to_h).select{|u| u.valid_password? password}
+    return users
+  end
   
   def after_database_authentication
     self.organisation.update_attributes({last_signed_in: Time.now}) if self.organisation.present?
@@ -112,6 +118,14 @@ class User < ActiveRecord::Base
   end
 
   def token_fields
-    { email: email }
+    { email: email, organisation_id: organisation_id}
+  end
+
+  def organisation_json(options = {})
+    options.merge({
+                    id: id,
+                    organisation_id: organisation_id,
+                    organisation_name: organisation.name
+                  })
   end
 end

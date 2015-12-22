@@ -7,6 +7,15 @@ module Users
     respond_to :json
 
     def create
+      
+      unless params[:user][:organisation_id].present?
+        duplicates = resource_from_credentials_check_duplicates || []
+        
+        if duplicates.count > 1
+          return render json: {success: false, email: params[:user][:email], organisations: duplicates.map(&:organisation_json)}
+        end
+      end
+      
       resource = resource_from_credentials
       return invalid_login_attempt unless resource
 
@@ -38,12 +47,17 @@ module Users
       render json: { success: false, message: 'Invalid email or password.' }, status: 401
     end
 
+    def resource_from_credentials_check_duplicates
+      data = { email: params[:user][:email] }
+      resource_class.check_duplicate(data, params[:user][:password])      
+    end
+
     def resource_from_credentials
       data = { email: params[:user][:email] }
       if params[:user][:organisation_id].present?
         data = data.merge({organisation_id: params[:user][:organisation_id]})
       end
-
+      
       res = resource_class.find_for_database_authentication(data)
 
       return unless res
