@@ -17,9 +17,9 @@ Rails.application.routes.draw do
   #   put 'users/change-password', to: 'users/registrations#update', as: 'user_password_change'
   # end
 
-  devise_scope :user do
-    root to: "users/sessions#new"
-  end
+  #devise_scope :user do
+  #  root to: "users/sessions#new"
+  #end
 
   resources :exams, only: [:index]
   
@@ -123,8 +123,8 @@ Rails.application.routes.draw do
   delete "/organisations/clarks/:user_id" => "organisations#delete_clark"
   delete "/organisations/sub_organisations/:sub_organisation_id" => "organisations#pull_back_sub_organisations"
 
-  get 'index' => "home#index"
-  #root 'home#index'
+  #get 'index' => "home#index"
+  root 'home#index'
   
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
