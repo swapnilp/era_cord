@@ -17,6 +17,11 @@ Rails.application.routes.draw do
   #   put 'users/change-password', to: 'users/registrations#update', as: 'user_password_change'
   # end
 
+
+  as :user do
+    post 'users/reset_password', to: "users/passwords#create", as: 'user_password_reset'
+  end
+
   #devise_scope :user do
   #  root to: "users/sessions#new"
   #end

@@ -57,7 +57,18 @@ class User < ActiveRecord::Base
     users = where(conditions.to_h).select{|u| u.valid_password? password}
     return users
   end
-  
+
+  def self.send_reset_password_instructions(warden_conditions)
+    conditions = warden_conditions.dup
+    user = where(conditions.to_h).first
+    if user
+      ResetPassword.new({email: user.email}).save
+      return true
+    else
+      return false
+    end
+  end
+
   def after_database_authentication
     self.organisation.update_attributes({last_signed_in: Time.now}) if self.organisation.present?
   end 

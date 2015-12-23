@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151219053731) do
+ActiveRecord::Schema.define(version: 20151223040529) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -317,6 +317,14 @@ ActiveRecord::Schema.define(version: 20151219053731) do
     t.string   "subject",    limit: 255
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
+  end
+
+  create_table "reset_passwords", force: :cascade do |t|
+    t.string   "email",      limit: 255,                   null: false
+    t.text     "token",      limit: 65535
+    t.boolean  "send_token", limit: 1,     default: false
+    t.datetime "created_at",                               null: false
+    t.datetime "updated_at",                               null: false
   end
 
   create_table "results", force: :cascade do |t|

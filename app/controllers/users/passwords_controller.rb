@@ -8,8 +8,12 @@ module Users
     # if we said that an account didn't exist (for example), that'd be
     # leaking account data. And that would be bad.
     def create
-      resource_class.send_reset_password_instructions(resource_params)
-      render json: { success: true, message: 'Password reset instructions sent' }, status: 200
+      success = resource_class.send_reset_password_instructions(resource_params)
+      if success
+        render json: { success: true, message: 'Password reset instructions sent' }, status: 200
+      else
+        render json: {success: false, message: ""}
+      end
     end
 
     def update
@@ -21,5 +25,13 @@ module Users
         render json: { success: false, message: resource.errors.full_messages.join('. ') }, status: 422
       end
     end
+
+    def resource_params
+      params.require(:user).permit(:email, :password, :password_confirmation)
+    end
+
+    
+    private :resource_params
+    
   end
 end
