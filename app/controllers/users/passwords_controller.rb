@@ -16,18 +16,31 @@ module Users
       end
     end
 
-    def update
-      resource = resource_class.reset_password_by_token(resource_params)
+    def edit
+      @reset_password = ResetPassword.where(token: params[:reset_password_token]).first
+      raise ActionController::RoutingError.new('Not Found') unless @reset_password.present?
+      
+      @organisations = User.where(email: @reset_password.email).map(&:organisation)
+      self.resource = resource_class.new
+    end
 
+    def update
+      #resource = resource_class.reset_password_by_token(resource_params)
+      @reset_password = ResetPassword.where(token: params[:reset_password_token]).first
+
+      self.resource = resource_class.where(email: @reset_password.email, organisation_id: params[:organisation_id]).first
+
+      self.resource.reset_password(params[:user][:password], params[:user][:password_confirmation])
       if resource.errors.empty?
-        render json: { success: true, message: 'Your password has been reset. You may use your new password to log in.' }, status: 200
+        redirect_to CONSOLE_URL
       else
-        render json: { success: false, message: resource.errors.full_messages.join('. ') }, status: 422
+        @organisations = User.where(email: @reset_password.email).map(&:organisation)
+        render :edit
       end
     end
 
     def resource_params
-      params.require(:user).permit(:email, :password, :password_confirmation)
+      params.require(:user).permit(:email, :password, :password_confirmation, :token)
     end
 
     

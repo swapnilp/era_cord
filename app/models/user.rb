@@ -6,7 +6,7 @@ class User < ActiveRecord::Base
   rolify
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :registerable,# :recoverable,
+  devise :database_authenticatable, :registerable, :recoverable,
           :rememberable, :trackable, :authentication_keys => [:login, :organisation_id]#, request_keys: [:organisation_id]
   attr_accessor :login
 
@@ -21,7 +21,7 @@ class User < ActiveRecord::Base
   validates_presence_of :email
   validates_format_of :email, :with => Devise.email_regexp, :allow_blank => true, :if => :email_changed?
   validates_presence_of :password, :on=>:create
-  validates_confirmation_of :password, :on=>:create
+  validates_confirmation_of :password #,  #:on=>[:create, :update]
   validates_length_of :password, :within => Devise.password_length, :allow_blank => true
 
   scope :clarks, -> {where(role: 'clark')}
@@ -43,6 +43,17 @@ class User < ActiveRecord::Base
     JWT.secure_compare token, server_token
   end
 
+  def reset_password(new_password, new_password_confirmation)
+    self.password = new_password
+    self.password_confirmation = new_password_confirmation
+    
+    if respond_to?(:after_password_reset) && valid?
+      ActiveSupport::Deprecation.warn "after_password_reset is deprecated"
+      after_password_reset
+    end
+    save
+  end
+  
   def self.find_for_database_authentication(warden_conditions)
     conditions = warden_conditions.dup
     if (login = conditions.delete(:login)) && (org = conditions.delete(:organisation_id)) 
