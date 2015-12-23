@@ -32,6 +32,7 @@ module Users
 
       self.resource.reset_password(params[:user][:password], params[:user][:password_confirmation])
       if resource.errors.empty?
+        @reset_password.destroy
         redirect_to CONSOLE_URL
       else
         @organisations = User.where(email: @reset_password.email).map(&:organisation)
