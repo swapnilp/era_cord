@@ -110,6 +110,7 @@ class User < ActiveRecord::Base
       self.add_role u_role.to_sym if CLARK_ROLES.include?(u_role) 
     end
     self.add_role :clark
+    self.update(token_expires_at: nil)
   end
   
   def admin?

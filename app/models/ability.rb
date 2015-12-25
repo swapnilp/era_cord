@@ -33,7 +33,7 @@ class Ability
       can :manage, DailyTeachingPoint
       can :manage, Exam
       can :manage, Chapter
-      can :read, Student
+      can :manage, Student
       can :enable_sms, Student 
       can :filter_students, Student 
       can :disable_student, Student 
