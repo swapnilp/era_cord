@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151223040529) do
+ActiveRecord::Schema.define(version: 20160102044150) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -178,6 +178,7 @@ ActiveRecord::Schema.define(version: 20151223040529) do
     t.integer  "chapters_point_id", limit: 4
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
+    t.integer  "organisation_id",   limit: 4
   end
 
   create_table "exam_results", force: :cascade do |t|
@@ -391,11 +392,12 @@ ActiveRecord::Schema.define(version: 20151223040529) do
   end
 
   create_table "student_subjects", force: :cascade do |t|
-    t.integer  "student_id", limit: 4
-    t.integer  "subject_id", limit: 4
-    t.integer  "batch_id",   limit: 4
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
+    t.integer  "student_id",      limit: 4
+    t.integer  "subject_id",      limit: 4
+    t.integer  "batch_id",        limit: 4
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+    t.integer  "organisation_id", limit: 4
   end
 
   create_table "students", force: :cascade do |t|
@@ -465,6 +467,28 @@ ActiveRecord::Schema.define(version: 20151223040529) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "organisation_id", limit: 4
+  end
+
+  create_table "time_table_classes", force: :cascade do |t|
+    t.integer  "organisation_id", limit: 4
+    t.integer  "sub_class_id",    limit: 4
+    t.integer  "time_table_id",   limit: 4
+    t.boolean  "is_break",        limit: 1
+    t.string   "type",            limit: 255
+    t.string   "start_time",      limit: 255
+    t.string   "end_time",        limit: 255
+    t.integer  "durations",       limit: 4
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+  end
+
+  create_table "time_tables", force: :cascade do |t|
+    t.string   "start_time",      limit: 255
+    t.integer  "organisation_id", limit: 4
+    t.integer  "jkci_class_id",   limit: 4
+    t.integer  "sub_class_id",    limit: 4
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
   end
 
   create_table "users", force: :cascade do |t|

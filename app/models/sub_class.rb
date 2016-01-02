@@ -1,5 +1,7 @@
 class SubClass < ActiveRecord::Base
   belongs_to :jkci_class
+
+  has_one :time_table
   has_many :class_students, through: :jkci_class
   
   default_scope { where(organisation_id: Organisation.current_id) }

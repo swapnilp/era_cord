@@ -48,11 +48,16 @@ class Student < ActiveRecord::Base
     return p_mobile.present? ?  "91" << p_mobile : nil
   end
 
-  def add_students_subjects(o_subjects)
+  def add_students_subjects(o_subjects, organisation)
     self.subjects.delete(self.subjects)
-    self.subjects << standard.subjects.compulsory
-    self.subjects << standard.subjects.where(id: o_subjects.map(&:to_i), is_compulsory: false) if o_subjects.present?
-      
+    standard.subjects.compulsory.each do |sub|
+      self.student_subjects.build({subject_id: sub.id, organisation_id: organisation.id}).save
+    end
+    if o_subjects.present?
+      standard.subjects.where(id: o_subjects.map(&:to_i), is_compulsory: false).each do |sub|
+        self.student_subjects.build({subject_id: sub.id, organisation_id: organisation.id}).save
+      end
+    end
   end
 
   def activate_sms

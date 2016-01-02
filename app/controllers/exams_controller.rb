@@ -253,8 +253,7 @@ class ExamsController < ApplicationController
     
     exam = @organisation.exams.where(id: params[:id]).first
     if exam
-      exam.chapters_points = ChaptersPoint.where(id: params[:point_ids].split(','))
-      exam.update_attributes({is_point_added: true})
+      exam.save_exam_points(params[:point_ids])
       render json: {success: true}
     else
       render json: {success: false}

@@ -27,7 +27,7 @@ class StudentsController < ApplicationController
     params.permit!
     student = @organisation.students.build(params[:student])
     if student.save
-      student.add_students_subjects(params[:o_subjects])
+      student.add_students_subjects(params[:o_subjects], @organisation)
       if params[:class_id].present?
         jkci_class = @organisation.jkci_classes.where(id: params[:class_id]).first
         jkci_class.class_students.build({student_id: student.id, organisation_id: @organisation.id}).save  if jkci_class.present?
@@ -64,7 +64,7 @@ class StudentsController < ApplicationController
     params.permit!
     student = @organisation.students.where(id: params[:id]).first
     if student && student.update(params[:student])
-      student.add_students_subjects(params[:o_subjects])
+      student.add_students_subjects(params[:o_subjects], @organisation)
       render json: {success: true}
     else
       render json: {success: false}

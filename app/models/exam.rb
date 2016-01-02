@@ -297,6 +297,14 @@ class Exam < ActiveRecord::Base
     reports
   end
 
+  def save_exam_points(point_ids)
+    self.chapters_points = []
+    ChaptersPoint.select([:id]).where(id: point_ids.split(',')).each do |chapter_point|
+      self.exam_points.build({chapters_point_id: chapter_point.id, organisation_id: self.organisation_id}).save
+    end
+    self.update_attributes({is_point_added: true})
+  end
+
   def grouped_exams_sms
     group_exams = grouped_exam_report_table_head
     reports = []

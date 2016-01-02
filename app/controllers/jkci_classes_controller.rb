@@ -105,7 +105,7 @@ class JkciClassesController < ApplicationController
     if jkci_class
       params[:students].each do |p_student|
         student = jkci_class.students.where(id: p_student['student_id']).first
-        student.add_students_subjects(p_student["o_subjects"]) if student
+        student.add_students_subjects(p_student["o_subjects"], @organisation) if student
       end
       render json: {success: true}
     else
