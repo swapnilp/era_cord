@@ -5,5 +5,15 @@ class TimeTable < ActiveRecord::Base
   has_many :time_table_classes
 
   default_scope { where(organisation_id: Organisation.current_id) }
+
+
+  def as_json(options= {})
+    options.merge({
+                    id: id,
+                    class_name: jkci_class.class_name,
+                    start_time: start_time,
+                    sub_class: sub_class.try(:name)
+                  })
+  end
   
 end

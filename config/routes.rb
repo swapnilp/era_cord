@@ -61,6 +61,7 @@ Rails.application.routes.draw do
       get 'manage_student_subject'
       get 'manage_roll_number'
       get 'get_notifications'
+      get 'get_timetable'
       post 'save_student_subjects'
       post 'manage_students'
       post 'save_roll_number'
@@ -75,6 +76,9 @@ Rails.application.routes.draw do
         delete 'remove_student'
       end
     end
+    
+    resources :time_tables, only: [:index, :create, :show]
+    
     resources :daily_teachs, except: [:update] do
       member do
         get 'get_catlogs'

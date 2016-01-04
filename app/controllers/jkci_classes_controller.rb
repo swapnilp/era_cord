@@ -179,6 +179,20 @@ class JkciClassesController < ApplicationController
     end
   end
 
+  def get_timetable
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+
+    time_table = jkci_class.time_tables.where(sub_class_id: nil).first
+    if time_table
+      render json: {success: true, time_table: time_table.as_json}
+    else
+      render json: {success: false}
+    end
+    
+  end
+
+
   ####################################
   
   def create
@@ -271,6 +285,7 @@ class JkciClassesController < ApplicationController
       format.json {render json: {success: true, html: render_to_string(:partial => "daily_teaching_point.html.erb", :layout => false, locals: {daily_teaching_points: @daily_teaching_points, hide_edit: true}), pagination_html:  render_to_string(partial: 'daily_teach_pagination.html.erb', layout: false, locals: {class_daily_teach: @daily_teaching_points}), css_holder: ".dailyTeach tbody"}}
     end
   end
+
 
   
   
