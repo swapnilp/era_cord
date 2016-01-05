@@ -27,7 +27,9 @@ class Subject < ActiveRecord::Base
                options.merge({
                                id: self.id,
                                std_name: std_name,
-                               name: name
+                               name: name,
+                               color: color,
+                               text_color: text_color
                              })
              end
     output.tap{|x| x.delete(:selected)} 

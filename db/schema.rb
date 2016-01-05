@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160102115416) do
+ActiveRecord::Schema.define(version: 20160105114748) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -442,6 +442,8 @@ ActiveRecord::Schema.define(version: 20160102115416) do
     t.datetime "updated_at"
     t.integer  "standard_id",   limit: 4
     t.boolean  "is_compulsory", limit: 1,   default: true
+    t.string   "color",         limit: 255
+    t.string   "text_color",    limit: 255, default: "#FFF"
   end
 
   create_table "talent2015s", force: :cascade do |t|
@@ -474,13 +476,14 @@ ActiveRecord::Schema.define(version: 20160102115416) do
     t.integer  "sub_class_id",    limit: 4
     t.integer  "time_table_id",   limit: 4
     t.boolean  "is_break",        limit: 1
-    t.string   "type",            limit: 255
+    t.string   "slot_type",       limit: 255
     t.string   "start_time",      limit: 255
     t.string   "end_time",        limit: 255
     t.integer  "durations",       limit: 4
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
     t.integer  "cwday",           limit: 4
+    t.integer  "subject_id",      limit: 4
   end
 
   create_table "time_tables", force: :cascade do |t|

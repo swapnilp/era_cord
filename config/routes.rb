@@ -112,6 +112,10 @@ Rails.application.routes.draw do
     delete "students/:student_id" => "jkci_classes#remove_student_from_class"
   end
 
+  resources :time_tables, only: [] do
+    resources :time_table_classes, only: [:create, :index, :update, :destroy]
+  end
+
   resources :chapters, only: [:index] do
     member do
       get 'get_points'
