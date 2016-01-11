@@ -345,8 +345,20 @@ class Exam < ActiveRecord::Base
       jkci_class: node.jkci_class.class_name, duration: node.duration, documents: node.documents_url, is_group: node.is_group, root: node.root?, root_id: node.root_id,
       is_point_added: node.is_point_added,
     chapters_points: node.chapters_points.map(&:chapter_name).join(', ')}
+  end
+
+  def calendar_json
+    {
+      id: self.id, 
+      type: "exam",
+      title: self.name,
+      start: self.exam_date,
+      end: self.exam_date+ (self.duration.try(:minutes) || 60.minutes),
+      url: "#/classes/#{self.jkci_class_id}/exams/39/show"
+    }
     
   end
+
 
   def as_json(options= {})
     if self.is_group

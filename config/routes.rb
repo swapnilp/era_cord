@@ -28,7 +28,11 @@ Rails.application.routes.draw do
   #  root to: "users/sessions#new"
   #end
 
-  resources :exams, only: [:index]
+  resources :exams, only: [:index] do 
+    collection do 
+      get 'calender_index'
+    end
+  end
   
   resources :students, except: [:update] do
     member do

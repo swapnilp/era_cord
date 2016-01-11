@@ -15,6 +15,17 @@ class ExamsController < ApplicationController
     render json: {success: true, body: ActiveModel::ArraySerializer.new(exams, each_serializer: ExamIndexSerializer).as_json, count: exams.total_count}
   end
 
+  def calender_index
+    exams = @organisation.exams
+    if params[:start]
+      exams = exams.where("exam_date >= ? ", Date.parse(params[:start]))
+    end
+    if params[:end]
+      exams = exams.where("exam_date <= ? ", Date.parse(params[:end]))
+    end
+    render json: {success: true, exams: exams.map(&:calendar_json)}
+  end
+
   def get_descendants
     jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
