@@ -32,6 +32,7 @@ class Organisation < ActiveRecord::Base
   has_many :users
   has_many :organisation_standards
   has_many :standards,-> {uniq},  through: :organisation_standards
+  has_many :time_table_classes
     
 
   cattr_accessor :current_id
@@ -342,4 +343,10 @@ class Organisation < ActiveRecord::Base
       jkci_class.update_attributes({is_active: true})
     end
   end
+
+  def self.calculate_off_class
+    #Organisation.unscoped
+    
+  end
+
 end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160105114748) do
+ActiveRecord::Schema.define(version: 20160115174553) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -255,6 +255,7 @@ ActiveRecord::Schema.define(version: 20160105114748) do
     t.integer  "standard_id",        limit: 4
     t.boolean  "enable_class_sms",   limit: 1,   default: false
     t.boolean  "enable_exam_sms",    limit: 1,   default: false
+    t.boolean  "has_sub_class",      limit: 1,   default: false
   end
 
   create_table "notifications", force: :cascade do |t|
@@ -270,6 +271,16 @@ ActiveRecord::Schema.define(version: 20160105114748) do
     t.boolean  "verification_require", limit: 1,   default: false
     t.integer  "organisation_id",      limit: 4
     t.integer  "jkci_class_id",        limit: 4
+  end
+
+  create_table "off_classes", force: :cascade do |t|
+    t.integer  "jkci_class_id", limit: 4
+    t.integer  "sub_class_id",  limit: 4
+    t.date     "date"
+    t.integer  "subject_id",    limit: 4
+    t.integer  "cwday",         limit: 4
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
   end
 
   create_table "organisation_standards", force: :cascade do |t|

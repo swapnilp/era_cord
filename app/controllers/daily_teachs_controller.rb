@@ -10,23 +10,13 @@ class DailyTeachsController < ApplicationController
     render json: {success: true, daily_teaching_points: daily_teaching_points, count: daily_teaching_points.total_count}
   end
 
-  def calender_index
-    exams = @organisation.exams
-    if params[:start]
-      exams = exams.where("exam_date >= ? ", Date.parse(params[:start]))
-    end
-    if params[:end]
-      exams = exams.where("exam_date <= ? ", Date.parse(params[:end]))
-    end
-    render json: {success: true, exams: exams.map(&:calendar_json)}
-  end
-
   def create
     raise ActionController::RoutingError.new('Not Found') unless current_user.has_role? :create_daily_teach 
     jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
     
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
-    daily_teaching_point = jkci_class.daily_teaching_points.build(create_params)
+    daily_teaching_point = jkci_class.daily_teaching_points.build(create_params.merge({organisation_id: @organisation.id}))
+    
     if daily_teaching_point.save
       daily_teaching_point.create_catlog
       render json: {success: true, class_id: jkci_class.id}

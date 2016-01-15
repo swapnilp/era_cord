@@ -9,6 +9,11 @@ class TimeTablesController < ApplicationController
     render json: {success: true, sub_classes: sub_classes.map(&:index_json)}
   end
 
+  def calender_index
+    time_table_classes = @organisation.time_table_classes
+    render json: {success: true, time_table_classes: time_table_classes.map(&:calender_json)}
+  end
+
   def create
     jkci_class = JkciClass.where(id: params[:jkci_class_id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class

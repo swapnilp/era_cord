@@ -117,6 +117,9 @@ Rails.application.routes.draw do
   end
 
   resources :time_tables, only: [] do
+    collection do 
+      get 'calender_index'
+    end
     resources :time_table_classes, only: [:create, :index, :update, :destroy]
   end
 

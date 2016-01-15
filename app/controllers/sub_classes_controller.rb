@@ -25,7 +25,7 @@ class SubClassesController < ApplicationController
     jkci_class = JkciClass.where(id: params[:jkci_class_id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     
-    sub_class = jkci_class.sub_classes.build(params[:sub_class])
+    sub_class = jkci_class.sub_classes.build(params[:sub_class].merge({organisation_id: @organisation.id}))
     if sub_class.save
       render json: {success: true}
     else
