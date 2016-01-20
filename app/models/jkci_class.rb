@@ -18,6 +18,7 @@ class JkciClass < ActiveRecord::Base
   has_many :exam_catlogs
   has_many :notifications
   has_many :time_tables
+  has_many :off_classes
   
   has_many :chapters, through: :subject
 

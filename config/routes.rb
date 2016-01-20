@@ -33,6 +33,12 @@ Rails.application.routes.draw do
       get 'calender_index'
     end
   end
+
+  resources :off_classes, only: [:index] do 
+    collection do 
+      get 'calender_index'
+    end
+  end
   
   resources :students, except: [:update] do
     member do

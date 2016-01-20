@@ -16,4 +16,13 @@ class TimeTable < ActiveRecord::Base
                   })
   end
   
+  
+  def calculate_off_class(date)
+    time_table_classes = self.time_table_classes.where(cwday: date.cwday).map(&:subject_id)
+    daily_classes = self.jkci_class.daily_teaching_points.where("date >= ? && date <= ?", date.to_date, (date+1.day).to_date).map(&:subject_id)
+    (time_table_classes - daily_classes).each do |subject_id|
+      self.jkci_class.off_classes.build({date: date, subject_id: subject_id, cwday: date.cwday}).save
+      
+    end
+  end
 end

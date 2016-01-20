@@ -26,7 +26,8 @@ class SubClass < ActiveRecord::Base
                options.merge({
                                id: self.id,
                                name: name,
-                               class_name: jkci_class.class_name
+                               class_name: jkci_class.class_name,
+                               description: destription
                              })
              end
     output.tap{|x| x.delete(:selected)} 

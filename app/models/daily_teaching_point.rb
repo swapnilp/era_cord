@@ -12,8 +12,13 @@ class DailyTeachingPoint < ActiveRecord::Base
   default_scope { where(organisation_id: Organisation.current_id) }
   scope :chapters_points, -> { where("chapter_id is not ?", nil) }
   #after_save :add_current_chapter
-  
+  after_save :check_off_classes
+ 
 
+  def check_off_classes
+    self.jkci_class.off_classes.where(date: self.date.to_date, subject_id: self.subject_id).destroy_all
+  end
+  
   def absent_count
     students_count = self.class_catlogs.where(is_present: false).count
     students_count.zero? ? "" : " #{students_count}"

@@ -33,6 +33,7 @@ class Organisation < ActiveRecord::Base
   has_many :organisation_standards
   has_many :standards,-> {uniq},  through: :organisation_standards
   has_many :time_table_classes
+  has_many :off_classes
     
 
   cattr_accessor :current_id
