@@ -3,7 +3,7 @@ class TimeTableClass < ActiveRecord::Base
   belongs_to :time_table
   belongs_to :subject
   belongs_to :organisation
-  #belongs_to :sub_class
+  belongs_to :sub_class
   
   default_scope { where(organisation_id: Organisation.current_id) }  
 
@@ -24,7 +24,7 @@ class TimeTableClass < ActiveRecord::Base
     options.merge({
                     id: id,
                     subject_id: subject_id,
-                    name: subject.try(:std_name),
+                    name: sub_class_id.present? ? "#{subject.try(:std_name)}- #{sub_class.try(:name)}" : subject.try(:std_name),
                     color: subject.try(:color),
                     cwday: cwday,
                     start_time: start_time,

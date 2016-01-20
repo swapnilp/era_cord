@@ -3,6 +3,7 @@ class SubClass < ActiveRecord::Base
 
   #has_one :time_table
   has_many :class_students, through: :jkci_class
+  has_many :off_classes
   
   default_scope { where(organisation_id: Organisation.current_id) }
   
