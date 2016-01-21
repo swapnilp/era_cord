@@ -57,6 +57,6 @@ class TimeTableClassesController < ApplicationController
   end
 
   def update_params
-    params.require(:time_table_class).permit(:slot_id, :subject_id, :start_time, :end_time, :durations, :cwday)
+    params.require(:time_table_class).permit(:slot_id, :subject_id, :start_time, :end_time, :durations, :cwday, :sub_class_id)
   end
 end
