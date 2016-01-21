@@ -15,6 +15,11 @@ class Subject < ActiveRecord::Base
     "#{name}-#{standard.std_name}"
   end
 
+  def only_std_name
+    "#{name}-#{standard.name}"
+  end
+
+
   def as_json(options= {})
     output = if options[:selected].present?
                options.merge({

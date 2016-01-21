@@ -26,7 +26,7 @@ class TimeTableClass < ActiveRecord::Base
     options.merge({
                     id: id,
                     subject_id: subject_id,
-                    name: sub_class_id.present? ? "#{subject.try(:std_name)}- #{sub_class.try(:name)}" : subject.try(:std_name),
+                    name: sub_class_id.present? ? "#{subject.try(:only_std_name)}- #{sub_class.try(:name)}" : subject.try(:only_std_name),
                     color: subject.try(:color),
                     cwday: cwday,
                     start_time: start_time,
