@@ -336,7 +336,7 @@ class Exam < ActiveRecord::Base
   end
   
   def self.json(node)
-    {id: node.id, name: node.name, marks: node.marks, subject: node.subject.try(:std_name), 
+    {id: node.id, name: node.name, marks: node.marks, subject: node.subject.try(:only_std_name), 
       exam_date: node.exam_date.to_date, exam_type: node.exam_type, 
       published_date: node.published_date.try(:to_date), jkci_class_id: node.jkci_class_id, 
       is_group: node.is_group, verify_result: node.verify_result, verify_absenty: node.verify_absenty , 

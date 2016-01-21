@@ -5,7 +5,7 @@ class ExamSerializer < ActiveModel::Serializer
   has_many :documents
 
   def subject
-    object.is_group ? '' : object.subject.std_name 
+    object.is_group ? '' : object.subject.only_std_name 
   end
 
   def jkci_class
