@@ -8,9 +8,9 @@ class ExamsController < ApplicationController
     if params[:jkci_class_id].present?
       jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
       return render json: {success: false, message: "Invalid Class"} unless jkci_class
-      exams = jkci_class.exams.includes([:subject, :exam_catlogs]).roots.order("exam_date desc").page(params[:page]) #@organisation.exams.roots.order("id desc").page(params[:page])
+      exams = jkci_class.exams.includes({subject: :standard}, :exam_catlogs).roots.order("exam_date desc").page(params[:page]) #@organisation.exams.roots.order("id desc").page(params[:page])
     else
-      exams = @organisation.exams.roots.order("exam_date desc").page(params[:page]) #@organisation.exams.roots.order("id desc").page(params[:page])
+      exams = @organisation.exams.includes({subject: :standard}, :exam_catlogs).roots.order("exam_date desc").page(params[:page]) #@organisation.exams.roots.order("id desc").page(params[:page])
     end
     render json: {success: true, body: ActiveModel::ArraySerializer.new(exams, each_serializer: ExamIndexSerializer).as_json, count: exams.total_count}
   end
@@ -75,7 +75,7 @@ class ExamsController < ApplicationController
     return render json: {success: false, message: "Invalid Calss"} unless jkci_class
     exam = jkci_class.exams.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Exam"} unless exam
-    exam_catlogs = exam.exam_catlogs
+    exam_catlogs = exam.exam_catlogs.includes(:student)
     render json: {success: true, catlogs: ActiveModel::ArraySerializer.new(exam_catlogs, each_serializer: ExamCatlogSerializer).as_json}
   end
 

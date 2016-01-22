@@ -54,7 +54,7 @@ class DailyTeachingPoint < ActiveRecord::Base
 
   def verify_presenty
     self.update_attributes({verify_absenty: true})
-    self.present_students.map(&:update_presnty)
+    self.present_students.update_all({last_present: Time.now})#.map(&:update_presnty)
   end
   
   def exams
