@@ -3,7 +3,7 @@ class DailyTeachingPoint < ActiveRecord::Base
   belongs_to :jkci_class
   belongs_to :teacher
   has_many :class_catlogs
-  has_many :students, through: :class_catlogs
+  #has_many :students, through: :class_catlogs
   belongs_to :subject
   belongs_to :chapter
   belongs_to :chapters_point
@@ -48,13 +48,17 @@ class DailyTeachingPoint < ActiveRecord::Base
     end
   end
 
-  def present_students
-    self.students.where("class_catlogs.is_present is not false")
+  def students 
+    self.class_students
   end
+
+  #def present_students
+    #self.students.where("class_catlogs.is_present is not false")
+  #end
 
   def verify_presenty
     self.update_attributes({verify_absenty: true})
-    self.present_students.update_all({last_present: Time.now})#.map(&:update_presnty)
+    #self.present_students.update_all({last_present: Time.now})#.map(&:update_presnty)
   end
   
   def exams
@@ -67,10 +71,18 @@ class DailyTeachingPoint < ActiveRecord::Base
     end
   end
 
-  def fill_catlog(present_list,  date)
-    self.update_attributes({is_fill_catlog: true, verify_absenty: false})
-    class_catlogs.where(student_id: present_list).update_all({is_present: false, date: date})
-    class_catlogs.where("student_id not in (?)", present_list).update_all({is_present: true, date: date})
+  def fill_catlog(absent_list,  date)
+    #self.update_attributes({is_fill_catlog: true, verify_absenty: false})
+    #class_catlogs.where(student_id: present_list).update_all({is_present: false, date: date})
+    #class_catlogs.where("student_id not in (?)", present_list).update_all({is_present: true, date: date})
+    class_catlogs.where("student_id not in (?)", [0] << absent_list).destroy_all
+    absent_students = self.students.where(id: absent_list)
+    absent_students.each do |student|
+      #self.class_catlogs.build({student_id: student.id, date: self.date, jkci_class_id: self.jkci_class_id, organisation_id: self.organisation_id}).save
+      class_catlog = self.class_catlogs.find_or_initialize_by({student_id: student.id, date: self.date, jkci_class_id: self.jkci_class_id, organisation_id: self.organisation_id})
+      class_catlog.is_present = false
+      class_catlog.save
+    end
   end
 
   def add_current_chapter

@@ -7,6 +7,7 @@ class ClassCatlog < ActiveRecord::Base
 
   scope :absent, -> {where(is_present: [false, nil]) }
   scope :only_absents, -> {where(is_present: false, is_recover: [false])}
+  #scope :only_present, -> {where("is_present not in (?)", [false])}
   
   default_scope { where(organisation_id: Organisation.current_id) }
 

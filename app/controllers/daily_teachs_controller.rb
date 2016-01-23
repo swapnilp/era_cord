@@ -18,7 +18,7 @@ class DailyTeachsController < ApplicationController
     daily_teaching_point = jkci_class.daily_teaching_points.build(create_params.merge({organisation_id: @organisation.id}))
     
     if daily_teaching_point.save
-      daily_teaching_point.create_catlog
+      #daily_teaching_point.create_catlog
       render json: {success: true, class_id: jkci_class.id}
     else
       render json: {success: false}
@@ -41,7 +41,7 @@ class DailyTeachsController < ApplicationController
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     daily_teaching_point = jkci_class.daily_teaching_points.where(id: params[:id]).first
     if daily_teaching_point
-      catlogs = daily_teaching_point.class_catlogs
+      catlogs = daily_teaching_point.students.map{|student| student.catlog_json([daily_teaching_point.class_catlogs.map(&:student_id)])}
       render json: {success: true, class_catlogs: catlogs}
     else
       render json: {success: false}

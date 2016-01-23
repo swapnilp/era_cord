@@ -186,4 +186,13 @@ class Student < ActiveRecord::Base
                     o_subjects: subjects.optional.map(&:id)
                   })
   end
+
+  def catlog_json(absent_list = [] , options={})
+    options.merge({
+                    id: id,
+                    name: name,
+                    p_mobile: p_mobile,
+                    is_present: !absent_list.flatten.include?(self.id)
+                  })
+  end
 end
