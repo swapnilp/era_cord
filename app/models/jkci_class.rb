@@ -32,6 +32,8 @@ class JkciClass < ActiveRecord::Base
   default_scope { where(organisation_id: Organisation.current_id) }
   scope :active, -> { where(is_active: true) }
 
+  after_create :generate_time_table
+
   def manage_students(associate_students, organisation)
     curr_students = self.students.map(&:id)
     #removed_students = curr_students - associate_students
@@ -129,6 +131,29 @@ class JkciClass < ActiveRecord::Base
     table
   end
 
+
+  def upgrade_batch(student_list, organisation, standard_id)
+    next_batch = self.batch.next
+    next_standard = organisation.standards.where(id: standard_id).first
+    next_old_class = JkciClass.where(standard_id: standard_id, batch_id: self.batch_id).first
+    if next_batch && next_standard && next_old_class
+      new_class = organisation.jkci_classes.find_or_initialize_by({batch_id: next_batch.id, standard_id: self.standard_id, organisation_id: self.organisation_id})
+      new_class.class_name = "#{new_class.standard.std_name}-#{next_batch.name}"
+      new_class.save
+
+      new_next_class = JkciClass.find_or_initialize_by({batch_id: next_batch.id, standard_id: next_standard.id, organisation_id: Organisation.current_id })
+      new_next_class.organisation_id = next_old_class.organisation_id
+      new_next_class.class_name = "#{new_next_class.standard.std_name}-#{next_batch.name}"
+      new_next_class.save
+      if student_list.present?
+        Student.where(id: student_list).update_all({standard_id: next_standard.id, batch_id: next_batch.id, organisation_id: next_old_class.organisation_id})
+        self.class_students.includes(:student).where(student_id: student_list).update_all({jkci_class_id: new_next_class.id, roll_number: nil, organisation_id: next_old_class.organisation_id, sub_class: nil})
+        new_next_class.students.map{|c_student| c_student.add_students_subjects(nil, next_old_class.organisation)}
+      end
+    end
+    new_next_class
+  end
+  
   def daily_teaching_table_format
     table = [["Id", "Subject", "Chapter", "Points", "Date", "Sms Sent", "Divisions"]]
 
@@ -176,6 +201,10 @@ class JkciClass < ActiveRecord::Base
     end
   end
 
+  def generate_time_table
+    self.time_tables.find_or_initialize_by({organisation_id: self.organisation_id}).save
+  end
+
   def subject_json(options={})
     options.merge({
                     id: id,
@@ -194,6 +223,16 @@ class JkciClass < ActiveRecord::Base
                     email: organisation.email
                     
                   })
+  end
+
+  def batch_json(options ={})
+    options.merge({
+                    class_name: class_name,
+                    batch: batch.name,
+                    is_next_batch: batch.next.present?,
+                    next_batch_name: batch.next.try(:name)
+                  })
+    
   end
   
 end

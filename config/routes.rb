@@ -72,9 +72,11 @@ Rails.application.routes.draw do
       get 'manage_roll_number'
       get 'get_notifications'
       get 'get_timetable'
+      get 'get_batch'
       post 'save_student_subjects'
       post 'manage_students'
       post 'save_roll_number'
+      post 'upgrade_batch'
       #delete 'remove_students'
     end
 

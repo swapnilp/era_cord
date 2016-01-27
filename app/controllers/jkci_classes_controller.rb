@@ -71,7 +71,12 @@ class JkciClassesController < ApplicationController
   def students
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
-    students = jkci_class.students.includes([:subjects, :standard, :batch]).select("class_students.roll_number, students.*").page(params[:page])
+    students = jkci_class.students.includes({subjects: :standard}, :standard, :batch, :jkci_classes).select("class_students.roll_number, students.*")
+    if params[:search] && JSON.parse(params[:search])['name']
+      students = students.where("first_name like ?", "%#{JSON.parse(params[:search])['name']}%")
+    end
+    students = students.page(params[:page])
+    
     render json: {success: true, students: ActiveModel::ArraySerializer.new(students, each_serializer: StudentSerializer).as_json, count: students.total_count}
   end
 
@@ -135,6 +140,26 @@ class JkciClassesController < ApplicationController
     end
   end
 
+  def get_batch
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    if jkci_class
+      standards = @organisation.standards.where("priority > ?", jkci_class.standard.priority)
+      render json: {success: true, jkci_class: jkci_class.batch_json, standards: standards.as_json}
+    else
+      render json: {success: false}
+    end
+  end
+
+  def upgrade_batch
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    if jkci_class
+      class_id = jkci_class.upgrade_batch(params[:student_list], @organisation, params[:standard_id])
+      render json: {success: true, class_id: class_id}
+    else
+      render json: {success: false}
+    end
+  end
+  
   def get_notifications
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class

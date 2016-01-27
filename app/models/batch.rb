@@ -4,4 +4,12 @@ class Batch < ActiveRecord::Base
   has_many :students
   default_scope  { where(is_active: true) } 
   scope :active, -> {where(is_active: true).order("id DESC")}
+
+  def next
+    self.class.where("id > ?", id).first
+  end
+
+  def previous
+    self.class.where("id < ?", id).last
+  end
 end

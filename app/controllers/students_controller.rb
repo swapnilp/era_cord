@@ -5,8 +5,11 @@ class StudentsController < ApplicationController
   
 
   def index
-    students = @organisation.students.select([:id, :first_name, :last_name, :standard_id, :group, :mobile, :p_mobile, :enable_sms, :gender, :is_disabled, :batch_id, :parent_name]).order("id desc").page(params[:page])
-    
+    students = @organisation.students.includes(:standard, :jkci_classes, {subjects: :standard}, :batch).select([:id, :first_name, :last_name, :standard_id, :group, :mobile, :p_mobile, :enable_sms, :gender, :is_disabled, :batch_id, :parent_name]).order("id desc")
+    if params[:search] && JSON.parse(params[:search])['name']
+      students = students.where("first_name like ?", "%#{JSON.parse(params[:search])['name']}%")
+    end
+    students = students.page(params[:page])
     render json: {success: true, body: ActiveModel::ArraySerializer.new(students, each_serializer: StudentSerializer).as_json, count: students.total_count}
   end
 

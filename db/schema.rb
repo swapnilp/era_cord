@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160116030618) do
+ActiveRecord::Schema.define(version: 20160127080442) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -241,21 +241,22 @@ ActiveRecord::Schema.define(version: 20160116030618) do
   end
 
   create_table "jkci_classes", force: :cascade do |t|
-    t.string   "class_name",         limit: 255
+    t.string   "class_name",           limit: 255
     t.datetime "class_start_time"
     t.datetime "class_end_time"
-    t.integer  "teacher_id",         limit: 4
+    t.integer  "teacher_id",           limit: 4
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "batch_id",           limit: 4
-    t.boolean  "is_active",          limit: 1,   default: true
-    t.integer  "subject_id",         limit: 4
-    t.integer  "current_chapter_id", limit: 4
-    t.integer  "organisation_id",    limit: 4
-    t.integer  "standard_id",        limit: 4
-    t.boolean  "enable_class_sms",   limit: 1,   default: false
-    t.boolean  "enable_exam_sms",    limit: 1,   default: false
-    t.boolean  "has_sub_class",      limit: 1,   default: false
+    t.integer  "batch_id",             limit: 4
+    t.boolean  "is_active",            limit: 1,   default: true
+    t.integer  "subject_id",           limit: 4
+    t.integer  "current_chapter_id",   limit: 4
+    t.integer  "organisation_id",      limit: 4
+    t.integer  "standard_id",          limit: 4
+    t.boolean  "enable_class_sms",     limit: 1,   default: false
+    t.boolean  "enable_exam_sms",      limit: 1,   default: false
+    t.boolean  "has_sub_class",        limit: 1,   default: false
+    t.boolean  "has_subject_assigned", limit: 1,   default: false
   end
 
   create_table "notifications", force: :cascade do |t|
@@ -401,6 +402,7 @@ ActiveRecord::Schema.define(version: 20160116030618) do
     t.datetime "created_at",                            null: false
     t.datetime "updated_at",                            null: false
     t.boolean  "is_active",  limit: 1,   default: true
+    t.integer  "priority",   limit: 4
   end
 
   create_table "student_subjects", force: :cascade do |t|
