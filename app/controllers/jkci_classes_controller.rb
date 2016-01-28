@@ -72,8 +72,8 @@ class JkciClassesController < ApplicationController
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     students = jkci_class.students.includes({subjects: :standard}, :standard, :batch, :jkci_classes).select("class_students.roll_number, students.*")
-    if params[:search] && JSON.parse(params[:search])['name']
-      students = students.where("first_name like ?", "%#{JSON.parse(params[:search])['name']}%")
+    if params[:search]
+      students = students.where("first_name like ?", "%#{params[:search]}%")
     end
     students = students.page(params[:page])
     
