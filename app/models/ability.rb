@@ -38,6 +38,7 @@ class Ability
       can :filter_students, Student 
       can :disable_student, Student 
       can :download_report, Student
+      can :manage, Contact
     else
       can :read, Gallery
       can :read, Event
@@ -46,6 +47,7 @@ class Ability
       can :read, Result
       can :create, Organisation
       can :regenerate_organisation_code, Organisation      
+      can :manage, Contact
       
       #can :roll, :clark
       #can :create_update, Chapter 

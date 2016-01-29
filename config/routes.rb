@@ -136,7 +136,9 @@ Rails.application.routes.draw do
       get 'get_points'
     end
   end
-
+  
+  resources :contacts#, only: [:create]
+  
   get '/organisation_cources' => "organisations#organisation_cources"
   get '/remaining_cources' => "organisations#remaining_cources"
   get '/organisations/get_sub_organisations' => "organisations#sub_organisations_list"
