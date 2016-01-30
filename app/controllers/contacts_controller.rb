@@ -1,5 +1,7 @@
 class ContactsController < ApplicationController
-
+  
+  skip_before_filter :authenticate_with_token!, only: [:create, :destroy]
+  
   def create
     contact = Contact.new(contact_params)
     if contact.save

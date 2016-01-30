@@ -39,8 +39,8 @@ class SubClassesController < ApplicationController
 
     sub_class = jkci_class.sub_classes.where(id: params[:id]).first
     if sub_class
-      students = sub_class.students
-      render json: {success: true, students: ActiveModel::ArraySerializer.new(students, each_serializer: StudentSerializer).as_json}
+      students = sub_class.students.includes(:batch, :standard)
+      render json: {success: true, students: students.map(&:sub_class_json)}
     else
       render json: {success: false}
     end  
@@ -55,7 +55,7 @@ class SubClassesController < ApplicationController
     sub_class_students_ids << 0
     students = jkci_class.students.where("students.id not in (?)", sub_class_students_ids)
     
-    render json: {success: true, students: ActiveModel::ArraySerializer.new(students, each_serializer: StudentSerializer).as_json}
+    render json: {success: true, students: students.map(&:sub_class_remaining_json)}
   end
 
   def add_students

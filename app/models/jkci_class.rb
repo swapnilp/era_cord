@@ -35,21 +35,11 @@ class JkciClass < ActiveRecord::Base
   after_create :generate_time_table
 
   def manage_students(associate_students, organisation)
-
     organisation.students.where(id: associate_students).each do |student|
+      organisation.class_students.where("jkci_class_id not in (?)", [self.id]).destroy_all
+      student.update_attributes({batch_id: self.batch_id})
       self.class_students.find_or_initialize_by({student_id: student.id, organisation_id: self.organisation_id}).save
     end
-
-    #curr_students = self.students.map(&:id)
-    ##removed_students = curr_students - associate_students
-    ##new_std = associate_students -  (curr_students & associate_students)
-    ##self.students.delete(organisation.students.where(id: removed_students))
-    #new_students = organisation.students.where(id: associate_students)
-    #new_students = new_students.where("id not in (?)", ([0]+ curr_students))
-    #new_students.each do |student|
-    #  self.class_students.build# << new_students
-    #end
-    
   end
 
   def remove_student_from_class(associate_student, organisation)

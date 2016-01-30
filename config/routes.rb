@@ -85,7 +85,7 @@ Rails.application.routes.draw do
         get 'students'
         get 'remaining_students'
         post 'add_students'
-        delete 'remove_student'
+        delete 'remove_student/:student_id' , to: "sub_classes#remove_student"
       end
     end
     
@@ -113,6 +113,8 @@ Rails.application.routes.draw do
         post 'remove_exam_result'
         post 'update'
         post 'add_absunt_students'
+        post 'add_absunt_student'
+        post 'remove_absunt_student'
         post 'upload_paper'
         post 'add_exam_results'
         post 'verify_exam_result'

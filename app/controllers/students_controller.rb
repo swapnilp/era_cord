@@ -14,16 +14,22 @@ class StudentsController < ApplicationController
   end
 
   def new
-    if params[:class_id]
-      standards = @organisation.standards.where(id: params[:class_id])
-      subjects = standards.first.try(:subjects).try(:optional) || []  
-      batches = Batch.all
+    if params[:class_id].present?
+      jkci_class = @organisation.jkci_classes.where(id: params[:class_id]).first
+      if jkci_class
+        standards = @organisation.standards.where(id: jkci_class.standard_id)
+        subjects = standards.first.try(:subjects).try(:optional) || []  
+        batches = Batch.where(id: jkci_class.batch_id)
+        render json: {success: true, standards: standards, subjects: subjects.as_json, batches: batches}
+      else
+        render json: {success: false}
+      end
     else
       standards = @organisation.standards.active
       subjects = standards.first.try(:subjects).try(:optional) || []  
       batches = Batch.all
+      render json: {success: true, standards: standards, subjects: subjects.as_json, batches: batches}
     end
-    render json: {standards: standards, subjects: subjects.as_json, batches: batches}
   end
   
   def create
@@ -42,7 +48,7 @@ class StudentsController < ApplicationController
   end
   
   def show
-    student = @organisation.students.where(id: params[:id]).first
+    student = @organisation.students.includes({subjects: :standard}).where(id: params[:id]).first
     if student
       render json: {success: true, body: StudentSerializer.new(student).as_json}
     else

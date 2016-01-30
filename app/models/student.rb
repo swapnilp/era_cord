@@ -195,4 +195,24 @@ class Student < ActiveRecord::Base
                     is_present: !absent_list.flatten.include?(self.id)
                   })
   end
+
+  def sub_class_remaining_json(absent_list = [] , options={})
+    options.merge({
+                    id: id,
+                    name: name,
+                    p_mobile: p_mobile
+                  })
+  end
+
+  def sub_class_json(options= {})
+    options.merge({
+                    id: id,
+                    name: "#{first_name} #{last_name}", 
+                    mobile: mobile, 
+                    parent_name: parent_name, 
+                    p_mobile: p_mobile, 
+                    batch: batch.name,
+                    standard: standard.std_name
+                  })
+    end
 end

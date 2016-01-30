@@ -117,6 +117,34 @@ class ExamsController < ApplicationController
     exam_catlogs = exam.exam_catlogs
     render json: {success: true, catlogs: ActiveModel::ArraySerializer.new(exam_catlogs, each_serializer: ExamCatlogSerializer).as_json}
   end
+  
+  def add_absunt_student
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Calss"} unless jkci_class
+    exam_catlog = @organisation.exam_catlogs.where(id: params[:catlog_id], exam_id: params[:id]).first
+    if exam_catlog
+      exam_catlog.update_attributes({is_present: false})
+      exam_catlog.exam.update_attributes({verify_absenty: false})
+      Notification.add_exam_abesnty(exam_catlog.exam_id, @organisation)
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+  end
+
+  def remove_absunt_student
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Calss"} unless jkci_class
+    exam_catlog = @organisation.exam_catlogs.where(id: params[:catlog_id], exam_id: params[:id], absent_sms_sent: [false, nil]).first
+    if exam_catlog
+      exam_catlog.update_attributes({is_present: nil, is_recover: nil})
+      exam_catlog.exam.update_attributes({verify_absenty: false})
+      Notification.add_exam_abesnty(exam_catlog.exam_id, @organisation)
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+  end
 
   def add_exam_results
     jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
@@ -318,13 +346,6 @@ class ExamsController < ApplicationController
     @students = @exam.students.where(id: students_ids)
   end
 
-  def remove_exam_absent
-    exam = @organisation.exams.where(id: params[:id]).first
-    exam.remove_absent_student(params[:student_id])
-    redirect_to exam_path(params[:id])
-  end
-
-  
 
   def recover_exam
     #@exam = Exam.where(id: params[:id]).first
