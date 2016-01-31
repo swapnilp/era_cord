@@ -26,7 +26,7 @@ class JkciClassesController < ApplicationController
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     #@notifications = @jkci_class.role_exam_notifications(current_user)
     if jkci_class
-      render json: JkciClassSerializer.new(jkci_class).as_json.merge({success: true})
+      render json: JkciClassSerializer.new(jkci_class).as_json.merge({success: true, has_manage_class: (current_user.has_role? :manage_class)})
     else
       render json: {success: false}
     end

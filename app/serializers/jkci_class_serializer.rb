@@ -13,6 +13,6 @@ class JkciClassSerializer < ActiveModel::Serializer
   def has_upgrade_batch
     object.batch.next.present?
   end
-  
+
 end
 
