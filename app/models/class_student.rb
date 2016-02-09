@@ -35,4 +35,17 @@ class ClassStudent < ActiveRecord::Base
                   })
   end
   
+  def verify_student_json(options = {})
+    options.merge({
+                    id: id,
+                    student_id: student_id,
+                    name: student.name,
+                    p_mobile: student.p_mobile,
+                    is_duplicate: is_duplicate,
+                    duplicate_field: duplicate_field,
+                    is_duplicate_accepted: is_duplicate_accepted
+                  })
+  end
+  
+  
 end

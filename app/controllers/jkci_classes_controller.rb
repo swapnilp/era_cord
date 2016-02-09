@@ -56,7 +56,9 @@ class JkciClassesController < ApplicationController
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     selected_students = jkci_class.students.map(&:id)
-    students = jkci_class.standard.students.enable_students.where("id not in (?)", ([0] + selected_students))
+    students = jkci_class.standard.students.enable_students.where("id not in (?)", ([0] + selected_students)).where(batch_id: jkci_class.batch_id)
+    jkci_class.update_attributes({is_student_verified: false})
+    jkci_class.check_duplicates
     render json: {success: true, students: ActiveModel::ArraySerializer.new(students, each_serializer: StudentSerializer).as_json}
   end
 
@@ -64,8 +66,14 @@ class JkciClassesController < ApplicationController
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     sutdents = params[:students_ids].map(&:to_i)  rescue []
-    jkci_class.manage_students(sutdents, @organisation) if jkci_class
-    render json: {success: true, id: jkci_class.id}
+    if jkci_class
+      jkci_class.manage_students(sutdents, @organisation) 
+      jkci_class.update_attributes({is_student_verified: false})
+      jkci_class.check_duplicates
+      render json: {success: true, id: jkci_class.id}
+    else
+      render json: {success: false}
+    end
   end
 
   def students
@@ -83,8 +91,14 @@ class JkciClassesController < ApplicationController
   def remove_student_from_class
     jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
-    jkci_class.remove_student_from_class(params[:student_id], @organisation) if jkci_class
-    render json: {success: true, id: jkci_class.id}
+    if jkci_class
+      jkci_class.remove_student_from_class(params[:student_id], @organisation) 
+      jkci_class.update_attributes({is_student_verified: false})
+      jkci_class.check_duplicates
+      render json: {success: true, id: jkci_class.id}
+    else
+      render json: {success: false}
+    end
   end
 
   def get_chapters
@@ -217,6 +231,38 @@ class JkciClassesController < ApplicationController
     
   end
 
+  def check_verify_students
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    class_students = jkci_class.class_students.includes(:student)
+    render json: {success: true, class_students: class_students.map(&:verify_student_json)}
+  end
+
+  def recheck_duplicate_student
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    jkci_class.check_duplicates
+    render json: {success: true}
+  end
+
+  def accept_duplicate_student
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    class_student = jkci_class.class_students.where(student_id: params[:student_id]).first
+    if class_student
+      class_student.update_attributes({is_duplicate_accepted: true})
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+  end
+
+  def verify_students
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    jkci_class.update_attributes({is_student_verified: true})
+    render json: {success: true}
+  end
 
   ####################################
   
@@ -266,14 +312,6 @@ class JkciClassesController < ApplicationController
 
 
   
-  def filter_class
-    jkci_classes = @organisation.jkci_classes.includes([:batch]).all.order("id desc").page(params[:page])
-    if params[:batch_id].present?
-      jkci_classes = jkci_classes.where(batch_id: params[:batch_id])
-    end
-    
-    render json: {success: true, html: render_to_string(:partial => "jkci_class.html.erb", :layout => false, locals: {jkci_classes: jkci_classes}), pagination_html:  render_to_string(partial: 'pagination.html.erb', layout: false, locals: {jkci_classes: jkci_classes}), css_holder: ".jkciClassTable tbody"}
-  end
 
 
   def class_daily_teaches

@@ -29,7 +29,8 @@ class Student < ActiveRecord::Base
   validates :last_name, presence: true
   validates :parent_name, presence: true
   validates :p_mobile, presence: true
-  
+
+  before_destroy :destroy_dependency
   
   def all_exams
     #Exam.where(std: std, is_active: true)
@@ -158,6 +159,15 @@ class Student < ActiveRecord::Base
       url_arry = [url, message, self.id, self.organisation_id]
     end
     url_arry
+  end
+
+  def destroy_dependency
+    self.exam_absents.destroy_all
+    self.exam_results.destroy_all
+    self.class_students.destroy_all
+    self.class_catlogs.destroy_all
+    self.exam_catlogs.destroy_all
+    self.student_subjects.destroy_all
   end
 
   def as_json(options= {})

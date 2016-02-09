@@ -203,6 +203,21 @@ class JkciClass < ActiveRecord::Base
     self.time_tables.find_or_initialize_by({organisation_id: self.organisation_id}).save
   end
 
+  def check_duplicates
+    class_students.update_all({duplicate_field: "", is_duplicate: false, is_duplicate_accepted: false})
+    students.select( :first_name,:last_name).group(:first_name, :last_name).having("count(*) > 1").each do |student|
+      ids = students.select(:id, :first_name,:last_name).where(first_name: student.first_name, last_name: student.last_name).map(&:id)
+      class_students.where(student_id: ids).update_all({is_duplicate: true, duplicate_field: "Name"})
+    end
+    
+    students.select(:p_mobile).group(:p_mobile).having("count(*) > 1").each do |student|
+      ids = students.select(:id, :p_mobile).where(p_mobile: student.p_mobile).map(&:id)
+      class_students.where(student_id: ids).each do |class_student|
+        class_student.update_attributes({is_duplicate: true, duplicate_field: class_student.duplicate_field + " Mobile"})
+      end
+    end
+  end
+
   def subject_json(options={})
     options.merge({
                     id: id,

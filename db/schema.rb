@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160131142347) do
+ActiveRecord::Schema.define(version: 20160131160437) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -75,13 +75,16 @@ ActiveRecord::Schema.define(version: 20160131142347) do
   end
 
   create_table "class_students", force: :cascade do |t|
-    t.integer  "jkci_class_id",   limit: 4
-    t.integer  "student_id",      limit: 4
+    t.integer  "jkci_class_id",         limit: 4
+    t.integer  "student_id",            limit: 4
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "sub_class",       limit: 255, default: ",0,"
-    t.integer  "organisation_id", limit: 4
-    t.integer  "roll_number",     limit: 4
+    t.string   "sub_class",             limit: 255, default: ",0,"
+    t.integer  "organisation_id",       limit: 4
+    t.integer  "roll_number",           limit: 4
+    t.boolean  "is_duplicate",          limit: 1,   default: false
+    t.string   "duplicate_field",       limit: 255
+    t.boolean  "is_duplicate_accepted", limit: 1,   default: false
   end
 
   create_table "contacts", force: :cascade do |t|
