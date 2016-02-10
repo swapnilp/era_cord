@@ -4,12 +4,14 @@ class JkciClassesController < ApplicationController
   #load_and_authorize_resource param_method: :my_sanitizer
 
   def index
-    jkci_classes = @organisation.jkci_classes.includes([:batch]).active.all.order("id desc")
+    #jkci_classes = @organisation.jkci_classes.includes([:batch]).active.all.order("id desc")
+    jkci_classes = @organisation.standards.where("organisation_standards.is_assigned_to_other = false").map(&:jkci_classes).map(&:last)
     render json: {body: ActiveModel::ArraySerializer.new(jkci_classes, each_serializer: JkciClassIndexSerializer).as_json}
   end
 
   def get_unassigned_classes
-    jkci_classes = @organisation.descendants.map(&:jkci_classes).flatten
+    jkci_classes = @organisation.standards.where("organisation_standards.is_assigned_to_other = true").map(&:jkci_classes).map(&:last)
+    #jkci_classes = @organisation.descendants.map(&:jkci_classes).flatten
     render json: {body: jkci_classes.map(&:unassigned_json)}
   end
 
