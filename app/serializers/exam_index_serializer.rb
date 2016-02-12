@@ -3,7 +3,7 @@ class ExamIndexSerializer < ActiveModel::Serializer
   attributes :id, :name, :marks, :subject, :exam_date, :exam_type, :published_date, :status, :jkci_class_id, :is_point_added, :is_group
 
   def subject
-    object.is_group ? '' : object.subject.only_std_name 
+    object.is_group ? '' : object.std_subject_name
   end
 
   def exam_date

@@ -31,6 +31,7 @@ Rails.application.routes.draw do
   resources :exams, only: [:index] do 
     collection do 
       get 'calender_index'
+      get 'get_filter_data'
     end
   end
 
