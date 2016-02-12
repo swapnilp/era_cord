@@ -11,13 +11,13 @@ class ExamsController < ApplicationController
       exams = jkci_class.exams.includes({subject: :standard}, :exam_catlogs, {jkci_class: :batch} ).roots.order("exam_date desc") 
       #@organisation.exams.roots.order("id desc").page(params[:page])
     else
-      exams = @organisation.exams.includes({subject: :standard}, :exam_catlogs, {jkci_class: :batch}).roots.order("exam_date desc") 
+      exams = @organisation.exams.joins(:jkci_class).includes({subject: :standard}, :exam_catlogs, {jkci_class: :batch}).roots.order("exam_date desc") 
       #@organisation.exams.roots.order("id desc").page(params[:page])
       if params[:standard_id].present?
-        exams = exams.joins(:jkci_class).where("jkci_classes.standard_id = ?", params[:standard_id])
+        exams = exams.where("jkci_classes.standard_id = ?", params[:standard_id])
       end
       if params[:batch_id].present?
-        exams = exams.joins(:jkci_class).where("jkci_classes.batch_id = ?", params[:batch_id])
+        exams = exams.where("jkci_classes.batch_id = ?", params[:batch_id])
       end
     end
     
