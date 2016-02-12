@@ -12,4 +12,5 @@ class OrganisationStandard < ActiveRecord::Base
   
   def create_organisation_calss
   end
+
 end

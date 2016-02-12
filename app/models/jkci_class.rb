@@ -30,7 +30,7 @@ class JkciClass < ActiveRecord::Base
   
   #default_scope  {where(is_active: true)} 
   default_scope { where(organisation_id: Organisation.current_id) }
-  scope :active, -> { where(is_active: true) }
+  scope :active, -> { where(is_current_active: true) }
 
   after_create :generate_time_table
 
@@ -203,19 +203,26 @@ class JkciClass < ActiveRecord::Base
     self.time_tables.find_or_initialize_by({organisation_id: self.organisation_id}).save
   end
 
-  def check_duplicates
-    class_students.update_all({duplicate_field: "", is_duplicate: false, is_duplicate_accepted: false})
+  def check_duplicates(hardCheck = true)
+    if hardCheck
+      class_students.update_all({duplicate_field: "", is_duplicate: false, is_duplicate_accepted: false})
+    end
     students.select( :first_name,:last_name).group(:first_name, :last_name).having("count(*) > 1").each do |student|
       ids = students.select(:id, :first_name,:last_name).where(first_name: student.first_name, last_name: student.last_name).map(&:id)
-      class_students.where(student_id: ids).update_all({is_duplicate: true, duplicate_field: "Name"})
+      class_students.where(student_id: ids, is_duplicate: false).update_all({is_duplicate: true, duplicate_field: "Name"})
     end
     
     students.select(:p_mobile).group(:p_mobile).having("count(*) > 1").each do |student|
       ids = students.select(:id, :p_mobile).where(p_mobile: student.p_mobile).map(&:id)
-      class_students.where(student_id: ids).each do |class_student|
-        class_student.update_attributes({is_duplicate: true, duplicate_field: class_student.duplicate_field + " Mobile"})
+      class_students.where(student_id: ids, is_duplicate: false).each do |class_student|
+        class_student.update_attributes({is_duplicate: true, duplicate_field: class_student.try(:duplicate_field).to_s + " Mobile"})
       end
     end
+  end
+
+  def make_active_class(organisation)
+    self.standard.jkci_classes.update_all({is_current_active: false})
+    self.update_attributes({is_current_active: true})
   end
 
   def subject_json(options={})
@@ -235,6 +242,19 @@ class JkciClass < ActiveRecord::Base
                     mobile: organisation.mobile,
                     email: organisation.email
                     
+                  })
+  end
+
+  def organisation_class_json(options = {})
+    options.merge({
+                    id: id,
+                    name: class_name,
+                    organisation_id: organisation_id,
+                    organisation_name: organisation.name,
+                    mobile: organisation.mobile,
+                    email: organisation.email,
+                    is_current_active: is_current_active,
+                    students_count: class_students.count
                   })
   end
 

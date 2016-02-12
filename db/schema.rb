@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160131160437) do
+ActiveRecord::Schema.define(version: 20160211102653) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -272,6 +272,7 @@ ActiveRecord::Schema.define(version: 20160131160437) do
     t.boolean  "has_sub_class",        limit: 1,   default: false
     t.boolean  "has_subject_assigned", limit: 1,   default: false
     t.boolean  "is_student_verified",  limit: 1,   default: false
+    t.boolean  "is_current_active",    limit: 1,   default: false
   end
 
   create_table "notifications", force: :cascade do |t|

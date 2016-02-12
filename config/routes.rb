@@ -74,6 +74,7 @@ Rails.application.routes.draw do
       get 'get_notifications'
       get 'get_timetable'
       get 'get_batch'
+      post 'make_active_class'
       post 'verify_students'
       post 'recheck_duplicate_student'
       post 'accept_duplicate_student'
@@ -146,6 +147,7 @@ Rails.application.routes.draw do
   resources :contacts#, only: [:create]
   
   get '/organisation_cources' => "organisations#organisation_cources"
+  get 'organisations/get_classes' => "organisations#organisation_classes"
   get '/remaining_cources' => "organisations#remaining_cources"
   get '/organisations/get_sub_organisations' => "organisations#sub_organisations_list"
   get '/organisations/add_standards' => "organisations#add_standards"

@@ -4,14 +4,14 @@ class JkciClassesController < ApplicationController
   #load_and_authorize_resource param_method: :my_sanitizer
 
   def index
-    #jkci_classes = @organisation.jkci_classes.includes([:batch]).active.all.order("id desc")
-    jkci_classes = @organisation.standards.where("organisation_standards.is_assigned_to_other = false").map(&:jkci_classes).map(&:last)
+    jkci_classes = @organisation.jkci_classes.includes([:batch]).active.order("id desc")
+    #jkci_classes = @organisation.standards.where("organisation_standards.is_assigned_to_other = false").map(&:jkci_classes).map(&:last)
     render json: {body: ActiveModel::ArraySerializer.new(jkci_classes, each_serializer: JkciClassIndexSerializer).as_json}
   end
 
   def get_unassigned_classes
-    jkci_classes = @organisation.standards.where("organisation_standards.is_assigned_to_other = true").map(&:jkci_classes).map(&:last)
-    #jkci_classes = @organisation.descendants.map(&:jkci_classes).flatten
+    #jkci_classes = @organisation.standards.where("organisation_standards.is_assigned_to_other = true").map(&:jkci_classes).map(&:last)
+    jkci_classes = @organisation.descendants.map(&:jkci_classes).map(&:active).flatten
     render json: {body: jkci_classes.map(&:unassigned_json)}
   end
 
@@ -60,7 +60,7 @@ class JkciClassesController < ApplicationController
     selected_students = jkci_class.students.map(&:id)
     students = jkci_class.standard.students.enable_students.where("id not in (?)", ([0] + selected_students)).where(batch_id: jkci_class.batch_id)
     jkci_class.update_attributes({is_student_verified: false})
-    jkci_class.check_duplicates
+    jkci_class.check_duplicates(false)
     render json: {success: true, students: ActiveModel::ArraySerializer.new(students, each_serializer: StudentSerializer).as_json}
   end
 
@@ -71,7 +71,7 @@ class JkciClassesController < ApplicationController
     if jkci_class
       jkci_class.manage_students(sutdents, @organisation) 
       jkci_class.update_attributes({is_student_verified: false})
-      jkci_class.check_duplicates
+      jkci_class.check_duplicates(false)
       render json: {success: true, id: jkci_class.id}
     else
       render json: {success: false}
@@ -96,7 +96,7 @@ class JkciClassesController < ApplicationController
     if jkci_class
       jkci_class.remove_student_from_class(params[:student_id], @organisation) 
       jkci_class.update_attributes({is_student_verified: false})
-      jkci_class.check_duplicates
+      jkci_class.check_duplicates(false)
       render json: {success: true, id: jkci_class.id}
     else
       render json: {success: false}
@@ -169,8 +169,8 @@ class JkciClassesController < ApplicationController
   def upgrade_batch
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     if jkci_class
-      class_id = jkci_class.upgrade_batch(params[:student_list], @organisation, params[:standard_id])
-      render json: {success: true, class_id: class_id}
+      new_jkci_class = jkci_class.upgrade_batch(params[:student_list], @organisation, params[:standard_id])
+      render json: {success: true, class_id: new_jkci_class.id , is_same_organisation:  new_jkci_class.organisation_id == @organisation.id}
     else
       render json: {success: false}
     end
@@ -243,7 +243,7 @@ class JkciClassesController < ApplicationController
   def recheck_duplicate_student
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
-    jkci_class.check_duplicates
+    jkci_class.check_duplicates(true)
     render json: {success: true}
   end
 
@@ -264,6 +264,14 @@ class JkciClassesController < ApplicationController
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     jkci_class.update_attributes({is_student_verified: true})
     render json: {success: true}
+  end
+
+  def make_active_class
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    jkci_class.make_active_class(@organisation)
+    jkci_classes = @organisation.jkci_classes.includes([:batch]).order("id desc")
+    render json: {success: true, classes: jkci_classes.map(&:organisation_class_json)}
   end
 
   ####################################

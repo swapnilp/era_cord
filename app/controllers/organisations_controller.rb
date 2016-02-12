@@ -13,6 +13,14 @@ class OrganisationsController < ApplicationController
     render json: {body: ActiveModel::ArraySerializer.new(organisation_standards, each_serializer: OrganisationCoursesSerializer).as_json }
   end
 
+  def organisation_classes
+    organisation_classes = @organisation.jkci_classes.order("id desc")
+    other_organisation_classes = JkciClass.where(organisation_id: @organisation.descendant_ids)
+
+    render json: {success: true, classes: organisation_classes.map(&:organisation_class_json), 
+      other_classes: other_organisation_classes.map(&:organisation_class_json)}
+  end
+
   def remaining_cources
     standards = Standard.select([:id, :name, :stream]).where("id not in (?)", ([0] + @organisation.standards.map(&:id)))
     render json: {body: ActiveModel::ArraySerializer.new(standards, each_serializer: StandardSerializer).as_json}
