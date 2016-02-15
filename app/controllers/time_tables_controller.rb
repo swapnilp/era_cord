@@ -10,7 +10,7 @@ class TimeTablesController < ApplicationController
   end
 
   def calender_index
-    time_table_classes = @organisation.time_table_classes.includes({subject: :standard}, :sub_class)
+    time_table_classes = @organisation.time_table_classes.includes({subject: :standard}, :sub_class).joins(time_table: :jkci_class).where("jkci_classes.is_current_active = ? ", true)
     render json: {success: true, time_table_classes: time_table_classes.map(&:calender_json)}
   end
 

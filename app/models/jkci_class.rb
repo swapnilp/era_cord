@@ -41,6 +41,10 @@ class JkciClass < ActiveRecord::Base
       self.class_students.find_or_initialize_by({student_id: student.id, organisation_id: self.organisation_id}).save
     end
   end
+  
+  def class_name_with_batch
+    "#{class_name}-#{batch.name}"
+  end
 
   def remove_student_from_class(associate_student, organisation)
     self.students.delete(organisation.students.where(id: associate_student))
@@ -218,6 +222,7 @@ class JkciClass < ActiveRecord::Base
         class_student.update_attributes({is_duplicate: true, duplicate_field: class_student.try(:duplicate_field).to_s + " Mobile"})
       end
     end
+    self.update_attributes({is_student_verified: false})
   end
 
   def make_active_class(organisation)

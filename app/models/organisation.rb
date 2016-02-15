@@ -21,17 +21,20 @@ class Organisation < ActiveRecord::Base
   has_many :exams
   has_many :exam_absents
   has_many :exam_catlogs
+  has_many :exam_points
   has_many :exam_results
   has_many :jkci_classes
   has_many :notifications
   has_many :parents_meetings
   has_many :sms_sents
   has_many :students
+  has_many :student_subjects
   has_many :sub_classes
   has_many :teachers
   has_many :users
   has_many :organisation_standards
   has_many :standards,-> {uniq},  through: :organisation_standards
+  has_many :time_tables
   has_many :time_table_classes
   has_many :off_classes
     
@@ -272,16 +275,30 @@ class Organisation < ActiveRecord::Base
         self.organisation_standards.where(standard_id: std.id).first.update_attributes({is_assigned_to_other: true})
         new_organisation.standards << std rescue nil
         if std.jkci_classes.present?
-          std.jkci_classes.map(&:exams).flatten.map(&:exam_points).flatten.each{ |record| record.update_attributes({organisation_id: new_sub_organisation_id})}
-          std.jkci_classes.map(&:exams).flatten.each{ |record| record.update_attributes({organisation_id: new_sub_organisation_id}) }
-          std.jkci_classes.map(&:exam_catlogs).flatten.each{ |record| record.update_attributes({organisation_id: new_sub_organisation_id})}
-          std.jkci_classes.map(&:daily_teaching_points).flatten.each{ |record| record.update_attributes({organisation_id: new_sub_organisation_id})}
-          std.jkci_classes.map(&:class_catlogs).flatten.each{ |record| record.update_attributes({organisation_id: new_sub_organisation_id})}
-          std.jkci_classes.map(&:sub_classes).flatten.each{ |record| record.update_attributes({organisation_id: new_sub_organisation_id})}
-          std.jkci_classes.map(&:students).flatten.map(&:student_subjects).flatten.each{ |record| record.update_attributes({organisation_id: new_sub_organisation_id})}
-          std.jkci_classes.map(&:students).flatten.each{ |record| record.update_attributes({organisation_id: new_sub_organisation_id})}
-          std.jkci_classes.map(&:class_students).flatten.each{ |record| record.update_attributes({organisation_id: new_sub_organisation_id})}
-          std.jkci_classes.map(&:notifications).flatten.each{ |record| record.update_attributes({organisation_id: new_sub_organisation_id})}
+          std_class_ids = std.jkci_classes.map(&:id)
+          self.exam_points.joins(exam: :jkci_class).where("jkci_classes.id in (?)", std_class_ids).update_all({organisation_id: new_sub_organisation_id})
+          self.exams.where("jkci_class_id in (?)", std_class_ids).update_all({organisation_id: new_sub_organisation_id})
+          self.exam_catlogs.where("jkci_class_id in (?)", std_class_ids).update_all({organisation_id: new_sub_organisation_id})
+          self.daily_teaching_points.where("jkci_class_id in (?)", std_class_ids).update_all({organisation_id: new_sub_organisation_id})
+          self.class_catlogs.where("jkci_class_id in (?)", std_class_ids).update_all({organisation_id: new_sub_organisation_id})
+          self.sub_classes.where("jkci_class_id in (?)", std_class_ids).update_all({organisation_id: new_sub_organisation_id})
+          self.student_subjects.joins(student: :class_students).where("class_students.jkci_class_id in (?)", std_class_ids).update_all({organisation_id: new_sub_organisation_id})
+          self.students.joins(:class_students).where("class_students.jkci_class_id in (?)", std_class_ids).update_all({organisation_id: new_sub_organisation_id})
+          self.class_students.where("jkci_class_id in (?)", std_class_ids).update_all({organisation_id: new_sub_organisation_id})
+          self.notifications.where("jkci_class_id in (?)", std_class_ids).update_all({organisation_id: new_sub_organisation_id})
+          self.time_table_classes.joins(:time_table).where("time_tables.jkci_class_id in (?)", std_class_ids).update_all({organisation_id: new_sub_organisation_id})
+          self.time_tables.where("jkci_class_id in (?)", std_class_ids).update_all({organisation_id: new_sub_organisation_id})
+          self.off_classes.where("jkci_class_id in (?)", std_class_ids).update_all({organisation_id: new_sub_organisation_id})
+          #std.jkci_classes.map(&:exams).flatten.map(&:exam_points).flatten.each{ |record| record.update_attributes({organisation_id: new_sub_organisation_id})}
+          #std.jkci_classes.map(&:exams).flatten.each{ |record| record.update_attributes({organisation_id: new_sub_organisation_id}) }
+          #std.jkci_classes.map(&:exam_catlogs).flatten.each{ |record| record.update_attributes({organisation_id: new_sub_organisation_id})}
+          #std.jkci_classes.map(&:daily_teaching_points).flatten.each{ |record| record.update_attributes({organisation_id: new_sub_organisation_id})}
+          #std.jkci_classes.map(&:class_catlogs).flatten.each{ |record| record.update_attributes({organisation_id: new_sub_organisation_id})}
+          #std.jkci_classes.map(&:sub_classes).flatten.each{ |record| record.update_attributes({organisation_id: new_sub_organisation_id})}
+          #std.jkci_classes.map(&:students).flatten.map(&:student_subjects).flatten.each{ |record| record.update_attributes({organisation_id: new_sub_organisation_id})}
+          #std.jkci_classes.map(&:students).flatten.each{ |record| record.update_attributes({organisation_id: new_sub_organisation_id})}
+          #std.jkci_classes.map(&:class_students).flatten.each{ |record| record.update_attributes({organisation_id: new_sub_organisation_id})}
+          #std.jkci_classes.map(&:notifications).flatten.each{ |record| record.update_attributes({organisation_id: new_sub_organisation_id})}
         end
         OrganisationStandard.unscoped.where(standard_id: std.id, organisation_id: new_organisation.ancestor_ids)
           .update_all({assigned_organisation_id: new_sub_organisation_id})

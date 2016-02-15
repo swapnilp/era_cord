@@ -235,8 +235,10 @@ class JkciClassesController < ApplicationController
 
   def check_verify_students
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
-    return render json: {success: false, message: "Invalid Class"} unless jkci_class
-    class_students = jkci_class.class_students.includes(:student)
+    if !jkci_class.present? || !current_user.has_role?(:manage_class)
+      return render json: {success: false, message: "Invalid Class"}  
+    end
+    class_students = jkci_class.class_students.includes(:student).order("duplicate_field ASC")
     render json: {success: true, class_students: class_students.map(&:verify_student_json)}
   end
 

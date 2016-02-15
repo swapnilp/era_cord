@@ -15,7 +15,7 @@ class OrganisationsController < ApplicationController
 
   def organisation_classes
     organisation_classes = @organisation.jkci_classes.order("id desc")
-    other_organisation_classes = JkciClass.where(organisation_id: @organisation.descendant_ids)
+    other_organisation_classes = JkciClass.where(organisation_id: @organisation.descendant_ids).order("standard_id asc")
 
     render json: {success: true, classes: organisation_classes.map(&:organisation_class_json), 
       other_classes: other_organisation_classes.map(&:organisation_class_json)}
@@ -122,7 +122,11 @@ class OrganisationsController < ApplicationController
 
 
   def launch_sub_organisation
-    sub_organisation = @organisation.sub_organisations.build(organisation_params)
+    #sub_organisation = @organisation.sub_organisations.build(organisation_params)
+    sub_organisation = @organisation.sub_organisations.find_or_initialize_by({email: organisation_params[:email]})
+    sub_organisation.name = organisation_params[:name]
+    sub_organisation.mobile = organisation_params[:mobile]
+    
     if sub_organisation.save
       standard_ids = params[:standard_ids].split(',').map(&:to_i)
       standards = Standard.where(id: standard_ids)
