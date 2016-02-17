@@ -122,6 +122,9 @@ class OrganisationsController < ApplicationController
 
 
   def launch_sub_organisation
+    if @organisation.root.subtree.map(&:email).include? organisation_params[:email]
+      return render json: {success: false, message: "Organisation email allready registered in parent tree Please assign standard to organisation."}
+    end
     #sub_organisation = @organisation.sub_organisations.build(organisation_params)
     sub_organisation = @organisation.sub_organisations.find_or_initialize_by({email: organisation_params[:email]})
     sub_organisation.name = organisation_params[:name]

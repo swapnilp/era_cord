@@ -1,5 +1,5 @@
 class UserLoginSerializer < ActiveModel::Serializer
-  attributes :id, :email, :roles, :token, :organisation_id, :success
+  attributes :id, :email, :roles, :token, :organisation_id, :success, :is_manage_organiser
 
   def email
     object.email
@@ -15,6 +15,10 @@ class UserLoginSerializer < ActiveModel::Serializer
 
   def token
     object.reset_auth_token!
+  end
+
+  def is_manage_organiser
+    object.has_role? :manage_organiser
   end
 
   def success
