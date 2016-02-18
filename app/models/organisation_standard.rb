@@ -13,4 +13,16 @@ class OrganisationStandard < ActiveRecord::Base
   def create_organisation_calss
   end
 
+  def as_json(options = {})
+    options.merge({
+                    id: id,
+                    standard_id: standard_id,
+                    organisation_id: organisation_id,
+                    organisation_name: organisation.try(:name),
+                    is_active: is_active,
+                    is_assigned_to_other: is_assigned_to_other,
+                    assigned_organisation_id: assigned_organisation_id
+                  })
+  end
+
 end

@@ -26,4 +26,13 @@ class Standard < ActiveRecord::Base
                     name: std_name
                   })
   end
+
+  def organisation_json(options= {})
+    options.merge({
+                    id: self.id,
+                    name: std_name,
+                    organisaiton_standards: organisation_standards.as_json
+                  })
+  end
+  
 end

@@ -26,6 +26,10 @@ class OrganisationsController < ApplicationController
     render json: {body: ActiveModel::ArraySerializer.new(standards, each_serializer: StandardSerializer).as_json}
   end
 
+  def organisation_standards
+    
+  end
+
   def sub_organisations_list
     sub_organisations = @organisation.descendants
     render json: sub_organisations, each_serializer: SubOrganisationSerializer
