@@ -19,7 +19,7 @@ class DailyTeachsController < ApplicationController
     
     if daily_teaching_point.save
       #daily_teaching_point.create_catlog
-      render json: {success: true, class_id: jkci_class.id}
+      render json: {success: true, class_id: jkci_class.id, dtp_id: daily_teaching_point.id}
     else
       render json: {success: false}
     end
