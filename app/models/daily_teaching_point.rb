@@ -131,7 +131,9 @@ class DailyTeachingPoint < ActiveRecord::Base
                     date: date,
                     subject_id: subject_id,
                     chapter_id: chapter_id,
-                    chapters_point_id: chapters_point_id.split(',').map(&:to_i)
+                    chapters_point_id: chapters_point_id.split(',').map(&:to_i),
+                    jkci_class: jkci_class.class_name,
+                    subject: subject.std_name
                   })
   end
 
