@@ -76,7 +76,7 @@ class DailyTeachsController < ApplicationController
   end
 
   def class_absent_verification
-    raise ActionController::RoutingError.new('Not Found') unless current_user.has_role? :verify_daily_teach_absenty
+    return render json: {success: false, message: "Unauthorised"} unless current_user.has_role? :verify_daily_teach_absenty
     daily_teaching_point = @organisation.daily_teaching_points.where(id: params[:id]).first
     
     if daily_teaching_point

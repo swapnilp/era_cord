@@ -295,7 +295,7 @@ class ExamsController < ApplicationController
     
     exam = @organisation.exams.where(id: params[:id]).first
     if exam
-      points = exam.subject.chapters.where(id: params[:chapter_ids].split(',')).first.try(:chapters_points).try(:as_json)
+      points = ChaptersPoint.joins([:chapter]).where("chapters.id in (?)", [0] + params[:chapter_ids].split(',')).as_json
       render json:{success: true, points: points}
     else
       render json: {success: false}

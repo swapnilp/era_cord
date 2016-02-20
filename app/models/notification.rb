@@ -28,7 +28,7 @@ class Notification < ActiveRecord::Base
     if exam.present?
       pre_notification = exam.notifications.where(actions: "verify_exam").first
       pre_notification.update_attributes({is_completed: true}) if pre_notification
-      org.notifications.build({object_type: "Exam", object_id: obj_id, message: "Exam #{exam.name} is conducted. Please add absenty & makrs", url: "/exams/#{obj_id}?&notification=true", actions: "exam_conduct", jkci_class_id: exam.jkci_class_id}).save
+      org.notifications.build({object_type: "Exam", object_id: obj_id, message: "Exam #{exam.name} is conducted. Please add absenty & marks", url: "/exams/#{obj_id}?&notification=true", actions: "exam_conduct", jkci_class_id: exam.jkci_class_id}).save
     end
   end
   
