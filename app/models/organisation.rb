@@ -53,6 +53,16 @@ class Organisation < ActiveRecord::Base
     parent_id == nil
   end
 
+  def add_standards(stds)
+    stds.each do |std|
+      self.standards << std
+      jkci_class = self.jkci_classes.find_or_initialize_by({batch_id: Batch.last.id, standard_id: std.id})
+      jkci_class.class_name = "#{std.std_name}-#{Batch.last.name}"
+      jkci_class.is_current_active = true
+      jkci_class.save
+    end
+  end
+
   def default_students
     Student.where("organisation_id = ? && last_present > ?", self.id, (Time.now - self.absent_days.days))
   end

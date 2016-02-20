@@ -39,7 +39,7 @@ class OrganisationsController < ApplicationController
   def add_standards
     standards = Standard.select([:id, :name, :stream]).where(id: params[:ids])
     if @organisation && @organisation.root?
-      @organisation.standards << standards
+      @organisation.add_standards(standards)#standards << standards
       render json: {success: true}
     else
       render json: {success: false}
