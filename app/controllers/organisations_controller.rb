@@ -27,7 +27,8 @@ class OrganisationsController < ApplicationController
   end
 
   def organisation_standards
-    
+    organisation_standards = @organisation.standards
+    render json: {success: true, organisation_standards: organisation_standards.map(&:organisation_json)}
   end
 
   def sub_organisations_list
@@ -157,7 +158,22 @@ class OrganisationsController < ApplicationController
       render json: {success: false}
     end
   end
-  
+
+  def remove_standard_from_organisation
+    organisation_standard = OrganisationStandard.where(standard_id: params[:standard_id], organisation_id: params[:organisation_id]).first
+    if organisation_standard && organisation_standard.id != @organisation.id
+      if organisation_standard.is_assigned_to_other
+        organisation_standard.destroy
+      else
+        
+      end
+
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+
+  end
   #################
 
   def new_users

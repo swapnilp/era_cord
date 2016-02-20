@@ -21,7 +21,9 @@ class OrganisationStandard < ActiveRecord::Base
                     organisation_name: organisation.try(:name),
                     is_active: is_active,
                     is_assigned_to_other: is_assigned_to_other,
-                    assigned_organisation_id: assigned_organisation_id
+                    assigned_organisation_id: assigned_organisation_id,
+                    is_parent_organisation: organisation.root?
+                    
                   })
   end
 

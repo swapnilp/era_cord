@@ -25,8 +25,8 @@ class JkciClass < ActiveRecord::Base
   validates :class_name, presence: true
   validates :batch_id, presence: true
   validates :organisation_id, presence: true
-  validates :standard_id, presence: true, uniqueness: { scope: [:organisation_id, :batch_id],
-    message: "should happen once per organisation per batch" }
+  #validates :standard_id, presence: true, uniqueness: { scope: [:organisation_id, :batch_id],
+  #  message: "should happen once per organisation per batch" }
   
   #default_scope  {where(is_active: true)} 
   default_scope { where(organisation_id: Organisation.current_id) }
@@ -147,6 +147,7 @@ class JkciClass < ActiveRecord::Base
       new_next_class.organisation_id = next_old_class.organisation_id
       new_next_class.class_name = "#{new_next_class.standard.std_name}-#{next_batch.name}"
       new_next_class.save
+      new_next_class.make_active_class(next_old_class.organisation)
       if student_list.present?
         Student.where(id: student_list).update_all({standard_id: next_standard.id, batch_id: next_batch.id, organisation_id: next_old_class.organisation_id})
         self.class_students.includes(:student).where(student_id: student_list).update_all({jkci_class_id: new_next_class.id, roll_number: nil, organisation_id: next_old_class.organisation_id, sub_class: nil})
@@ -222,6 +223,9 @@ class JkciClass < ActiveRecord::Base
         class_student.update_attributes({is_duplicate: true, duplicate_field: class_student.try(:duplicate_field).to_s + " Mobile"})
       end
     end
+    
+    #students.where("batch_id != ?", self.batch_id).update_all({is_duplicate: true, duplicate_field: "Batch"})
+    class_students.joins(:student).where("students.batch_id != ?", self.batch_id).update_all({is_duplicate: true, duplicate_field: "Batch"})
     self.update_attributes({is_student_verified: false})
   end
 

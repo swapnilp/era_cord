@@ -31,7 +31,7 @@ class Standard < ActiveRecord::Base
     options.merge({
                     id: self.id,
                     name: std_name,
-                    organisaiton_standards: organisation_standards.as_json
+                    organisaitons: organisation_standards.as_json
                   })
   end
   

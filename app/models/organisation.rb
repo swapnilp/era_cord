@@ -234,6 +234,9 @@ class Organisation < ActiveRecord::Base
       Student.where(organisation_id: old_organisation_id).update_all({organisation_id: self.id})
       ClassStudent.where(organisation_id: old_organisation_id).update_all({organisation_id: self.id})
       Notification.where(organisation_id: old_organisation_id).update_all({organisation_id: self.id})
+      TimeTableClass.where(organisation_id: old_organisation_id).update_all({organisation_id: self.id})
+      TimeTable.where(organisation_id: old_organisation_id).update_all({organisation_id: self.id})
+      OffClass.where(organisation_id: old_organisation_id).update_all({organisation_id: self.id})
       JkciClass.where(organisation_id: old_organisation_id).update_all({organisation_id: self.id})
       
       unless self.root?
@@ -360,11 +363,6 @@ class Organisation < ActiveRecord::Base
       jkci_class = self.jkci_classes.find_or_create_by({standard_id: standard.id, batch_id: batch.id, class_name: "#{standard.std_name}-#{batch.name}"})
       jkci_class.update_attributes({is_active: true})
     end
-  end
-
-  def self.calculate_off_class
-    #Organisation.unscoped
-    
   end
 
 end

@@ -1,5 +1,5 @@
 class UserLoginSerializer < ActiveModel::Serializer
-  attributes :id, :email, :roles, :token, :organisation_id, :success, :is_manage_organiser
+  attributes :id, :email, :roles, :token, :organisation_id, :success, :is_manage_organiser, :name
 
   def email
     object.email
@@ -19,6 +19,10 @@ class UserLoginSerializer < ActiveModel::Serializer
 
   def is_manage_organiser
     object.has_role? :manage_organiser
+  end
+
+  def name
+    object.organisation.name
   end
 
   def success

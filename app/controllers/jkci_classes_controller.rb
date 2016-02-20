@@ -85,9 +85,11 @@ class JkciClassesController < ApplicationController
     if params[:search]
       students = students.where("first_name like ?", "%#{params[:search]}%")
     end
-    students = students.page(params[:page])
+    unless params[:withoutPage]
+      students = students.page(params[:page])
+    end
     
-    render json: {success: true, students: ActiveModel::ArraySerializer.new(students, each_serializer: StudentSerializer).as_json, count: students.total_count}
+    render json: {success: true, students: ActiveModel::ArraySerializer.new(students, each_serializer: StudentSerializer).as_json, count: students.try(:total_count)}
   end
 
   def remove_student_from_class

@@ -149,6 +149,7 @@ Rails.application.routes.draw do
   
   get '/organisation_cources' => "organisations#organisation_cources"
   get 'organisations/get_classes' => "organisations#organisation_classes"
+  get 'organisations/organisation_standards' => "organisations#organisation_standards"
   get '/remaining_cources' => "organisations#remaining_cources"
   get '/organisations/get_sub_organisations' => "organisations#sub_organisations_list"
   get '/organisations/add_standards' => "organisations#add_standards"
@@ -157,6 +158,7 @@ Rails.application.routes.draw do
   get "/organisations/users/:user_id/toggleEnable" => "organisations#toggle_enable_users"
   get "/organisations/users/:user_id/get_email" => "organisations#get_user_email"
   get "/organisations/get_standards" => "organisations#get_organisation_standards"
+  post '/organisations/remove_standard_from_organisation' => "organisations#remove_standard_from_organisation"
   post "/organisations/users/:user_id/update_clark_password" => "organisations#update_clark_password"
   post "/organisations/users/:user_id/update_roles" => "organisations#update_clark_roles"
   post "/organisations/users/create_organisation_clark" => "organisations#create_organisation_clark"

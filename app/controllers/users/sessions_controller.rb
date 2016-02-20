@@ -60,8 +60,12 @@ module Users
       
       res = resource_class.find_for_database_authentication(data)
 
+      if res.count > 1
+        res = res.select{|u| u.valid_password? params[:user][:password]}.first
+      else
+        res = res[0]
+      end
       return unless res
-
       return res if res.valid_password? params[:user][:password]
     end
   end
