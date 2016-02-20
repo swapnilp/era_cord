@@ -224,7 +224,6 @@ class JkciClass < ActiveRecord::Base
       end
     end
     
-    #students.where("batch_id != ?", self.batch_id).update_all({is_duplicate: true, duplicate_field: "Batch"})
     class_students.joins(:student).where("students.batch_id != ?", self.batch_id).update_all({is_duplicate: true, duplicate_field: "Batch"})
     self.update_attributes({is_student_verified: false})
   end
