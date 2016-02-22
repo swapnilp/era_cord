@@ -32,14 +32,14 @@ class ExamsController < ApplicationController
   end
 
   def calender_index
-    exams = @organisation.exams
+    exams = Exam.includes({subject: :standard}, :organisation ).where(organisation_id: Organisation.current_id)
     if params[:start]
       exams = exams.where("exam_date >= ? ", Date.parse(params[:start]))
     end
     if params[:end]
       exams = exams.where("exam_date <= ? ", Date.parse(params[:end]))
     end
-    render json: {success: true, exams: exams.map(&:calendar_json)}
+    render json: {success: true, exams: exams.map{|exam| exam.calendar_json(@organisation.id)}}
   end
 
   def get_descendants

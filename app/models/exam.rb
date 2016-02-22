@@ -352,15 +352,27 @@ class Exam < ActiveRecord::Base
     chapters_points: node.chapters_points.map(&:chapter_name).join(', ')}
   end
 
-  def calendar_json
-    {
-      id: self.id, 
-      type: "exam",
-      title: self.name,
-      start: self.exam_date,
-      end: self.exam_date+ (self.duration.try(:minutes) || 60.minutes),
-      url: "#/classes/#{self.jkci_class_id}/exams/#{self.id}/show"
-    }
+  def calendar_json(org_id)
+    if org_id == self.organisation_id
+      {
+        id: self.id, 
+        title: "#{self.subject.try(:std_name)}",
+        type: "#{self.name}-#{self.organisation.name}",
+        start: self.exam_date,
+        end: self.exam_date+ (self.duration.try(:minutes) || 60.minutes),
+        url: "#/classes/#{self.jkci_class_id}/exams/#{self.id}/show",
+        selfOrg: true
+      }
+    else
+      {
+        id: self.id, 
+        title: "#{self.subject.try(:std_name)}",
+        type: "#{self.name}-#{self.organisation.name}",
+        start: self.exam_date,
+        end: self.exam_date+ (self.duration.try(:minutes) || 60.minutes),
+        selfOrg: false
+      }
+    end
     
   end
 
