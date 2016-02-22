@@ -359,7 +359,7 @@ class Exam < ActiveRecord::Base
       title: self.name,
       start: self.exam_date,
       end: self.exam_date+ (self.duration.try(:minutes) || 60.minutes),
-      url: "#/classes/#{self.jkci_class_id}/exams/39/show"
+      url: "#/classes/#{self.jkci_class_id}/exams/#{self.id}/show"
     }
     
   end
