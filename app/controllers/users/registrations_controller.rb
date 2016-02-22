@@ -61,7 +61,7 @@ module Users
         render json: { success: true, message: 'Password changed successfully' }, status: 200
       else
         clean_up_passwords resource
-        render json: { success: false, message: 'Could not update password' }, status: 422
+        render json: { success: false, message: 'Could not update password' }, status: 200 #422 is needed
       end
     end
   end
