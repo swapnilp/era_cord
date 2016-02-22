@@ -45,6 +45,7 @@ Rails.application.routes.draw do
     member do
       get 'download_report'
       post 'update'
+      post 'toggle_sms'
     end
   end
 

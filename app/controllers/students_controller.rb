@@ -79,7 +79,17 @@ class StudentsController < ApplicationController
       render json: {success: false}
     end
   end
-
+  
+  def toggle_sms
+    student = @organisation.students.where(id: params[:id]).first
+    if student && current_user.has_role?(:toggle_student_sms)
+      student.update({enable_sms: params[:enable_sms]})
+      render json: {success: true, enable_sms: student.enable_sms}
+    else
+      render json: {success: false, enable_sms: student.enable_sms}
+    end
+  end
+  
   def download_report
     @student = @organisation.students.where(id: params[:id]).first
     @exam_catlogs = @student.exam_table_format

@@ -151,7 +151,7 @@ class Exam < ActiveRecord::Base
   def publish_results
     self.update_attributes({is_result_decleared: true, is_completed: true, published_date: Time.now})
     if self.root?
-      if self.jkci_class.enable_exam_sms  
+      if self.jkci_class.enable_exam_sms && self.organisation.is_send_message
         if self.is_group
           Delayed::Job.enqueue GroupExamResultSmsSend.new(self.group_result_message_send)
         else

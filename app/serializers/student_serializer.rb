@@ -1,6 +1,5 @@
 class StudentSerializer < ActiveModel::Serializer
-  attributes :id, :name, :batch, :standard, :parent_name, :p_mobile, :mobile, :subjects, :class_names, :roll_number
-
+  attributes :id, :name, :batch, :standard, :parent_name, :p_mobile, :mobile, :subjects, :class_names, :roll_number, :enable_sms
   
   def name
     object.name

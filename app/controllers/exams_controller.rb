@@ -19,6 +19,9 @@ class ExamsController < ApplicationController
       if params[:filter].present? &&  JSON.parse(params[:filter])['filterBatch'].present?
         exams = exams.where("jkci_classes.batch_id = ?", JSON.parse(params[:filter])['filterBatch'])
       end
+      if params[:filter].present? &&  JSON.parse(params[:filter])['filterExamType'].present?
+        exams = exams.where(is_group: JSON.parse(params[:filter])['filterExamType'] == "Grouped")
+      end
     end
     
     exams = exams.page(params[:page])
