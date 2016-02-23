@@ -147,7 +147,9 @@ Rails.application.routes.draw do
   end
   
   resources :contacts#, only: [:create]
-  
+  get '/organisation_profile' => "organisations#show"
+  get '/organisation_edit' => "organisations#edit"
+  post '/update_organisation' => "organisations#update"
   get '/organisation_cources' => "organisations#organisation_cources"
   get 'organisations/get_classes' => "organisations#organisation_classes"
   get 'organisations/organisation_standards' => "organisations#organisation_standards"

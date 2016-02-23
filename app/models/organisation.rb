@@ -375,4 +375,14 @@ class Organisation < ActiveRecord::Base
     end
   end
 
+  def as_json(options= {})
+    options.merge({
+                    name: name,
+                    email: email,
+                    mobile: mobile,
+                    is_send_message: is_send_message ? 'Enabled' : 'Disabled'
+                  })
+    
+  end
+  
 end

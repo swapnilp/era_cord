@@ -6,6 +6,36 @@ class OrganisationsController < ApplicationController
   #                                          :edit_password, :update_password, :launch_sub_organisation]
   before_action :authenticate_user!, except: [:new, :create, :regenerate_organisation_code]
 
+  def show
+    if current_user.has_role? :organisation
+      render json: {success: true, organisation: @organisation.as_json}
+    else
+      render json: {success: false}
+    end
+  end
+
+
+  def edit
+    if current_user.has_role? :organisation
+      render json: {success: true, organisation: @organisation.as_json}
+    else
+      render json: {success: false}
+    end
+  end
+
+  def update
+    if current_user.has_role? :organisation
+      if current_user.valid_password?(update_organisation_params["password"])
+        @organisation.update({mobile: update_organisation_params["mobile"]})
+        render json: {success: true}
+      else
+        render json: {success: false, message: "Enter valid password"}
+      end
+
+    else
+      render json: {success: false, message: "Unauthorised"}
+    end
+  end
 
 
   def organisation_cources
@@ -348,5 +378,9 @@ class OrganisationsController < ApplicationController
 
   def update_password_params
     params.require(:clark).permit(:password, :password_confirmation, :salt, :encrypted_password)
+  end
+
+  def update_organisation_params
+    params.require(:organisation).permit(:mobile, :password)
   end
 end
