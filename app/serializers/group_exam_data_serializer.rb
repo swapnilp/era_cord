@@ -11,7 +11,7 @@ class GroupExamDataSerializer < ActiveModel::Serializer
   end
 
   def sub_classes
-    object.jkci_class.get_sub_classes(object.sub_classes.split(','))
+    object.sub_classes.present? ? object.jkci_class.get_sub_classes(object.sub_classes.split(',')) : nil
   end
   #has_many :subjects
 
