@@ -286,15 +286,16 @@ class Exam < ActiveRecord::Base
 
   def grouped_exam_report
     return [] unless self.is_group
-    ex_students = self.exam_students
-    group_exams = self.descendants
-    catlogs = ExamCatlog.where(exam_id: group_exams.map(&:id))
+    #ex_students = self.exam_students
+    g_exams_ids = self.descendants.order("id ASC").map(&:id)
+    catlogs = ExamCatlog.select([:student_id, :exam_id, :organisation_id, :marks]).where(exam_id: g_exams_ids)
+    ex_students = Student.select([:id, :initl, :last_name, :p_mobile ]).where(id: catlogs.map(&:student_id).uniq)
     reports = []
     
     ex_students.each do |student|
       report = [student.id, student.short_name, student.p_mobile]
-      group_exams.order("id ASC").each do |g_exam|
-        mark = catlogs.where(student_id: student.id, exam_id: g_exam.id).first.marks rescue 'nil'
+      g_exams_ids.each do |g_exam_id|
+        mark = catlogs.where(student_id: student.id, exam_id: g_exam_id).first.marks rescue 'nil'
         report << (mark.present? ? mark : '0' )
       end
       reports << report if report[3..15].map(&:to_i).sum != 0
