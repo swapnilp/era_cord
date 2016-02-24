@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160222154145) do
+ActiveRecord::Schema.define(version: 20160224035857) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -327,6 +327,7 @@ ActiveRecord::Schema.define(version: 20160222154145) do
     t.string   "ancestry",                limit: 255
     t.datetime "last_signed_in"
     t.boolean  "is_send_message",         limit: 1,   default: false
+    t.string   "short_name",              limit: 255
   end
 
   add_index "organisations", ["ancestry"], name: "index_organisations_on_ancestry", using: :btree

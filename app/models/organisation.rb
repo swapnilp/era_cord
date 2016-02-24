@@ -380,6 +380,7 @@ class Organisation < ActiveRecord::Base
                     name: name,
                     email: email,
                     mobile: mobile,
+                    short_name: short_name, 
                     is_send_message: is_send_message ? 'Enabled' : 'Disabled'
                   })
     
