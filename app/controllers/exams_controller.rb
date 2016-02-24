@@ -232,8 +232,9 @@ class ExamsController < ApplicationController
     subjects = jkci_class.standard.subjects
     
     if exam && !exam.is_completed
+      exam_sub_classes = sub_classes.as_json({selected: exam.sub_classes.to_s.split(',').map(&:to_i)})
       render json: {success: true, exam: exam, 
-        sub_classes: sub_classes.as_json({selected: exam.sub_classes.split(',').map(&:to_i)}), 
+        sub_classes: exam_sub_classes, 
         subjects: subjects.as_json({selected: [exam.subject_id]})}
     else
       render json: {success: false}
