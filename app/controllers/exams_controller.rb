@@ -318,6 +318,23 @@ class ExamsController < ApplicationController
       render json: {success: false}
     end
   end
+  
+  def destroy
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Calss"} unless jkci_class
+    
+    exam = jkci_class.exams.where(id: params[:id]).first
+    if exam && !exam.create_verification
+      exam.update_attributes({is_active: false})
+      exam.delete_notification if exam.root?
+      back_url = exam.root? ? "/classes/#{exam.jkci_class_id}" : "/classes/#{exam.jkci_class_id}/exams/#{exam.root.id}/show" 
+
+      render json: {success: true, backUrl: back_url}
+    else
+      render json: {success: false}
+    end
+  end
+
 
   ####################
   
@@ -338,13 +355,6 @@ class ExamsController < ApplicationController
   
   
 
-  def destroy
-    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
-    exam = jkci_class.exams.where(id: params[:id]).first
-    exam.update_attributes({is_active: false})
-    exam.delete_notification if exam.root?
-    redirect_to exams_path
-  end
 
   def verify_create_exam
     exam = @organisation.exams.where(id: params[:id]).first
