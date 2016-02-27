@@ -237,34 +237,42 @@ class JkciClass < ActiveRecord::Base
     spreadsheet = open_spreadsheet(file)
     
     header = []
-    spreadsheet[0].each_with_index { |row, index|
-      if index == 0
-        row && row.each_with_index { |cell|
-          val = cell && cell.value
-          header << val if val
-        }
+    transaction do
+      spreadsheet[0].each_with_index { |row, index|
+        if index == 0
+          row && row.each_with_index { |cell|
+            val = cell && cell.value
+            header << val if val
+          }
         return false if (header & STUDENT_HEADER).size != STUDENT_HEADER.size
-      else
-        vals = [];
-        row && row.each_with_index { |cell|
-          val = cell && cell.value || ""
-          vals << val 
-        }
-        record = header.zip(vals).to_h
-        student = org.students.find_or_initialize_by(record.slice("first_name", "last_name", "p_mobile").merge({standard_id: self_class.standard_id, batch_id: self_class.batch_id}))
-        unless student.id.present?
-          student.initl = record['initl']
-          student.middle_name = record['middle_name']
-          student.gender = record['gender']
-          student.mobile = record['mobile']
-          student.parent_name = record['parent_name']
-          student.save!
+        else
+          vals = [];
+          row && row.each_with_index { |cell|
+            val = cell && cell.value || ""
+            vals << val 
+          }
+          record = header.zip(vals).to_h
+          student = org.students.find_or_initialize_by(record.slice("first_name", "last_name", "p_mobile"))
+          if student.id.present?
+            org.class_students.where("jkci_class_id not in (?)", [self_class.id]).destroy_all
+            student.update_attributes({batch_id: self_class.batch_id, standard_id: self_class.standard_id})
+          else
+            student.initl = record['initl']
+            student.middle_name = record['middle_name']
+            student.gender = record['gender']
+            student.mobile = record['mobile']
+            student.parent_name = record['parent_name']
+            student.standard_id = self_class.standard_id
+            student.batch_id = self_class.batch_id
+            student.save!
+          end
+          
+          if student.id
+            self_class.class_students.find_or_initialize_by({student_id: student.id, organisation_id: self_class.organisation_id}).save
+          end
         end
-        if student.id
-          self_class.class_students.find_or_initialize_by({student_id: student.id, organisation_id: self_class.organisation_id}).save
-        end
-      end
-    }
+      }
+    end
     return true
   end
   

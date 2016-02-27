@@ -27,7 +27,7 @@ class Student < ActiveRecord::Base
   validates :batch_id, presence: true
   validates :first_name, presence: true
   validates :last_name, presence: true
-  validates :parent_name, presence: true
+  #validates :parent_name, presence: true
   validates :p_mobile, presence: true
 
   before_destroy :destroy_dependency
