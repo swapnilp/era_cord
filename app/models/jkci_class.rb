@@ -240,11 +240,14 @@ class JkciClass < ActiveRecord::Base
     transaction do
       spreadsheet[0].each_with_index { |row, index|
         if index == 0
+          is_valid_class = (row && (row[0].value == "eraCord-#{org.id}-#{self_class.id}"))
+          return false unless is_valid_class
+        elsif index == 1
           row && row.each_with_index { |cell|
             val = cell && cell.value
             header << val if val
           }
-        return false if (header & STUDENT_HEADER).size != STUDENT_HEADER.size
+          return false if (header & STUDENT_HEADER).size != STUDENT_HEADER.size
         else
           vals = [];
           row && row.each_with_index { |cell|

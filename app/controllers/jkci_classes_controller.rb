@@ -282,6 +282,7 @@ class JkciClassesController < ApplicationController
   def download_excel
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     raise ActionController::RoutingError.new('Not Found') unless jkci_class
+    @class_code = "eraCord-#{@organisation.id}-#{jkci_class.id}"
     @students = jkci_class.students
     respond_to do |format|
       format.xlsx
