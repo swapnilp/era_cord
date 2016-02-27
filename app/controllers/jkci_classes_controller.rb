@@ -1,6 +1,6 @@
 class JkciClassesController < ApplicationController
   before_action :authenticate_user!
-  skip_before_filter :authenticate_with_token!, only: [:sub_organisation_class_report, :download_class_catlog, :download_class_syllabus, :download_class_student_list]
+  skip_before_filter :authenticate_with_token!, only: [:sub_organisation_class_report, :download_class_catlog, :download_class_syllabus, :download_class_student_list, :download_excel]
   #load_and_authorize_resource param_method: :my_sanitizer
 
   def index
@@ -276,6 +276,31 @@ class JkciClassesController < ApplicationController
     jkci_class.make_active_class(@organisation)
     jkci_classes = @organisation.jkci_classes.includes([:batch]).order("id desc")
     render json: {success: true, classes: jkci_classes.map(&:organisation_class_json)}
+  end
+
+
+  def download_excel
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    raise ActionController::RoutingError.new('Not Found') unless jkci_class
+    @students = jkci_class.students
+    respond_to do |format|
+      format.xlsx
+    end
+
+  end
+
+  def import_students_excel
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    file = params[:file]
+    if jkci_class && file
+      if  JkciClass.import_students_excel(file, jkci_class, @organisation)
+        render json: {success: true}
+      else
+        render json: {success: false, message: "Please Fill Proper Data"}
+      end
+    else
+      render json: {success: false, message: "File Not Present"}
+    end
   end
 
   ####################################

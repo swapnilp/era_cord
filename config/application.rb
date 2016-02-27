@@ -1,6 +1,9 @@
 require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
+#require 'csv'
+#require 'iconv'
+require 'zip/zip'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
