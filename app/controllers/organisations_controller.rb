@@ -162,7 +162,7 @@ class OrganisationsController < ApplicationController
     end
     #sub_organisation = @organisation.sub_organisations.build(organisation_params)
     sub_organisation = @organisation.sub_organisations.find_or_initialize_by({email: organisation_params[:email]})
-    sub_organisation.name = organisation_params[:name]
+    sub_organisation.name = "#{@organisation.name}-#{organisation_params[:name]}"
     sub_organisation.mobile = organisation_params[:mobile]
     
     if sub_organisation.save

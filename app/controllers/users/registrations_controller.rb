@@ -41,7 +41,8 @@ module Users
           resource.organisation.update_attributes({last_signed_in: Time.now}) if resource.organisation.present?
           set_flash_message :notice, :signed_up if is_flashing_format?
           sign_up(resource_name, resource)
-          respond_with resource, location: after_sign_up_path_for(resource)
+          #respond_with resource, location: after_sign_up_path_for(resource)
+          respond_with resource, location: CONSOLE_URL
         else
         set_flash_message :notice, :"signed_up_but_#{resource.inactive_message}" if is_flashing_format?
           expire_data_after_sign_in!
