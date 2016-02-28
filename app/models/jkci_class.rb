@@ -36,7 +36,7 @@ class JkciClass < ActiveRecord::Base
 
   def manage_students(associate_students, organisation)
     organisation.students.where(id: associate_students).each do |student|
-      organisation.class_students.where("jkci_class_id not in (?)", [self.id]).destroy_all
+      organisation.class_students.where("jkci_class_id not in (?)", [self.id]).where(student_id: student).destroy_all
       student.update_attributes({batch_id: self.batch_id})
       self.class_students.find_or_initialize_by({student_id: student.id, organisation_id: self.organisation_id}).save
     end
@@ -257,7 +257,7 @@ class JkciClass < ActiveRecord::Base
           record = header.zip(vals).to_h
           student = org.students.find_or_initialize_by(record.slice("first_name", "last_name", "p_mobile"))
           if student.id.present?
-            org.class_students.where("jkci_class_id not in (?)", [self_class.id]).destroy_all
+            org.class_students.where("jkci_class_id not in (?) and student_id in (?)", [self_class.id], [student.id]).destroy_all
             student.update_attributes({batch_id: self_class.batch_id, standard_id: self_class.standard_id})
           else
             student.initl = record['initl']
