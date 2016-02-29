@@ -3,26 +3,48 @@ class Ability
 
   def initialize(user)
     user ||= User.new
-
+    roles = user.roles.map(&:name)
 
     alias_action :create, :read, :update, :to => :create_update
 
 
-    if user.has_role? :admin
+    if roles.include? 'admin'
       can :manage, :all
       #can :roll, :admin
       #can :roll, :clark
-    elsif user.has_role? :clark
+    elsif roles.include? 'clark'
       can :read, Gallery
       can :read, Event
       can :read, Album
       can :read, BatchResult
       can :read, Result
-
+      
       can :roll, :clark
       can :read, Subject
       can :read, SubClass
+
+      can :read, TimeTable
+      can :calender_index, TimeTable
+      
+      can :read, Exam
+      can :calender_index, Exam
+      can :get_filter_data, Exam
+      can :get_catlogs, Exam
+      can :verify_exam, Exam if roles.include? 'verify_exam'
+      can :exam_conducted, Exam if roles.include? 'exam_conduct'
+      can :remove_absunt_student, Exam if roles.include? 'add_exam_absenty'
+      can :add_absunt_student, Exam if roles.include? 'add_exam_absenty'
+      can :ignore_student, Exam if roles.include? 'add_exam_absenty'
+      can :remove_ignore_student, Exam if roles.include? 'add_exam_absenty'
+      can :verify_exam_absenty, Exam if roles.include? 'verify_exam_absenty'
+      can :add_exam_results, Exam if roles.include? 'add_exam_result'
+      can :remove_exam_result, Exam if roles.include? 'add_exam_result'
+      can :verify_exam_result, Exam if roles.include? 'verify_exam_result'
+      can :publish_exam_result, Exam if roles.include? 'publish_exam'
+      
       can :read, JkciClass
+      can :get_unassigned_classes, JkciClass
+      can :students, JkciClass
       can :get_exam_info, JkciClass
       can :filter_class_exams, JkciClass
       can :class_daily_teaches, JkciClass
@@ -30,10 +52,12 @@ class Ability
       can :download_class_catlog, JkciClass
       can :download_class_syllabus, JkciClass
       can :filter_class, JkciClass
-      can :manage, DailyTeachingPoint
-      can :manage, Exam
+      
+      can :read, DailyTeachingPoint
+
       can :manage, Chapter
-      can :manage, Student
+      #can :manage, Student
+      can :read, Student
       can :enable_sms, Student 
       can :filter_students, Student 
       can :disable_student, Student 
@@ -49,56 +73,6 @@ class Ability
       can :regenerate_organisation_code, Organisation      
       can :manage, Contact
       
-      #can :roll, :clark
-      #can :create_update, Chapter 
-      #can :read, Event 
-      #can :read, JkciClass 
-      #can :read, Subject 
-      #can :create_update, Exam 
-      #can :read, Result 
-      #can :read, Teacher 
-      #can :read, Album 
-      #can :create_update, ClassCatlog 
-      #can :create_update, ExamAbsent 
-      #can :read, Batch 
-      #can :create_update, ExamCatlog 
-      #can :read, ResultsPhoto 
-      #can :create_update, ClassStudent 
-      #can :manage, ExamResult 
-      #can :read, BatchResult 
-      #can :read, Gallery 
-      ##can :manage, :sms_sent 
-      #can :create_update, DailyTeachingPoint 
-      #can :read, Student 
-    #elsif user.parent?
-    #  can :roll, :parent
-    #  can :roll, :contact_us
-    #  can :role, :timetable
-    #  #can :read, Chapter 
-    #  can :read, Event
-    #  #can :read, JkciClass 
-    #  #can :read, Subject 
-    #  #can :read, Exam 
-    #  can :read, Result 
-    #  #can :read, Teacher 
-    #  can :read, Album 
-    #  #can :read, ClassCatlog 
-    #  #can :read, ExamAbsent 
-    #  #can :read, User 
-    #  #can :read, Batch 
-    #  #can :read, ExamCatlog 
-    #  can :read, ResultsPhoto 
-    #  #can :read, ClassStudent 
-    #  #can :read, ExamResult 
-    #  can :read, BatchResult 
-    #  can :read, Gallery 
-    #  #can :read, DailyTeachingPoint 
-    #  #can :read, Student
-    #  #can :read, :all
-    #
-    #
-    #
-    #
     #  #can :read, User, id: user.id
     #  #can :read, Student, id: user.student_id.to_s.split(',').map(&:to_i)
     #  #can :read, Exam
