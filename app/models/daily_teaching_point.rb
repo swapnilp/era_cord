@@ -138,7 +138,7 @@ class DailyTeachingPoint < ActiveRecord::Base
                     is_sms_sent: is_sms_sent,
                     jkci_class: jkci_class.class_name,
                     verify_absenty: verify_absenty,
-                    emable_sms: jkci_class.enable_class_sms
+                    enable_sms: jkci_class.enable_class_sms
                   })
   end
 

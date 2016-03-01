@@ -11,8 +11,13 @@ class ExamAbsentSmsSend < Struct.new(:exam_arry)
       obj_id = exam[2]
       org_id = exam[3]
       
-      deliver_sms(URI::encode(url))
-      SmsSent.new({obj_type: "absent_exam", obj_id: obj_id, message: message, is_parent: true, organisation_id: org_id}).save
+      sms_sent = find_or_initialize_by({obj_type: "absent_exam", obj_id: obj_id, is_parent: true, organisation_id: org_id})
+      unless sms_sent.id.present?
+        deliver_sms(URI::encode(url))
+      end
+      #SmsSent.new({obj_type: "absent_exam", obj_id: obj_id, message: message, is_parent: true, organisation_id: org_id}).save
+      sms_sent.message =  message
+      sms_sent.save
     end
   end
 end

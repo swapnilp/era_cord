@@ -261,7 +261,6 @@ class Exam < ActiveRecord::Base
         end
       end
     end
-    self.exam_catlogs.update_all({absent_sms_sent: true})
     return url_arry
   end
 
