@@ -166,6 +166,7 @@ class Exam < ActiveRecord::Base
   end
 
   def publish_absentee
+    
     Delayed::Job.enqueue ExamAbsentSmsSend.new(self.absenty_message_send)
   end
   
@@ -260,6 +261,7 @@ class Exam < ActiveRecord::Base
         end
       end
     end
+    self.exam_catlogs.update_all({absent_sms_sent: true})
     return url_arry
   end
 

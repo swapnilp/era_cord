@@ -66,6 +66,7 @@ Rails.application.routes.draw do
   resources :jkci_classes do
     member do
       get 'get_exam_info'
+      get 'get_dtp_info'
       get 'toggle_class_sms'
       get 'toggle_exam_sms'
       get 'assign_students'
@@ -105,7 +106,10 @@ Rails.application.routes.draw do
         get 'get_catlogs'
         get 'class_absent_verification'
         post 'fill_catlog'
+        post 'add_absent_student'
+        post 'remove_absent_student'
         post 'update'
+        post 'publish_absenty'
       end
     end
     resources :exams, except: [:update] do

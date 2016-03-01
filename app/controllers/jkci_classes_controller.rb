@@ -24,6 +24,15 @@ class JkciClassesController < ApplicationController
     end
   end
 
+  def get_dtp_info
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    if jkci_class
+      render json: {success: true, data: ClassExamDataSerializer.new(jkci_class).as_json} 
+    else
+      render json: {success: false}
+    end
+  end
+
   def show
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     #@notifications = @jkci_class.role_exam_notifications(current_user)

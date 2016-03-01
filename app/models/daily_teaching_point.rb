@@ -79,10 +79,26 @@ class DailyTeachingPoint < ActiveRecord::Base
     absent_students = self.students.where(id: absent_list)
     absent_students.each do |student|
       #self.class_catlogs.build({student_id: student.id, date: self.date, jkci_class_id: self.jkci_class_id, organisation_id: self.organisation_id}).save
-      class_catlog = self.class_catlogs.find_or_initialize_by({student_id: student.id, date: self.date, jkci_class_id: self.jkci_class_id, organisation_id: self.organisation_id})
+      class_catlog = self.class_catlogs.find_or_initialize_by({student_id: student.id, jkci_class_id: self.jkci_class_id, organisation_id: self.organisation_id})
       class_catlog.is_present = false
       class_catlog.save
     end
+  end
+
+  def make_absent(absent_student)
+    absent_students = self.students.where(id: absent_student)
+    absent_students.each do |student|
+      #self.class_catlogs.build({student_id: student.id, date: self.date, jkci_class_id: self.jkci_class_id, organisation_id: self.organisation_id}).save
+      class_catlog = self.class_catlogs.find_or_initialize_by({student_id: student.id, jkci_class_id: self.jkci_class_id, organisation_id: self.organisation_id})
+      class_catlog.is_present = false
+      class_catlog.save
+      self.update_attributes({verify_absenty: false})
+    end
+  end
+
+  def remove_absent(absent_student)
+    class_catlogs.where("student_id not in (?)", [0] << absent_student).destroy_all
+    self.update_attributes({verify_absenty: false})
   end
 
   def add_current_chapter
@@ -121,7 +137,8 @@ class DailyTeachingPoint < ActiveRecord::Base
                     absents: class_catlogs.only_absents.count,
                     is_sms_sent: is_sms_sent,
                     jkci_class: jkci_class.class_name,
-                    verify_absenty: verify_absenty
+                    verify_absenty: verify_absenty,
+                    emable_sms: jkci_class.enable_class_sms
                   })
   end
 

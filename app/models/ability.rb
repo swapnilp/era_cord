@@ -41,22 +41,39 @@ class Ability
       can :remove_exam_result, Exam if roles.include? 'add_exam_result'
       can :verify_exam_result, Exam if roles.include? 'verify_exam_result'
       can :publish_exam_result, Exam if roles.include? 'publish_exam'
+      can :get_exam_info, JkciClass if roles.include? 'create_exam'
+      can :create, Exam if roles.include? 'create_exam'
       
       can :read, JkciClass
       can :get_unassigned_classes, JkciClass
       can :students, JkciClass
-      can :get_exam_info, JkciClass
+      can :get_chapters, JkciClass
       can :filter_class_exams, JkciClass
       can :class_daily_teaches, JkciClass
       can :filter_daily_teach, JkciClass
       can :download_class_catlog, JkciClass
       can :download_class_syllabus, JkciClass
       can :filter_class, JkciClass
+      can :get_notifications, JkciClass
+      can :toggle_class_sms, JkciClass
+      can :toggle_exam_sms, JkciClass
+
+      can :read, Notification
       
       can :read, DailyTeachingPoint
-
-      can :manage, Chapter
+      can :get_catlogs, DailyTeachingPoint
+      can :get_dtp_info, JkciClass if roles.include? 'create_daily_teach'
+      can :create, DailyTeachingPoint if roles.include? 'create_daily_teach'
+      can :edit, DailyTeachingPoint if roles.include? 'create_daily_teach'
+      can :add_absent_student, DailyTeachingPoint if roles.include? 'add_daily_teach_absenty'
+      can :remove_absent_student, DailyTeachingPoint if roles.include? 'add_daily_teach_absenty'
+      can :class_absent_verification, DailyTeachingPoint if roles.include? 'verify_daily_teach_absenty'
+      
+      can :read, Chapter
+      can :get_points, Chapter
       #can :manage, Student
+
+      
       can :read, Student
       can :enable_sms, Student 
       can :filter_students, Student 
