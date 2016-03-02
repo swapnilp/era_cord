@@ -26,6 +26,8 @@ class Ability
       can :read, TimeTable
       can :calender_index, TimeTable
       
+      can :organisation_cources, Organisations 
+      
       can :read, Exam
       can :calender_index, Exam
       can :get_filter_data, Exam
