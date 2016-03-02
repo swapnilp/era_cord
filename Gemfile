@@ -38,6 +38,7 @@ gem 'active_model_serializers'
 gem 'rolify', '~> 3.4.1'
 gem 'cancancan', '~> 1.9.2'
 gem 'delayed_job_active_record', "~> 4.0.1"
+gem "daemons"
 gem "delayed_job_web", "~> 1.2.9"
 #gem "prawn", '~>2.0.2'
 #gem "prawn-table", '~>0.2.2'
