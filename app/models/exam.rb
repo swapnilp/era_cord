@@ -166,6 +166,7 @@ class Exam < ActiveRecord::Base
   end
 
   def publish_absentee
+    
     Delayed::Job.enqueue ExamAbsentSmsSend.new(self.absenty_message_send)
   end
   

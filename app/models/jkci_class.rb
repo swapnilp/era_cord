@@ -36,7 +36,7 @@ class JkciClass < ActiveRecord::Base
 
   def manage_students(associate_students, organisation)
     organisation.students.where(id: associate_students).each do |student|
-      organisation.class_students.where("jkci_class_id not in (?)", [self.id]).destroy_all
+      organisation.class_students.where("jkci_class_id not in (?)", [self.id]).where(student_id: student).destroy_all
       student.update_attributes({batch_id: self.batch_id})
       self.class_students.find_or_initialize_by({student_id: student.id, organisation_id: self.organisation_id}).save
     end
@@ -231,6 +231,61 @@ class JkciClass < ActiveRecord::Base
   def make_active_class(organisation)
     self.standard.jkci_classes.update_all({is_current_active: false})
     self.update_attributes({is_current_active: true})
+  end
+
+  def self.import_students_excel(file, self_class, org)
+    spreadsheet = open_spreadsheet(file)
+    
+    header = []
+    transaction do
+      spreadsheet[0].each_with_index { |row, index|
+        if index == 0
+          is_valid_class = (row && (row[0].value == "eraCord-#{org.id}-#{self_class.id}"))
+          return false unless is_valid_class
+        elsif index == 1
+          row && row.each_with_index { |cell|
+            val = cell && cell.value
+            header << val if val
+          }
+          return false if (header & STUDENT_HEADER).size != STUDENT_HEADER.size
+        else
+          vals = [];
+          row && row.each_with_index { |cell|
+            val = cell && cell.value || ""
+            vals << val 
+          }
+          record = header.zip(vals).to_h
+          student = org.students.find_or_initialize_by(record.slice("first_name", "last_name", "p_mobile"))
+          if student.id.present?
+            org.class_students.where("jkci_class_id not in (?) and student_id in (?)", [self_class.id], [student.id]).destroy_all
+            student.update_attributes({batch_id: self_class.batch_id, standard_id: self_class.standard_id})
+          else
+            student.initl = record['initl']
+            student.middle_name = record['middle_name']
+            student.gender = record['gender']
+            student.mobile = record['mobile']
+            student.parent_name = record['parent_name']
+            student.standard_id = self_class.standard_id
+            student.batch_id = self_class.batch_id
+            student.save!
+          end
+          
+          if student.id
+            self_class.class_students.find_or_initialize_by({student_id: student.id, organisation_id: self_class.organisation_id}).save
+          end
+        end
+      }
+    end
+    return true
+  end
+  
+  def self.open_spreadsheet(file)
+    case File.extname(file.original_filename)
+    when ".csv" then Csv.new(file.path, nil, :ignore)
+      #when ".xls" then Roo::Excel.new(file.path, packed: nil, file_warning: :ignore)
+    when ".xlsx" then RubyXL::Parser.parse(file.path)
+    else raise "Unknown file type: #{file.original_filename}"
+    end
   end
 
   def subject_json(options={})

@@ -22,6 +22,7 @@ class ApplicationController < ActionController::Base
     render opts.merge(json: { success: false, message: message, errors: object.errors.full_messages }, status: 422)
   end
 
+
   protected
 
   def configure_permitted_parameters

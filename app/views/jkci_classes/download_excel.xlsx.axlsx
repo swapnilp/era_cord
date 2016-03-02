@@ -1,0 +1,8 @@
+wb = xlsx_package.workbook
+wb.add_worksheet(name: "Students") do |sheet|
+  sheet.add_row  [@class_code]
+  sheet.add_row  STUDENT_HEADER
+  @students.each do |student|
+    sheet.add_row [student.initl, student.first_name, student.middle_name, student.last_name, student.gender, student.mobile, student.parent_name,  student.p_mobile]
+  end
+end

@@ -35,13 +35,17 @@ class ExamsController < ApplicationController
   end
 
   def calender_index
-    exams = Exam.includes({subject: :standard}, :organisation ).where(organisation_id: Organisation.current_id)
+    exams = Exam.includes({subject: :standard}, :organisation ).joins(:jkci_class).where("jkci_classes.is_current_active = ? ", true).where(organisation_id: Organisation.current_id)
     if params[:start]
       exams = exams.where("exam_date >= ? ", Date.parse(params[:start]))
     end
     if params[:end]
       exams = exams.where("exam_date <= ? ", Date.parse(params[:end]))
     end
+    if params[:standard]
+      exams = exams.where("jkci_classes.standard_id = ? ",  params[:standard])
+    end
+    
     render json: {success: true, exams: exams.map{|exam| exam.calendar_json(@organisation.id)}}
   end
 
@@ -318,6 +322,23 @@ class ExamsController < ApplicationController
       render json: {success: false}
     end
   end
+  
+  def destroy
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Calss"} unless jkci_class
+    
+    exam = jkci_class.exams.where(id: params[:id]).first
+    if exam && !exam.create_verification
+      exam.update_attributes({is_active: false})
+      exam.delete_notification if exam.root?
+      back_url = exam.root? ? "/classes/#{exam.jkci_class_id}" : "/classes/#{exam.jkci_class_id}/exams/#{exam.root.id}/show" 
+
+      render json: {success: true, backUrl: back_url}
+    else
+      render json: {success: false}
+    end
+  end
+
 
   ####################
   
@@ -338,13 +359,6 @@ class ExamsController < ApplicationController
   
   
 
-  def destroy
-    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
-    exam = jkci_class.exams.where(id: params[:id]).first
-    exam.update_attributes({is_active: false})
-    exam.delete_notification if exam.root?
-    redirect_to exams_path
-  end
 
   def verify_create_exam
     exam = @organisation.exams.where(id: params[:id]).first

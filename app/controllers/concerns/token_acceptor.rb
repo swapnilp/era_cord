@@ -10,6 +10,7 @@ module TokenAcceptor
   def authenticate_with_token!
     token = request.headers['Authorization'].presence
     token = params[:authorization_token] unless token
+
     return reject_token if token.nil?
 
 

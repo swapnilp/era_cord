@@ -61,6 +61,30 @@ class DailyTeachsController < ApplicationController
     end
   end
 
+  def add_absent_student
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    daily_teaching_point = jkci_class.daily_teaching_points.where(id: params[:id]).first
+    if daily_teaching_point
+      daily_teaching_point.make_absent(params[:student])
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+  end
+  
+  def remove_absent_student
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    daily_teaching_point = jkci_class.daily_teaching_points.where(id: params[:id]).first
+    if daily_teaching_point
+      daily_teaching_point.remove_absent(params[:student])
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+  end
+
   def edit
     jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
@@ -94,7 +118,19 @@ class DailyTeachsController < ApplicationController
     else
       render json: {success: false}
     end
+  end
 
+  def publish_absenty
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    
+    daily_teaching_point = @organisation.daily_teaching_points.where(id: params[:id]).first
+    if daily_teaching_point
+      daily_teaching_point.publish_absenty
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
   end
 
   ########################

@@ -3,7 +3,7 @@ module Users
     respond_to :json
 
     skip_before_filter :authenticate_with_token!
-
+    
     # Here we don't care if it's actually successful. The reason being
     # if we said that an account didn't exist (for example), that'd be
     # leaking account data. And that would be bad.

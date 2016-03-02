@@ -45,6 +45,14 @@ gem "delayed_job_web", "~> 1.2.9"
 gem 'prawn-rails'
 gem 'kaminari'
 gem 'whenever', '~>0.9.4'
+#gem 'roo', '~> 2.0.0'
+gem "iconv", "~> 1.0.3"
+#gem 'roo-xls'
+#gem 'axlsx', '~> 2.0.1'
+gem 'rubyzip', '~>  0.9.9'
+gem 'rubyXL'
+gem 'axlsx_rails'
+
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'

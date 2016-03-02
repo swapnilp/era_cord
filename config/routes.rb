@@ -61,10 +61,12 @@ Rails.application.routes.draw do
   get "/class/:id/download_class_catlog" => "jkci_classes#download_class_catlog", as: "download_class_catlog"
   get "/class/:id/download_class_student_list" => "jkci_classes#download_class_student_list", as: "download_class_student_list"
   get "/class/:id/download_class_syllabus" => "jkci_classes#download_class_syllabus", as: "download_class_syllabus"
+  get "/classes/:id/download_excel" => "jkci_classes#download_excel"
   
   resources :jkci_classes do
     member do
       get 'get_exam_info'
+      get 'get_dtp_info'
       get 'toggle_class_sms'
       get 'toggle_exam_sms'
       get 'assign_students'
@@ -76,6 +78,7 @@ Rails.application.routes.draw do
       get 'get_notifications'
       get 'get_timetable'
       get 'get_batch'
+      post "import_students_excel"
       post 'make_active_class'
       post 'verify_students'
       post 'recheck_duplicate_student'
@@ -103,7 +106,10 @@ Rails.application.routes.draw do
         get 'get_catlogs'
         get 'class_absent_verification'
         post 'fill_catlog'
+        post 'add_absent_student'
+        post 'remove_absent_student'
         post 'update'
+        post 'publish_absenty'
       end
     end
     resources :exams, except: [:update] do
@@ -130,6 +136,7 @@ Rails.application.routes.draw do
       end
       resources :exams, only: [:create]
     end
+    
     delete "students/:student_id" => "jkci_classes#remove_student_from_class"
   end
 
