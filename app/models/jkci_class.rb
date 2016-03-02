@@ -7,7 +7,7 @@ class JkciClass < ActiveRecord::Base
   has_many :daily_teaching_points
   has_many :class_catlogs
   belongs_to :batch
-  belongs_to :subject
+  #belongs_to :subject
   belongs_to :standard
   has_many :subjects, through: :standard
   belongs_to :organisation
