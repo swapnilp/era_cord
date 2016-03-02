@@ -35,13 +35,17 @@ class ExamsController < ApplicationController
   end
 
   def calender_index
-    exams = Exam.includes({subject: :standard}, :organisation ).where(organisation_id: Organisation.current_id)
+    exams = Exam.includes({subject: :standard}, :organisation ).joins(:jkci_class).where("jkci_classes.is_current_active = ? ", true).where(organisation_id: Organisation.current_id)
     if params[:start]
       exams = exams.where("exam_date >= ? ", Date.parse(params[:start]))
     end
     if params[:end]
       exams = exams.where("exam_date <= ? ", Date.parse(params[:end]))
     end
+    if params[:standard]
+      exams = exams.where("jkci_classes.standard_id = ? ",  params[:standard])
+    end
+    
     render json: {success: true, exams: exams.map{|exam| exam.calendar_json(@organisation.id)}}
   end
 
