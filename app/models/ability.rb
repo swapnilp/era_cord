@@ -32,6 +32,7 @@ class Ability
       can :calender_index, Exam
       can :get_filter_data, Exam
       can :get_catlogs, Exam
+      can :get_descendants, Exam
       can :verify_exam, Exam if roles.include? 'verify_exam'
       can :exam_conducted, Exam if roles.include? 'exam_conduct'
       can :remove_absunt_student, Exam if roles.include? 'add_exam_absenty'
