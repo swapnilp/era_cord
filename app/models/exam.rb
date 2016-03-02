@@ -96,6 +96,7 @@ class Exam < ActiveRecord::Base
     self.present_students.map(&:update_presnty)
     self.update_attributes({verify_absenty: true})
     Notification.verify_exam_abesnty(self.id, organisation)
+    self.publish_absentee
   end
 
   def remove_absent_student(student_id)
@@ -166,8 +167,9 @@ class Exam < ActiveRecord::Base
   end
 
   def publish_absentee
-    
-    Delayed::Job.enqueue ExamAbsentSmsSend.new(self.absenty_message_send)
+    if self.organisation.is_send_message && self.jkci_class.enable_exam_sms
+      Delayed::Job.enqueue ExamAbsentSmsSend.new(self.absenty_message_send)
+    end
   end
   
   def send_result_email(exam, student)
