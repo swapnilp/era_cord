@@ -5,13 +5,14 @@ class ExamsController < ApplicationController
 
 
   def index
+    #Bullet.enable = false
     if params[:jkci_class_id].present?
       jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
       return render json: {success: false, message: "Invalid Class"} unless jkci_class
-      exams = jkci_class.exams.includes({subject: :standard}, :exam_catlogs, {jkci_class: :batch} ).roots.order("exam_date desc") 
+      exams = jkci_class.exams.includes({subject: :standard}, {jkci_class: :batch} ).roots.order("exam_date desc") 
       #@organisation.exams.roots.order("id desc").page(params[:page])
     else
-      exams = @organisation.exams.joins(:jkci_class).includes({subject: :standard}, :exam_catlogs, {jkci_class: :batch}).roots.order("exam_date desc") 
+      exams = Exam.joins(:jkci_class).includes({subject: :standard}, {jkci_class: :batch}).roots.order("exam_date desc").where(organisation_id: Organisation.current_id)
       #@organisation.exams.roots.order("id desc").page(params[:page])
       if params[:filter].present? &&  JSON.parse(params[:filter])['filterStandard'].present?
         exams = exams.where("jkci_classes.standard_id = ?", JSON.parse(params[:filter])['filterStandard'])
@@ -29,7 +30,7 @@ class ExamsController < ApplicationController
   end
 
   def get_filter_data
-    standards = @organisation.standards.where("organisation_standards.is_assigned_to_other = false")
+    standards = @organisation.standards
     batches = Batch.all
     render json: {success: true, standards: standards.as_json, batches: batches.as_json}
   end
