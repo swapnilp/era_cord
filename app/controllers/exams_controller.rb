@@ -52,7 +52,7 @@ class ExamsController < ApplicationController
   def get_descendants
     jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
-    exam = @organisation.exams.where(id: params[:id]).first
+    exam = @organisation.exams.includes({subject: :standard}, :jkci_class).where(id: params[:id]).first
     if exam
       render json: {success: true, body: ActiveModel::ArraySerializer.new(exam.descendants, each_serializer: ExamIndexSerializer).as_json}
     else

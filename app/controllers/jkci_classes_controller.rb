@@ -313,6 +313,15 @@ class JkciClassesController < ApplicationController
     end
   end
 
+  def presenty_catlog
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    if jkci_class
+      
+    else
+      render json: {success: false, message: "File Not Present"}
+    end
+  end
+
   ####################################
   
   def create

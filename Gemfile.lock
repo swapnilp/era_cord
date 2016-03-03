@@ -57,6 +57,9 @@ GEM
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
     builder (3.2.2)
+    bullet (5.0.0)
+      activesupport (>= 3.0.0)
+      uniform_notifier (~> 1.9.0)
     byebug (8.2.2)
     cancancan (1.9.2)
     chronic (0.10.2)
@@ -228,6 +231,7 @@ GEM
     uglifier (2.7.2)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
+    uniform_notifier (1.9.0)
     warden (1.2.6)
       rack (>= 1.0)
     web-console (2.3.0)
@@ -246,6 +250,7 @@ DEPENDENCIES
   ancestry
   aws-sdk (< 2.0)
   axlsx_rails
+  bullet
   byebug
   cancancan (~> 1.9.2)
   coffee-rails (~> 4.1.0)

@@ -281,7 +281,7 @@ class Exam < ActiveRecord::Base
 
   def grouped_exam_report_table_head
     table_head = ["ID", "Name", "Mobile"]
-    self.descendants.order("id ASC").each do |g_exam|
+    self.descendants.includes(:subject).order("id ASC").each do |g_exam|
       table_head << g_exam.subject.try(:name)
     end
     table_head
