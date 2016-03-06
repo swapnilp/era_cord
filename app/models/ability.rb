@@ -4,6 +4,8 @@ class Ability
   def initialize(user)
     user ||= User.new
     roles = user.roles.map(&:name)
+    p '!!!!!!!!!'
+    p roles.include? 'create_exam'
 
     alias_action :create, :read, :update, :to => :create_update
 
@@ -46,6 +48,7 @@ class Ability
       can :verify_exam_result, Exam if roles.include? 'verify_exam_result'
       can :publish_exam_result, Exam if roles.include? 'publish_exam'
       can :get_exam_info, JkciClass if roles.include? 'create_exam'
+      can :get_exam_info, Exam if roles.include? 'create_exam'
       can :create, Exam if roles.include? 'create_exam'
       
       can :read, JkciClass
