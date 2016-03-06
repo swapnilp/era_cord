@@ -288,6 +288,13 @@ class JkciClass < ActiveRecord::Base
     end
   end
 
+  def presenty_catlog(start_date, end_date)
+    class_students.each do |class_student|
+      exam_catlogs.includes(:exam).where()
+      #JkciClass.last.students.joins({exam_catlogs: :exam}, :class_catlogs).where("exam_catlogs.is_present = ? and exams.exam_date > ? and  exams.exam_date < ? and class_catlogs.date like ?", false, (Date.today-1.months), Date.today, Date.today - 3.days)
+    end
+  end
+
   def subject_json(options={})
     options.merge({
                     id: id,

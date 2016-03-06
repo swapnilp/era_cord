@@ -10,7 +10,7 @@ class TimeTablesController < ApplicationController
   end
 
   def calender_index
-    time_table_classes = @organisation.time_table_classes.includes({subject: :standard}, :sub_class).joins(time_table: :jkci_class).where("jkci_classes.is_current_active = ? ", true)
+    time_table_classes = TimeTableClass.includes({subject: :standard}, :sub_class).joins(time_table: :jkci_class).where("jkci_classes.is_current_active = ? and time_table_classes.organisation_id in (?) ", true, Organisation.current_id)
 
     if params[:standard]
       jkci_class  = JkciClass.select([:id, :standard_id, :organisation_id, :is_current_active]).where(standard_id: params[:standard], is_current_active: true).first

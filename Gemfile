@@ -52,7 +52,7 @@ gem "iconv", "~> 1.0.3"
 gem 'rubyzip', '~>  0.9.9'
 gem 'rubyXL'
 gem 'axlsx_rails'
-
+gem 'bullet'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'

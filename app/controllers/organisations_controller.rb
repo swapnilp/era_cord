@@ -39,7 +39,7 @@ class OrganisationsController < ApplicationController
 
 
   def organisation_cources
-    organisation_standards = @organisation.organisation_standards
+    organisation_standards = @organisation.organisation_standards.includes(:standard, :assigned_organisation)
     render json: {body: ActiveModel::ArraySerializer.new(organisation_standards, each_serializer: OrganisationCoursesSerializer).as_json }
   end
 
@@ -57,7 +57,7 @@ class OrganisationsController < ApplicationController
   end
 
   def organisation_standards
-    organisation_standards = @organisation.standards
+    organisation_standards = @organisation.standards.includes(:organisation_standards)
     render json: {success: true, organisation_standards: organisation_standards.map(&:organisation_json)}
   end
 

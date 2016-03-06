@@ -96,6 +96,7 @@ class Exam < ActiveRecord::Base
     self.present_students.map(&:update_presnty)
     self.update_attributes({verify_absenty: true})
     Notification.verify_exam_abesnty(self.id, organisation)
+    self.publish_absentee
   end
 
   def remove_absent_student(student_id)
@@ -166,8 +167,9 @@ class Exam < ActiveRecord::Base
   end
 
   def publish_absentee
-    
-    Delayed::Job.enqueue ExamAbsentSmsSend.new(self.absenty_message_send)
+    if self.organisation.is_send_message && self.jkci_class.enable_exam_sms
+      Delayed::Job.enqueue ExamAbsentSmsSend.new(self.absenty_message_send)
+    end
   end
   
   def send_result_email(exam, student)
@@ -279,7 +281,7 @@ class Exam < ActiveRecord::Base
 
   def grouped_exam_report_table_head
     table_head = ["ID", "Name", "Mobile"]
-    self.descendants.order("id ASC").each do |g_exam|
+    self.descendants.includes(:subject).order("id ASC").each do |g_exam|
       table_head << g_exam.subject.try(:name)
     end
     table_head
@@ -288,18 +290,36 @@ class Exam < ActiveRecord::Base
   def grouped_exam_report
     return [] unless self.is_group
     #ex_students = self.exam_students
-    g_exams_ids = self.descendants.order("id ASC").map(&:id)
-    catlogs = ExamCatlog.select([:student_id, :exam_id, :organisation_id, :marks]).where(exam_id: g_exams_ids)
-    ex_students = Student.select([:id, :initl, :last_name, :p_mobile ]).where(id: catlogs.map(&:student_id).uniq)
-    reports = []
-    
-    ex_students.each do |student|
-      report = [student.id, student.short_name, student.p_mobile]
-      g_exams_ids.each do |g_exam_id|
-        mark = catlogs.where(student_id: student.id, exam_id: g_exam_id).first.marks rescue 'nil'
-        report << (mark.present? ? mark : '0' )
-      end
-      reports << report if report[3..15].map(&:to_i).sum != 0
+   # g_exams_ids = self.descendants.order("id ASC").map(&:id)
+   # catlogs = ExamCatlog.select([:student_id, :exam_id, :organisation_id, :marks]).where(exam_id: g_exams_ids)
+   # ex_students = Student.select([:id, :initl, :last_name, :p_mobile ]).where(id: catlogs.map(&:student_id).uniq)
+   # reports = []
+   # 
+   # ex_students.each do |student|
+   #   report = [student.id, student.short_name, student.p_mobile]
+   #   g_exams_ids.each do |g_exam_id|
+   #     mark = catlogs.where(student_id: student.id, exam_id: g_exam_id).first.marks rescue 'nil'
+   #     report << (mark.present? ? mark : '0' )
+   #   end
+   #   reports << report if report[3..15].map(&:to_i).sum != 0
+   # end
+    #reports
+    g_exams = self.descendants.order("id ASC").map(&:id)
+    exams_hash = {}
+    students_report = {}
+    g_exams.each_with_index do |g_exam, index|
+      exams_hash = exams_hash.merge({g_exam => index + 3})
+    end
+    exam_catlogs = ExamCatlog.where(exam_id: g_exams).includes(:student)
+    exam_catlogs.each do |exam_catlog|
+      students_report[exam_catlog.student.name] ||= ['nil']*(g_exams.count+3)
+      students_report[exam_catlog.student.name][exams_hash[exam_catlog.exam_id]] = exam_catlog.marks || 0
+      students_report[exam_catlog.student.name][1] = exam_catlog.student.name
+      students_report[exam_catlog.student.name][2] = exam_catlog.student.p_mobile
+    end
+    reports = students_report.values
+    reports.each_with_index do |val, index|
+      reports[index][0] = index+1
     end
     reports
   end

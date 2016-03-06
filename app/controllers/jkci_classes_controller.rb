@@ -4,7 +4,7 @@ class JkciClassesController < ApplicationController
   load_and_authorize_resource param_method: :my_sanitizer
 
   def index
-    jkci_classes = @organisation.jkci_classes.includes([:batch]).active.order("id desc")
+    jkci_classes = @organisation.jkci_classes.active.order("id desc")
     #jkci_classes = @organisation.standards.where("organisation_standards.is_assigned_to_other = false").map(&:jkci_classes).map(&:last)
     render json: {body: ActiveModel::ArraySerializer.new(jkci_classes, each_serializer: JkciClassIndexSerializer).as_json}
   end
@@ -283,7 +283,7 @@ class JkciClassesController < ApplicationController
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     jkci_class.make_active_class(@organisation)
-    jkci_classes = @organisation.jkci_classes.includes([:batch]).order("id desc")
+    jkci_classes = @organisation.jkci_classes.order("id desc")
     render json: {success: true, classes: jkci_classes.map(&:organisation_class_json)}
   end
 
@@ -308,6 +308,15 @@ class JkciClassesController < ApplicationController
       else
         render json: {success: false, message: "Please Fill Proper Data"}
       end
+    else
+      render json: {success: false, message: "File Not Present"}
+    end
+  end
+
+  def presenty_catlog
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    if jkci_class
+      
     else
       render json: {success: false, message: "File Not Present"}
     end
