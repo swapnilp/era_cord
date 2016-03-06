@@ -317,8 +317,11 @@ class Exam < ActiveRecord::Base
       students_report[exam_catlog.student.name][1] = exam_catlog.student.name
       students_report[exam_catlog.student.name][2] = exam_catlog.student.p_mobile
     end
-    
-    students_report.values
+    reports = students_report.values
+    reports.each_with_index do |val, index|
+      reports[index][0] = index+1
+    end
+    reports
   end
 
   def save_exam_points(point_ids)
