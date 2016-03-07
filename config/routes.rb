@@ -65,6 +65,7 @@ Rails.application.routes.draw do
   
   resources :jkci_classes do
     member do
+      get 'presenty_catlog'
       get 'get_exam_info'
       get 'get_dtp_info'
       get 'toggle_class_sms'

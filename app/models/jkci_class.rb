@@ -288,11 +288,38 @@ class JkciClass < ActiveRecord::Base
     end
   end
 
-  def presenty_catlog(start_date, end_date)
-    class_students.each do |class_student|
-      exam_catlogs.includes(:exam).where()
-      #JkciClass.last.students.joins({exam_catlogs: :exam}, :class_catlogs).where("exam_catlogs.is_present = ? and exams.exam_date > ? and  exams.exam_date < ? and class_catlogs.date like ?", false, (Date.today-1.months), Date.today, Date.today - 3.days)
+  def presenty_catlog(params = '', start_date = Date.today - 1.months, end_date = Date.today)
+    dates = (start_date..end_date).to_a
+    date_hash = {}
+    dates.each_with_index do |date, index|
+      date_hash[date.to_s] = index
     end
+    
+    present_reports ={}
+
+    # ---- For Class Presenty only ##
+    if params == 'class_catlogs'
+      klass_catlogs = class_catlogs.joins(:student).select("class_catlogs.id, students.first_name as first_name, students.last_name as last_name, students.p_mobile as p_mobile, class_catlogs.date").where("date <= ? and date >= ?", end_date, start_date)
+      klass_catlogs.each do |class_catlog|
+        present_reports["#{class_catlog.first_name} #{class_catlog.last_name}"] ||= (["#{class_catlog.first_name} #{class_catlog.last_name}"] << ['p']*dates.count).flatten
+        present_reports["#{class_catlog.first_name} #{class_catlog.last_name}"][date_hash[class_catlog.date.to_s]+1] = "a"
+      end
+    end
+    
+
+    # ---- For Exam Presenty only ##
+    if params == 'exams'
+      kexam_catlogs = exam_catlogs.joins(:student, :exam).select("exam_catlogs.id, students.first_name as first_name, students.last_name as last_name, students.p_mobile as p_mobile, exams.exam_date as exam_date, exam_catlogs.is_present").where(is_present: false)
+      kexam_catlogs.each do |exam_catlog|
+        present_reports["#{exam_catlog.first_name} #{exam_catlog.last_name}"] ||= (["#{exam_catlog.first_name} #{exam_catlog.last_name}"] << ['p']*dates.count).flatten
+        present_reports["#{exam_catlog.first_name} #{exam_catlog.last_name}"][date_hash[exam_catlog.exam_date.to_date.to_s]+1] = "a"
+      end
+    end
+    reports = []
+    reports << (["name"] << date_hash.keys).flatten
+    reports << present_reports.values
+
+    return reports
   end
 
   def subject_json(options={})
