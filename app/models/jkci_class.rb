@@ -296,6 +296,9 @@ class JkciClass < ActiveRecord::Base
     end
     
     present_reports ={}
+    students.select([:first_name, :last_name]).each do |student|
+      present_reports["#{student.first_name} #{student.last_name}"] ||= (["#{student.first_name} #{student.last_name}"] << ['p']*dates.count).flatten
+    end
 
     # ---- For Class Presenty only ##
     if params == 'class_catlogs'
