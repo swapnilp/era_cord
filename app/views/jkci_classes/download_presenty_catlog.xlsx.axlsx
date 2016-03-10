@@ -1,0 +1,16 @@
+wb = xlsx_package.workbook
+wb.add_worksheet(name: "Presenty") do |sheet|
+  cell_rotated_text_style = wb.styles.add_style({:alignment => {:textRotation => 90}})
+  @catlogs.each_with_index do |catlog, index|
+    if index == 0
+      sheet.add_row catlog, style: cell_rotated_text_style 
+    else
+      catlog.each do |td|
+        sheet.add_row td
+      end
+    end
+  end
+  @catlogs.first.each_with_index do |c_width, index|
+    sheet.column_info[index].width = 2.00 unless index == 0
+  end
+end

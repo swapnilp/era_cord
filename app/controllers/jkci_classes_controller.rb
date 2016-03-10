@@ -1,6 +1,6 @@
 class JkciClassesController < ApplicationController
   before_action :authenticate_user!
-  skip_before_filter :authenticate_with_token!, only: [:sub_organisation_class_report, :download_class_catlog, :download_class_syllabus, :download_class_student_list, :download_excel]
+  skip_before_filter :authenticate_with_token!, only: [:sub_organisation_class_report, :download_class_catlog, :download_class_syllabus, :download_class_student_list, :download_excel, :download_presenty_catlog]
   load_and_authorize_resource param_method: :my_sanitizer
 
   def index
@@ -320,6 +320,16 @@ class JkciClassesController < ApplicationController
       render json: {success: true, catlogs: catlogs}
     else
       render json: {success: false, message: "File Not Present"}
+    end
+  end
+
+  def download_presenty_catlog
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    if jkci_class
+      @catlogs = jkci_class.presenty_catlog(params[:filter], params[:start_date], params[:end_date])
+      respond_to do |format|
+        format.xlsx
+      end
     end
   end
 
