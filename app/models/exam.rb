@@ -282,7 +282,7 @@ class Exam < ActiveRecord::Base
   def grouped_exam_report_table_head
     table_head = ["ID", "Name", "Mobile"]
     self.descendants.includes(:subject).order("id ASC").each do |g_exam|
-      table_head << g_exam.subject.try(:name)
+      table_head << "#{g_exam.subject.try(:name)}//#{g_exam.marks}"
     end
     table_head
   end
@@ -313,7 +313,7 @@ class Exam < ActiveRecord::Base
     exam_catlogs = ExamCatlog.where(exam_id: g_exams).includes(:student)
     exam_catlogs.each do |exam_catlog|
       students_report[exam_catlog.student.name] ||= ['nil']*(g_exams.count+3)
-      students_report[exam_catlog.student.name][exams_hash[exam_catlog.exam_id]] = exam_catlog.marks || 0
+      students_report[exam_catlog.student.name][exams_hash[exam_catlog.exam_id]] = exam_catlog.is_present? ? exam_catlog.marks.to_i : 'A'
       students_report[exam_catlog.student.name][1] = exam_catlog.student.name
       students_report[exam_catlog.student.name][2] = exam_catlog.student.p_mobile
     end
@@ -337,7 +337,7 @@ class Exam < ActiveRecord::Base
     reports = []
     grouped_exam_report.each do |report|
       report_hash = []
-      group_exams[3..10].zip(report[3..14]){ |a,b| report_hash << "#{a}=#{b == '0' ? 'A' : b}" if b != 'nil' }
+      group_exams[3..10].zip(report[3..14]){ |a,b| a1,a2=a.split('//');report_hash << "#{a1}=#{b == '0' ? 'A' : b}/#{a2}" if b != 'nil' }
       reports << [report[1] + " got " + report_hash.join(',') + " marks in #{self.name} exams", "91"+report[2], report[0]]
     end
     reports
