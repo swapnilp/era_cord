@@ -1,7 +1,7 @@
 class User < ActiveRecord::Base
   PASSWORD_REGEX = /\A(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z]).{8,}\z/
   TOKEN_SECRET = Rails.application.secrets[:secret_key_base]
-  TOKEN_EXPIRE_TIME = 7.days
+  TOKEN_EXPIRE_TIME = 1.days#2.hours
   
   rolify
   # Include default devise modules. Others available are:
