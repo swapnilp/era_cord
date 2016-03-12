@@ -326,7 +326,9 @@ class JkciClassesController < ApplicationController
   def download_presenty_catlog
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     if jkci_class
-      @catlogs = jkci_class.presenty_catlog(params[:filter], params[:start_date], params[:end_date])
+      start_date = Date.parse(params[:start_date]).to_date rescue nil
+      end_date = Date.parse(params[:end_date]).to_date rescue nil
+      @catlogs = jkci_class.presenty_catlog(params[:filter], start_date , end_date)
       respond_to do |format|
         format.xlsx
       end
