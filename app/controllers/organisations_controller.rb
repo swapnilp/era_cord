@@ -56,6 +56,12 @@ class OrganisationsController < ApplicationController
     render json: {body: ActiveModel::ArraySerializer.new(standards, each_serializer: StandardSerializer).as_json}
   end
 
+  def remaining_standard_organisations
+    #standard = Standard.where(id: params[:standard_id])
+    organisations = @organisation.descendants.joins(:organisation_standards).where("organisation_standards.standard_id not in (?)", params[:standard_id])
+    render json: {success: true, body: ActiveModel::ArraySerializer.new(organisations, each_serializer: SubOrganisationSerializer).as_json}
+  end
+
   def organisation_standards
     organisation_standards = @organisation.standards.includes(:organisation_standards)
     render json: {success: true, organisation_standards: organisation_standards.map(&:organisation_json)}

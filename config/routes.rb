@@ -162,6 +162,7 @@ Rails.application.routes.draw do
   get '/organisation_cources' => "organisations#organisation_cources"
   get 'organisations/get_classes' => "organisations#organisation_classes"
   get 'organisations/organisation_standards' => "organisations#organisation_standards"
+  get 'organisations/standard/:standard_id/remaining_organisations' => "organisations#remaining_standard_organisations"
   get '/remaining_cources' => "organisations#remaining_cources"
   get '/organisations/get_sub_organisations' => "organisations#sub_organisations_list"
   get '/organisations/add_standards' => "organisations#add_standards"
