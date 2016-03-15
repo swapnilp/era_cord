@@ -58,10 +58,31 @@ class OrganisationsController < ApplicationController
 
   def remaining_standard_organisations
     #standard = Standard.where(id: params[:standard_id])
-    organisations = @organisation.descendants.joins(:organisation_standards).where("organisation_standards.standard_id not in (?)", params[:standard_id])
+    ids = [0] << @organisation.descendants.joins(:organisation_standards).where("organisation_standards.standard_id = ? && organisation_standards.is_assigned_to_other = ?", params[:standard_id], false).map(&:id)
+    organisations = @organisation.descendants.where("id not in (?)", ids.flatten)
     render json: {success: true, body: ActiveModel::ArraySerializer.new(organisations, each_serializer: SubOrganisationSerializer).as_json}
   end
 
+  def switch_organisation_standard
+    if params[:switch_organisation_standard] && params[:switch_organisation_standard][:role] == 'Handler'
+      success = @organisation.switch_organisation(params[:switch_organisation_standard][:new_organisation], params[:switch_organisation_standard][:standard_id])
+      render json: {success: success, message: "Something went wrong"}
+    elsif params[:switch_organisation_standard] && params[:switch_organisation_standard][:role] == 'Observer'
+      assigned_org_id = @organisation.organisation_standards.where(standard_id: params[:switch_organisation_standard][:standard_id]).first.try(:assigned_organisation_id) || @organisation.id
+      new_org_standard = OrganisationStandard.find_or_initialize_by({standard_id: params[:switch_organisation_standard][:standard_id], organisation_id: params[:switch_organisation_standard][:new_organisation]})
+      new_org_standard.is_assigned_to_other =  true
+      new_org_standard.assigned_organisation_id =  assigned_org_id
+      new_org_standard.save
+      render json: {success: true}
+    else
+      render json: {success: false, message: "Invalide date"}
+    end
+    #success = @organisation.switch_organisation(params[:old_organisation_id], params[:new_organisation_id], params[:standard_id])
+    #respond_to do |format|
+    #  format.json {render json: {success: success}}
+    #end
+  end
+  
   def organisation_standards
     organisation_standards = @organisation.standards.includes(:organisation_standards)
     render json: {success: true, organisation_standards: organisation_standards.map(&:organisation_json)}
@@ -200,13 +221,14 @@ class OrganisationsController < ApplicationController
     if organisation_standard && organisation_standard.id != @organisation.id
       if organisation_standard.is_assigned_to_other
         organisation_standard.destroy
+        render json: {success: true}
       else
-        
+        success = @organisation.switch_organisation(@organisation.id, params[:standard_id])
+        organisation_standard.destroy
+        render json: {success: success, message: "Something went wrong"}
       end
-
-      render json: {success: true}
     else
-      render json: {success: false}
+      render json: {success: false, message: "Invalide data"}
     end
 
   end
@@ -360,12 +382,7 @@ class OrganisationsController < ApplicationController
     end
   end
   
-  def switch_organisation_standard
-    success = @organisation.switch_organisation(params[:old_organisation_id], params[:new_organisation_id], params[:standard_id])
-    respond_to do |format|
-      format.json {render json: {success: success}}
-    end
-  end
+  
 
   private
   

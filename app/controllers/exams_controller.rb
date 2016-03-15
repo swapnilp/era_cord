@@ -12,7 +12,7 @@ class ExamsController < ApplicationController
       exams = jkci_class.exams.includes({subject: :standard}, {jkci_class: :batch} ).roots.order("exam_date desc") 
       #@organisation.exams.roots.order("id desc").page(params[:page])
     else
-      exams = Exam.joins(:jkci_class).includes({subject: :standard}, {jkci_class: :batch}).roots.order("exam_date desc").where(organisation_id: Organisation.current_id)
+      exams = Exam.joins(:jkci_class).includes({subject: :standard}, {jkci_class: :batch}).roots.order("exam_date desc").where("exams.organisation_id in (?) && jkci_classes.is_current_active = ?", Organisation.current_id, true)
       #@organisation.exams.roots.order("id desc").page(params[:page])
       if params[:filter].present? &&  JSON.parse(params[:filter])['filterStandard'].present?
         exams = exams.where("jkci_classes.standard_id = ?", JSON.parse(params[:filter])['filterStandard'])

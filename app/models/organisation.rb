@@ -179,54 +179,87 @@ class Organisation < ActiveRecord::Base
     Delayed::Job.enqueue OrganisationRegistationSms.new(organisation_sms_message)
   end
 
-  def switch_organisation(old_organisation_id, new_organisation_id, standard_id)
-    # pull back organisaiton standards classes from sub organisation to master organisation
-    std = self.standards.where(id: standard_id).first
-    if old_organisation_id == "0"
-      old_organisation = self
-      old_organisation_id = self.id
-    else
-      old_organisation = self.subtree.where(id: old_organisation_id).first
-    end
-    new_organisation = self.descendants.where(id: new_organisation_id).first
+  def switch_organisation(new_org_id, standard_id)
 
-    if old_organisation.present? && new_organisation.present? && std.present? && !new_organisation.root?
-      class_ids = JkciClass.where(standard_id: std.id, organisation_id: old_organisation_id).map(&:id)
-      if class_ids.present?
-        #ExamPoint.where(jkci_class_id: class_ids, organisation_id: old_organisation_id).update_all({organisation_id: new_organisation.id})
-        Exam.where(jkci_class_id: class_ids, organisation_id: old_organisation_id).update_all({organisation_id: new_organisation.id})
-        ExamCatlog.where(jkci_class_id: class_ids, organisation_id: old_organisation_id).update_all({organisation_id: new_organisation.id})
-        DailyTeachingPoint.where(jkci_class_id: class_ids, organisation_id: old_organisation_id).update_all({organisation_id: new_organisation.id})
-        ClassCatlog.where(jkci_class_id: class_ids, organisation_id: old_organisation_id).update_all({organisation_id: new_organisation.id})
-        SubClass.where(jkci_class_id: class_ids, organisation_id: old_organisation_id).update_all({organisation_id: new_organisation.id})
-        Student.where(standard_id: std.id, organisation_id: old_organisation_id).update_all({organisation_id: new_organisation.id})
-        ClassStudent.where(jkci_class_id: class_ids, organisation_id: old_organisation_id).update_all({organisation_id: new_organisation.id})
-        Notification.where(jkci_class_id: class_ids, organisation_id: old_organisation_id).update_all({organisation_id: new_organisation.id})
-        JkciClass.where(standard_id: std.id, organisation_id: old_organisation_id).update_all({organisation_id: new_organisation.id})
-        OrganisationStandard.unscoped.where(standard_id: std.id, organisation_id: old_organisation.path_ids).each do |org_standard|
-          if org_standard.organisation.root?
-            org_standard.update_attributes({is_assigned_to_other: true, assigned_organisation_id: new_organisation.id})
-          else
-            org_standard.destroy
-          end
-        end
-
-        new_organisation.ancestor_ids.each do |ancestor_id|
-          org = Organisation.where(id: ancestor_id).first
-          if org && org.root?
-            OrganisationStandard.unscoped.where(id: org.id, standard_id: std.id).update_all({is_assigned_to_other: true, assigned_organisation_id: new_organisation.id})
-          elsif org
-            org.organisation_standards.build({is_assigned_to_other: true, assigned_organisation_id: new_organisation.id, standard_id: std.id}).save
-          end
-        end
-        new_organisation.standards << std
-        return true
-      else
-        return false
-      end
+    old_organisation_standard = self.organisation_standards.where(standard_id: standard_id).first
+    
+    if old_organisation_standard.present?
+      old_org_id = old_organisation_standard.assigned_organisation_id || old_organisation_standard.organisation_id
+      old_org = self.root.subtree.where(id: old_org_id).first if old_organisation_standard
+      return false if old_org.id == new_org_id
+      new_org = self.subtree.where(id: new_org_id).first
+      std = self.standards.where(id: standard_id).first
+      return false unless old_org.present?
+      return false unless new_org.present?
+      return false unless std.present?
     else
       return false
     end
+
+    class_ids = JkciClass.where(standard_id: std.id, organisation_id: old_org.id).map(&:id)
+    if class_ids.present?
+      transaction do
+        ExamPoint.joins(:exam).where("exams.organisation_id = ? && exams.jkci_class_id in (?)",old_org.id, class_ids).update_all({organisation_id: new_org.id})
+        ExamCatlog.joins(:exam).where("exams.organisation_id = ? && exams.jkci_class_id in (?)",old_org.id, class_ids).update_all({organisation_id: new_org.id})
+        Exam.where(organisation_id: old_org.id, jkci_class_id: class_ids).update_all({organisation_id: new_org.id})
+        DailyTeachingPoint.where(organisation_id: old_org.id, jkci_class_id: class_ids).update_all({organisation_id: new_org.id})
+        ClassCatlog.where(organisation_id: old_org.id, jkci_class_id: class_ids).update_all({organisation_id: new_org.id})
+        SubClass.where(organisation_id: old_org.id, jkci_class_id: class_ids).update_all({organisation_id: new_org.id})
+        StudentSubject.joins({student: :class_students}).where("class_students.jkci_class_id in (?) && class_students.organisation_id = ?", class_ids, old_org.id).update_all({organisation_id: new_org.id})
+        Student.joins(:class_students).where("class_students.jkci_class_id in (?) && class_students.organisation_id = ?", class_ids, old_org.id).update_all({organisation_id: new_org.id})
+        ClassStudent.where(organisation_id: old_org.id, jkci_class_id: class_ids).update_all({organisation_id: new_org.id})
+        Notification.where(organisation_id: old_org.id, jkci_class_id: class_ids).update_all({organisation_id: new_org.id})
+        TimeTableClass.joins(:time_table).where("time_tables.jkci_class_id in (?) && time_tables.organisation_id = ?", class_ids, old_org.id).update_all({organisation_id: new_org.id})
+        TimeTable.where(organisation_id: old_org.id, jkci_class_id: class_ids).update_all({organisation_id: new_org.id})
+        OffClass.where(organisation_id: old_org.id, jkci_class_id: class_ids).update_all({organisation_id: new_org.id})
+        JkciClass.where(organisation_id: old_org.id, id: class_ids).update_all({organisation_id: new_org.id})  
+        OrganisationStandard.unscoped.where(standard_id: std.id, organisation_id: self.root.subtree_ids).update_all({is_assigned_to_other: true, assigned_organisation_id: new_org.id})
+        new_org_standard = OrganisationStandard.find_or_initialize_by({standard_id: std.id, organisation_id: new_org.id})
+        new_org_standard.is_assigned_to_other =  false
+        new_org_standard.assigned_organisation_id =  nil
+        new_org_standard.save
+      end
+      return true
+    end
+    
+    #if old_organisation.present? && new_organisation.present? && std.present? && !new_organisation.root?
+    #  class_ids = JkciClass.where(standard_id: std.id, organisation_id: old_organisation_id).map(&:id)
+    #  if class_ids.present?
+    #    #ExamPoint.where(jkci_class_id: class_ids, organisation_id: old_organisation_id).update_all({organisation_id: new_organisation.id})
+    #    #Exam.where(jkci_class_id: class_ids, organisation_id: old_organisation_id).update_all({organisation_id: new_organisation.id})
+    #    #ExamCatlog.where(jkci_class_id: class_ids, organisation_id: old_organisation_id).update_all({organisation_id: new_organisation.id})
+    #    #DailyTeachingPoint.where(jkci_class_id: class_ids, organisation_id: old_organisation_id).update_all({organisation_id: new_organisation.id})
+    #    #ClassCatlog.where(jkci_class_id: class_ids, organisation_id: old_organisation_id).update_all({organisation_id: new_organisation.id})
+    #    #SubClass.where(jkci_class_id: class_ids, organisation_id: old_organisation_id).update_all({organisation_id: new_organisation.id})
+    #    #Student.where(standard_id: std.id, organisation_id: old_organisation_id).update_all({organisation_id: new_organisation.id})
+    #    #ClassStudent.where(jkci_class_id: class_ids, organisation_id: old_organisation_id).update_all({organisation_id: new_organisation.id})
+    #    #Notification.where(jkci_class_id: class_ids, organisation_id: old_organisation_id).update_all({organisation_id: new_organisation.id})
+    #    #JkciClass.where(standard_id: std.id, organisation_id: old_organisation_id).update_all({organisation_id: new_organisation.id})
+    #    #OrganisationStandard.unscoped.where(standard_id: std.id, organisation_id: old_organisation.path_ids).each do |org_standard|
+    #    #  if org_standard.organisation.root?
+    #    #    org_standard.update_attributes({is_assigned_to_other: true, assigned_organisation_id: new_organisation.id})
+    #    #  else
+    #    #    org_standard.destroy
+    #    #  end
+    #    #end
+    #    
+    #    
+    #    new_organisation.ancestor_ids.each do |ancestor_id|
+    #      org = Organisation.where(id: ancestor_id).first
+    #      if org && org.root?
+    #        OrganisationStandard.unscoped.where(id: org.id, standard_id: std.id).update_all({is_assigned_to_other: true, assigned_organisation_id: new_organisation.id})
+    #      elsif org
+    #        org.organisation_standards.build({is_assigned_to_other: true, assigned_organisation_id: new_organisation.id, standard_id: std.id}).save
+    #      end
+    #    end
+    #    new_organisation.standards << std
+    #    return true
+    #  else
+    #    return false
+    #  end
+    #else
+    #  return false
+    #end
   end
   
   def pull_back_organisation(old_org)
