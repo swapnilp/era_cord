@@ -27,12 +27,20 @@ class Standard < ActiveRecord::Base
                   })
   end
 
-  def organisation_json(options= {})
-    options.merge({
-                    id: self.id,
-                    name: std_name,
-                    organisaitons: organisation_standards.as_json
-                  })
+  def organisation_json(options= {}, org = nil)
+    if org.present?
+      options.merge({
+                      id: self.id,
+                      name: std_name,
+                      organisaitons: organisation_standards.map{|org_standard| org_standard.as_json({}, org)}
+                    })
+    else
+      options.merge({
+                      id: self.id,
+                      name: std_name,
+                      organisaitons: organisation_standards.as_json
+                    })
+    end
   end
   
 end

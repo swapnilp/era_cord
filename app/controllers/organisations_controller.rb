@@ -85,7 +85,7 @@ class OrganisationsController < ApplicationController
   
   def organisation_standards
     organisation_standards = @organisation.standards.includes(:organisation_standards)
-    render json: {success: true, organisation_standards: organisation_standards.map(&:organisation_json)}
+    render json: {success: true, organisation_standards: organisation_standards.map{|org_standard| org_standard.organisation_json({}, @organisation)}}
   end
 
   def sub_organisations_list
