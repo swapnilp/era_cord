@@ -1,6 +1,6 @@
 class JkciClassesController < ApplicationController
   before_action :authenticate_user!
-  skip_before_filter :authenticate_with_token!, only: [:sub_organisation_class_report, :download_class_catlog, :download_class_syllabus, :download_class_student_list, :download_excel, :download_presenty_catlog]
+  skip_before_filter :authenticate_with_token!, only: [:sub_organisation_class_report, :download_class_catlog, :download_class_syllabus, :download_class_student_list]
   load_and_authorize_resource param_method: :my_sanitizer
 
   def index
