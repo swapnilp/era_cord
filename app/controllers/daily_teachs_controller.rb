@@ -3,11 +3,11 @@ class DailyTeachsController < ApplicationController
   load_and_authorize_resource class: 'DailyTeachingPoint', param_method: :my_sanitizer
 
   def index
-    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    jkci_class = JkciClass.where(id: params[:jkci_class_id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     
     daily_teaching_points = jkci_class.daily_teaching_points.includes([:subject, :chapter, :class_catlogs]).order("date desc").page(params[:page])
-    render json: {success: true, daily_teaching_points: daily_teaching_points, count: daily_teaching_points.total_count}
+    render json: {success: true, daily_teaching_points: daily_teaching_points.map{|dtp| dtp.as_json({}, @organisation)}, count: daily_teaching_points.total_count}
   end
 
   def create

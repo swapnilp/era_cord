@@ -11,7 +11,7 @@ class JkciClassesController < ApplicationController
 
   def get_unassigned_classes
     #jkci_classes = @organisation.standards.where("organisation_standards.is_assigned_to_other = true").map(&:jkci_classes).map(&:last)
-    jkci_classes = @organisation.descendants.map(&:jkci_classes).map(&:active).flatten
+    jkci_classes = JkciClass.where("id not in (?) && is_current_active = ? && standard_id in (?)", @organisation.jkci_classes.map(&:id) << 0, true, @organisation.organisation_standards.map(&:standard_id) << 0)#@organisation.descendants.map(&:jkci_classes).map(&:active).flatten
     render json: {body: jkci_classes.map(&:unassigned_json)}
   end
 
@@ -34,7 +34,7 @@ class JkciClassesController < ApplicationController
   end
 
   def show
-    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    jkci_class = JkciClass.where(id: params[:id]).first
     #@notifications = @jkci_class.role_exam_notifications(current_user)
     if jkci_class
       render json: JkciClassSerializer.new(jkci_class).as_json.merge({success: true, has_manage_class: (current_user.has_role? :manage_class)})
@@ -88,7 +88,7 @@ class JkciClassesController < ApplicationController
   end
 
   def students
-    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    jkci_class = JkciClass.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     students = jkci_class.students.includes({subjects: :standard}, :standard, :batch, :jkci_classes).select("class_students.roll_number, students.*")
     if params[:search]
@@ -188,7 +188,7 @@ class JkciClassesController < ApplicationController
   end
   
   def get_notifications
-    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    jkci_class = JkciClass.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     
     notifications = jkci_class.role_exam_notifications(current_user).page(params[:page])
@@ -196,7 +196,7 @@ class JkciClassesController < ApplicationController
   end
 
   def sub_organisation_class_report
-    @sub_organisation = @organisation.subtree.where(id: params[:sub_organisation_id]).first
+    @sub_organisation = @organisation.root.subtree.where(id: params[:sub_organisation_id]).first
     @jkci_class = @sub_organisation.jkci_classes.where(id: params[:jkci_class_id]).first
     @exams_table_format = @jkci_class.exams_table_format
     @daily_teaching_table_format = @jkci_class.daily_teaching_table_format
@@ -314,7 +314,7 @@ class JkciClassesController < ApplicationController
   end
 
   def presenty_catlog
-    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    jkci_class = JkciClass.where(id: params[:id]).first
     if jkci_class
       catlogs = jkci_class.presenty_catlog(params[:filter])
       render json: {success: true, catlogs: catlogs}

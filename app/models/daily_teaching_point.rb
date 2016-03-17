@@ -128,19 +128,35 @@ class DailyTeachingPoint < ActiveRecord::Base
     url_arry
   end
 
-  def as_json(options= {})
-    options.merge({
-                    id: id,
-                    date: date.to_date,
-                    subject: subject.try(:name),
-                    chapter: chapter.try(:name),
-                    points: 'asdads',
-                    absents: class_catlogs.only_absents.count,
-                    is_sms_sent: is_sms_sent,
-                    jkci_class: jkci_class.class_name,
-                    verify_absenty: verify_absenty,
-                    enable_sms: jkci_class.enable_class_sms
-                  })
+  def as_json(options= {}, org = nil)
+    if org.present?
+      options.merge({
+                      id: id,
+                      date: date.to_date,
+                      subject: subject.try(:name),
+                      chapter: chapter.try(:name),
+                      points: 'asdads',
+                      absents: class_catlogs.only_absents.count,
+                      is_sms_sent: is_sms_sent,
+                      jkci_class: jkci_class.class_name,
+                      verify_absenty: verify_absenty,
+                      enable_sms: jkci_class.enable_class_sms,
+                      self_organisation: organisation_id == org.id
+                    })
+    else
+      options.merge({
+                      id: id,
+                      date: date.to_date,
+                      subject: subject.try(:name),
+                      chapter: chapter.try(:name),
+                      points: 'asdads',
+                      absents: class_catlogs.only_absents.count,
+                      is_sms_sent: is_sms_sent,
+                      jkci_class: jkci_class.class_name,
+                      verify_absenty: verify_absenty,
+                      enable_sms: jkci_class.enable_class_sms
+                    })
+    end
   end
 
   def edit_json(options= {})
