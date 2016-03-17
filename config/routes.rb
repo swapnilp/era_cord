@@ -82,6 +82,7 @@ Rails.application.routes.draw do
       get 'get_batch'
       post "import_students_excel"
       post 'make_active_class'
+      post 'make_deactive_class'
       post 'verify_students'
       post 'recheck_duplicate_student'
       post 'accept_duplicate_student'

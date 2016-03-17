@@ -229,8 +229,13 @@ class JkciClass < ActiveRecord::Base
   end
 
   def make_active_class(organisation)
-    self.standard.jkci_classes.update_all({is_current_active: false})
+    #self.standard.jkci_classes.update_all({is_current_active: false})
     self.update_attributes({is_current_active: true})
+  end
+
+  def make_deactive_class(organisation)
+    #self.standard.jkci_classes.update_all({is_current_active: false})
+    self.update_attributes({is_current_active: false})
   end
 
   def self.import_students_excel(file, self_class, org)

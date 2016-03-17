@@ -286,6 +286,14 @@ class JkciClassesController < ApplicationController
     render json: {success: true, classes: jkci_classes.map(&:organisation_class_json)}
   end
 
+  def make_deactive_class
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    jkci_class.make_deactive_class(@organisation)
+    jkci_classes = @organisation.jkci_classes.order("id desc")
+    render json: {success: true, classes: jkci_classes.map(&:organisation_class_json)}
+  end
+
 
   def download_excel
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
