@@ -224,8 +224,17 @@ class Student < ActiveRecord::Base
                     batch: batch.name,
                     standard: standard.std_name
                   })
-    end
+  end
 
+  def assign_json(options ={})
+    options.merge({
+                    id: id,
+                    name: "#{first_name} #{last_name}", 
+                    p_mobile: p_mobile
+                  })
+  end
+
+  
   def self.to_csv(options = {})
     CSV.generate(options) do |csv|
       csv << column_names

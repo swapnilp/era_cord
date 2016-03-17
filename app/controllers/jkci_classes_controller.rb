@@ -67,10 +67,8 @@ class JkciClassesController < ApplicationController
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     selected_students = jkci_class.students.map(&:id)
-    students = jkci_class.standard.students.enable_students.where("id not in (?)", ([0] + selected_students)).where(batch_id: jkci_class.batch_id)
-    jkci_class.update_attributes({is_student_verified: false})
-    jkci_class.check_duplicates(false)
-    render json: {success: true, students: ActiveModel::ArraySerializer.new(students, each_serializer: StudentSerializer).as_json}
+    students = @organisation.students.where("id not in (?) && standard_id = ?", selected_students << 0, jkci_class.standard_id)
+    render json: {success: true, students: students.map(&:assign_json)}
   end
 
   def manage_students
