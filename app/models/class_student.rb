@@ -1,5 +1,5 @@
 class ClassStudent < ActiveRecord::Base
-  belongs_to :jkci_class
+  belongs_to :jkci_class, counter_cache: true
   belongs_to :student
   
   default_scope { where(organisation_id: Organisation.current_id) }

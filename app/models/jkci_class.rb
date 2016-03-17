@@ -363,7 +363,7 @@ class JkciClass < ActiveRecord::Base
                     mobile: organisation.mobile,
                     email: organisation.email,
                     is_current_active: is_current_active,
-                    students_count: class_students.count
+                    students_count: class_students_count
                   })
   end
 
