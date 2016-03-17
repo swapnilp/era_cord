@@ -7,7 +7,8 @@ class StudentsController < ApplicationController
   def index
     students = @organisation.students.includes(:standard, :jkci_classes, {subjects: :standard}, :batch).select([:id, :first_name, :last_name, :standard_id, :group, :mobile, :p_mobile, :enable_sms, :gender, :is_disabled, :batch_id, :parent_name]).order("id desc")
     if params[:search]
-      students = students.where("first_name like ?", "%#{params[:search]}%")
+      query = "%#{params[:search]}%"
+      students = students.where("CONCAT_WS(' ', first_name, last_name) LIKE ? || CONCAT_WS(' ', last_name, first_name) LIKE ? || p_mobile like ?", query, query, query)
     end
     students = students.page(params[:page])
     render json: {success: true, body: ActiveModel::ArraySerializer.new(students, each_serializer: StudentSerializer).as_json, count: students.total_count}
