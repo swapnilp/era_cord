@@ -235,12 +235,14 @@ class OrganisationsController < ApplicationController
 
   def absenty_graph_report
     headers, labels, reports = @organisation.class_absenty_graph_report
-    render json: {success: true, headers: headers, labels: labels, data: reports}
+    sum_data = reports.map(&:sum)
+    render json: {success: true, headers: headers, labels: labels, data: reports, sum_data: sum_data}
   end
 
   def exams_graph_report
     headers, labels, reports = @organisation.class_exams_graph_report
-    render json: {success: true, headers: headers, labels: labels, data: reports}
+    sum_data = reports.map(&:sum)
+    render json: {success: true, headers: headers, labels: labels, data: reports, sum_data: sum_data}
   end
   #################
 
