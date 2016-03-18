@@ -293,6 +293,34 @@ class JkciClass < ActiveRecord::Base
     end
   end
 
+  def absenty_graph_reports(graph_type="day")
+    reports = {}
+    if graph_type == "day"
+      reports = self.class_catlogs.joins(:daily_teaching_point).where("is_present in (?) && daily_teaching_points.date > ?", [false, nil], Date.today - 30.days).group_by_period(graph_type.to_sym, "daily_teaching_points.date", format: "%d-%b").count
+    end
+    if graph_type == "week"
+      reports = self.class_catlogs.joins(:daily_teaching_point).where("is_present in (?) && daily_teaching_points.date > ?",  [false, nil], Date.today - 15.weeks).group_by_period(graph_type.to_sym, "daily_teaching_points.date", format: "%d-%b-%Y", week_start: :mon).count
+    end
+    if graph_type == "month"
+      reports = self.class_catlogs.joins(:daily_teaching_point).where("is_present in (?) && daily_teaching_points.date > ?",  [false, nil], Date.today - 10.months).group_by_period(graph_type.to_sym, "daily_teaching_points.date", format: "%b-%Y").count
+    end
+    reports
+  end
+
+  def exams_graph_reports(graph_type="day")
+    reports = {}
+    if graph_type == "day"
+      reports = self.exams.where("exam_date > ?", Date.today - 30.days).group_by_period(graph_type.to_sym, "exam_date", format: "%d-%b").count
+    end
+    if graph_type == "week"
+      reports = self.exams.where("exam_date > ?", Date.today - 15.weeks).group_by_period(graph_type.to_sym, "exam_date", format: "%d-%b-%Y", week_start: :mon).count
+    end
+    if graph_type == "month"
+      reports = self.exams.where("exam_date > ?", Date.today - 10.months).group_by_period(graph_type.to_sym, "exam_date", format: "%b-%Y").count
+    end
+    reports
+  end
+
   def presenty_catlog(params = '', start_date = Date.today - 1.months, end_date = Date.today, isDownload = false)
     start_date = Date.today - 1.months unless start_date.present?
     end_date = Date.today unless end_date.present?

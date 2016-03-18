@@ -408,6 +408,46 @@ class Organisation < ActiveRecord::Base
     end
   end
 
+  def class_absenty_graph_report
+    reports = {}
+    a_reports = {}
+    headers = ((Date.today - 30.days)..Date.today).to_a.map{|date| date.strftime("%d-%b")}
+    classes =JkciClass.where(standard_id: self.organisation_standards.map(&:standard_id) << 0).active
+    classes.each do |klass|
+      reports[klass.class_name] = klass.absenty_graph_reports
+      a_reports[klass.class_name] = [0]* headers.size
+    end
+    
+    headers.each_with_index do |h_date, index|
+      a_reports.keys.each do |key|
+        a_reports[key][index] = reports[key][h_date] || 0
+      end
+    end
+    return headers, a_reports.keys, a_reports.values 
+
+    #p reports
+  end
+
+  def class_exams_graph_report
+    reports = {}
+    a_reports = {}
+    headers = ((Date.today - 30.days)..Date.today).to_a.map{|date| date.strftime("%d-%b")}
+    classes =JkciClass.where(standard_id: self.organisation_standards.map(&:standard_id) << 0).active
+    classes.each do |klass|
+      reports[klass.class_name] = klass.exams_graph_reports
+      a_reports[klass.class_name] = [0]* headers.size
+    end
+    
+    headers.each_with_index do |h_date, index|
+      a_reports.keys.each do |key|
+        a_reports[key][index] = reports[key][h_date] || 0
+      end
+    end
+    return headers, a_reports.keys, a_reports.values 
+
+    #p reports
+  end
+
   def as_json(options= {})
     options.merge({
                     name: name,

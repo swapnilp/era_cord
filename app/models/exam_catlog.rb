@@ -10,6 +10,7 @@ class ExamCatlog < ActiveRecord::Base
   scope :only_results, -> {where("marks is not ?", nil)}
   scope :only_ignored, -> {where("is_ingored is not ?", nil)}
   scope :completed, -> {where("is_present in (?)",  [true, false])}
+
   
   default_scope { where(organisation_id: Organisation.current_id) }
 

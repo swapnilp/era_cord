@@ -53,6 +53,7 @@ gem 'rubyzip', '~>  0.9.9'
 gem 'rubyXL'
 gem 'axlsx_rails'
 gem 'bullet'
+gem 'groupdate', '~> 2.5.0'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'

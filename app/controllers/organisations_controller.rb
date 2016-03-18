@@ -232,6 +232,16 @@ class OrganisationsController < ApplicationController
     end
 
   end
+
+  def absenty_graph_report
+    headers, labels, reports = @organisation.class_absenty_graph_report
+    render json: {success: true, headers: headers, labels: labels, data: reports}
+  end
+
+  def exams_graph_report
+    headers, labels, reports = @organisation.class_exams_graph_report
+    render json: {success: true, headers: headers, labels: labels, data: reports}
+  end
   #################
 
   def new_users
