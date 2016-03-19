@@ -408,44 +408,79 @@ class Organisation < ActiveRecord::Base
     end
   end
 
-  def class_absenty_graph_report
+  def class_absenty_graph_report(duration_type = 'day')
     reports = {}
     a_reports = {}
-    headers = ((Date.today - 30.days)..Date.today).to_a.map{|date| date.strftime("%d-%b")}
+    headers = []
+    if duration_type == 'day'
+      headers = ((Date.today - 30.days)..Date.today).to_a.map{|date| date.strftime("%d-%b")}
+    elsif duration_type == 'week'
+      date = Date.today.beginning_of_week
+      headers = ((date - 15.weeks)..date).time_step(1.week).to_a.map{|date| date.strftime("%d-%b")}
+    elsif duration_type == 'month'
+      headers = ((Date.today - 10.months)..Date.today).time_step(1.month).to_a.map{|date| date.strftime("%b-%Y")}
+    end
     classes =JkciClass.where(standard_id: self.organisation_standards.map(&:standard_id) << 0).active
     classes.each do |klass|
-      reports[klass.class_name] = klass.absenty_graph_reports
+      reports[klass.class_name] = klass.absenty_graph_reports(duration_type)
       a_reports[klass.class_name] = [0]* headers.size
     end
-    
     headers.each_with_index do |h_date, index|
       a_reports.keys.each do |key|
         a_reports[key][index] = reports[key][h_date] || 0
       end
     end
     return headers, a_reports.keys, a_reports.values 
-
-    #p reports
   end
 
-  def class_exams_graph_report
+  def class_exams_graph_report(duration_type = 'day')
     reports = {}
     a_reports = {}
-    headers = ((Date.today - 30.days)..Date.today).to_a.map{|date| date.strftime("%d-%b")}
+    headers = []
+    if duration_type == 'day'
+      headers = ((Date.today - 30.days)..Date.today).to_a.map{|date| date.strftime("%d-%b")}
+    elsif duration_type == 'week'
+      date = Date.today.beginning_of_week
+      headers = ((date - 15.weeks)..date).time_step(1.week).to_a.map{|date| date.strftime("%d-%b")}
+    elsif duration_type == 'month'
+      headers = ((Date.today - 10.months)..Date.today).time_step(1.month).to_a.map{|date| date.strftime("%b-%Y")}
+    end
     classes =JkciClass.where(standard_id: self.organisation_standards.map(&:standard_id) << 0).active
     classes.each do |klass|
-      reports[klass.class_name] = klass.exams_graph_reports
+      reports[klass.class_name] = klass.exams_graph_reports(duration_type)
       a_reports[klass.class_name] = [0]* headers.size
     end
-    
     headers.each_with_index do |h_date, index|
       a_reports.keys.each do |key|
         a_reports[key][index] = reports[key][h_date] || 0
       end
     end
     return headers, a_reports.keys, a_reports.values 
-
-    #p reports
+  end
+  
+  def off_class_graph_report(duration_type = 'day')
+    reports = {}
+    a_reports = {}
+    headers = []
+    if duration_type == 'day'
+      headers = ((Date.today - 30.days)..Date.today).to_a.map{|date| date.strftime("%d-%b")}
+    elsif duration_type == 'week'
+      date = Date.today.beginning_of_week
+      headers = ((date - 15.weeks)..date).time_step(1.week).to_a.map{|date| date.strftime("%d-%b")}
+    elsif duration_type == 'month'
+      headers = ((Date.today - 10.months)..Date.today).time_step(1.month).to_a.map{|date| date.strftime("%b-%Y")}
+    end
+    classes =JkciClass.where(standard_id: self.organisation_standards.map(&:standard_id) << 0).active
+    classes.each do |klass|
+      reports[klass.class_name] = klass.off_class_graph_reports(duration_type)
+      a_reports[klass.class_name] = [0]* headers.size
+    end
+    headers.each_with_index do |h_date, index|
+      a_reports.keys.each do |key|
+        a_reports[key][index] = reports[key][h_date] || 0
+      end
+    end
+    return headers, a_reports.keys, a_reports.values 
   end
 
   def as_json(options= {})

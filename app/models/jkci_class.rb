@@ -299,7 +299,7 @@ class JkciClass < ActiveRecord::Base
       reports = self.class_catlogs.joins(:daily_teaching_point).where("is_present in (?) && daily_teaching_points.date > ?", [false, nil], Date.today - 30.days).group_by_period(graph_type.to_sym, "daily_teaching_points.date", format: "%d-%b").count
     end
     if graph_type == "week"
-      reports = self.class_catlogs.joins(:daily_teaching_point).where("is_present in (?) && daily_teaching_points.date > ?",  [false, nil], Date.today - 15.weeks).group_by_period(graph_type.to_sym, "daily_teaching_points.date", format: "%d-%b-%Y", week_start: :mon).count
+      reports = self.class_catlogs.joins(:daily_teaching_point).where("is_present in (?) && daily_teaching_points.date > ?",  [false, nil], Date.today - 15.weeks).group_by_period(graph_type.to_sym, "daily_teaching_points.date", format: "%d-%b", week_start: :mon).count
     end
     if graph_type == "month"
       reports = self.class_catlogs.joins(:daily_teaching_point).where("is_present in (?) && daily_teaching_points.date > ?",  [false, nil], Date.today - 10.months).group_by_period(graph_type.to_sym, "daily_teaching_points.date", format: "%b-%Y").count
@@ -313,10 +313,24 @@ class JkciClass < ActiveRecord::Base
       reports = self.exams.where("exam_date > ?", Date.today - 30.days).group_by_period(graph_type.to_sym, "exam_date", format: "%d-%b").count
     end
     if graph_type == "week"
-      reports = self.exams.where("exam_date > ?", Date.today - 15.weeks).group_by_period(graph_type.to_sym, "exam_date", format: "%d-%b-%Y", week_start: :mon).count
+      reports = self.exams.where("exam_date > ?", Date.today - 15.weeks).group_by_period(graph_type.to_sym, "exam_date", format: "%d-%b", week_start: :mon).count
     end
     if graph_type == "month"
       reports = self.exams.where("exam_date > ?", Date.today - 10.months).group_by_period(graph_type.to_sym, "exam_date", format: "%b-%Y").count
+    end
+    reports
+  end
+  
+  def off_class_graph_reports(graph_type="day")
+    reports = {}
+    if graph_type == "day"
+      reports = self.off_classes.where("date > ?", Date.today - 30.days).group_by_period(graph_type.to_sym, "date", format: "%d-%b").count
+    end
+    if graph_type == "week"
+      reports = self.off_classes.where("date > ?", Date.today - 15.weeks).group_by_period(graph_type.to_sym, "date", format: "%d-%b", week_start: :mon).count
+    end
+    if graph_type == "month"
+      reports = self.off_classes.where("date > ?", Date.today - 10.months).group_by_period(graph_type.to_sym, "date", format: "%b-%Y").count
     end
     reports
   end
