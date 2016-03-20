@@ -13,7 +13,10 @@ module TokenAcceptor
 
     return reject_token if token.nil?
 
-
+    if current_user && current_user.validate_auth_token(token)
+      return true 
+    end 
+    
     # Since we're sent 'Bearer <token>', get rid of the 'Bearer' part
     token.gsub!(/\ABearer\s/, '')
 
@@ -27,7 +30,11 @@ module TokenAcceptor
     user = User.find_by(email: token_payload['email'], organisation_id: token_payload['organisation_id'])
 
     if user && user.validate_auth_token(token)
-      sign_in user
+      
+      if current_user && current_user.id == user.id
+      else
+        sign_in user
+      end
     else
       reject_token
     end

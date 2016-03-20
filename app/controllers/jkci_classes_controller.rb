@@ -1,6 +1,6 @@
 class JkciClassesController < ApplicationController
   before_action :authenticate_user!
-  skip_before_filter :authenticate_with_token!, only: [:sub_organisation_class_report, :download_class_catlog, :download_class_syllabus, :download_class_student_list]
+  skip_before_filter :authenticate_with_token!, only: [:sub_organisation_class_report]
   load_and_authorize_resource param_method: :my_sanitizer
 
   def index
@@ -37,7 +37,7 @@ class JkciClassesController < ApplicationController
     jkci_class = JkciClass.where(id: params[:id]).first
     #@notifications = @jkci_class.role_exam_notifications(current_user)
     if jkci_class
-      render json: JkciClassSerializer.new(jkci_class).as_json.merge({success: true, has_manage_class: (current_user.has_role? :manage_class)})
+      render json: JkciClassSerializer.new(jkci_class).as_json.merge({success: true, has_manage_class: (current_user.has_role? :manage_class), self_organisation: jkci_class.organisation_id == @organisation.id})
     else
       render json: {success: false}
     end
@@ -205,16 +205,24 @@ class JkciClassesController < ApplicationController
   end
 
   def download_class_catlog
-    @jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
-    @catlogs = @jkci_class.students_table_format(params[:subclass])
-    respond_to do |format|
-      format.pdf { render :layout => false }
+    @jkci_class = JkciClass.where(id: params[:id]).first
+    if @jkci_class
+      @catlogs = @jkci_class.students_table_format(params[:subclass])
+    else
+      @catlogs = []
     end
+      respond_to do |format|
+        format.pdf { render :layout => false }
+      end
   end
 
   def download_class_syllabus
-    @jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
-    @subjects = @jkci_class.standard.subjects
+    @jkci_class = JkciClass.where(id: params[:id]).first
+    if @jkci_class
+      @subjects = @jkci_class.standard.subjects
+    else
+      @subjects = []
+    end
     #@subject = @jkci_class.standard.subjects.where(id: params[:subject]).first
     #@chapters_table = @jkci_class.chapters_table_format(@subject)
     respond_to do |format|
@@ -333,14 +341,17 @@ class JkciClassesController < ApplicationController
   end
 
   def download_presenty_catlog
-    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    jkci_class = JkciClass.where(id: params[:id]).first
     if jkci_class
       start_date = Date.parse(params[:start_date]).to_date rescue nil
       end_date = Date.parse(params[:end_date]).to_date rescue nil
       @catlogs = jkci_class.presenty_catlog(params[:filter], start_date , end_date)
-      respond_to do |format|
-        format.xlsx
-      end
+    else
+      @catlogs = []
+    end
+      
+    respond_to do |format|
+      format.xlsx
     end
   end
 
