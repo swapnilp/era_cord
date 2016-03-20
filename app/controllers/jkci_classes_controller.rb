@@ -206,23 +206,19 @@ class JkciClassesController < ApplicationController
 
   def download_class_catlog
     @jkci_class = JkciClass.where(id: params[:id]).first
-    if @jkci_class
-      @catlogs = @jkci_class.students_table_format(params[:subclass])
-    else
-      @catlogs = []
+    raise ActionController::RoutingError.new('Not Found') unless @jkci_class
+    @catlogs = @jkci_class.students_table_format(params[:subclass])
+    
+    respond_to do |format|
+      format.pdf { render :layout => false }
     end
-      respond_to do |format|
-        format.pdf { render :layout => false }
-      end
   end
 
   def download_class_syllabus
     @jkci_class = JkciClass.where(id: params[:id]).first
-    if @jkci_class
-      @subjects = @jkci_class.standard.subjects
-    else
-      @subjects = []
-    end
+    raise ActionController::RoutingError.new('Not Found') unless @jkci_class
+    
+    @subjects = @jkci_class.standard.subjects
     #@subject = @jkci_class.standard.subjects.where(id: params[:subject]).first
     #@chapters_table = @jkci_class.chapters_table_format(@subject)
     respond_to do |format|
@@ -231,8 +227,10 @@ class JkciClassesController < ApplicationController
   end
 
   def download_class_student_list
-    @jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    @jkci_class = JkciClass.where(id: params[:id]).first
+    raise ActionController::RoutingError.new('Not Found') unless @jkci_class
     @students_table_format = @jkci_class.class_students_table_format
+    
     respond_to do |format|
       format.pdf { render :layout => false }
     end
