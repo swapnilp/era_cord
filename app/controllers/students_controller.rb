@@ -90,6 +90,8 @@ class StudentsController < ApplicationController
       render json: {success: false, enable_sms: student.enable_sms}
     end
   end
+
+  
   
   def download_report
     @student = @organisation.students.where(id: params[:id]).first

@@ -27,7 +27,7 @@ class SubClassesController < ApplicationController
     
     sub_class = jkci_class.sub_classes.build(params[:sub_class].merge({organisation_id: @organisation.id}))
     if sub_class.save
-      render json: {success: true}
+      render json: {success: true, id: sub_class.id}
     else
       render json: {success: false}
     end
@@ -40,7 +40,12 @@ class SubClassesController < ApplicationController
     sub_class = jkci_class.sub_classes.where(id: params[:id]).first
     if sub_class
       students = sub_class.students.includes(:batch, :standard)
-      render json: {success: true, students: students.map(&:sub_class_json)}
+      if params[:search]
+        query = "%#{params[:search]}%"
+        students = students.where("CONCAT_WS(' ', first_name, last_name) LIKE ? || CONCAT_WS(' ', last_name, first_name) LIKE ? || p_mobile like ?", query, query, query)
+      end
+      students = students.page(params[:page])
+      render json: {success: true, students: students.map(&:sub_class_json), count: students.total_count}
     else
       render json: {success: false}
     end  
