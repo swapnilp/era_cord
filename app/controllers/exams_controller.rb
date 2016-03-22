@@ -55,7 +55,7 @@ class ExamsController < ApplicationController
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     exam = @organisation.exams.includes({subject: :standard}, :jkci_class).where(id: params[:id]).first
     if exam
-      render json: {success: true, body: ActiveModel::ArraySerializer.new(exam.descendants, each_serializer: ExamIndexSerializer).as_json}
+      render json: {success: true, body: ActiveModel::ArraySerializer.new(exam.descendants, each_serializer: ExamIndexSerializer, scope: {current_organisation: @organisation.id}).as_json}
     else
       render json: {success: false}
     end
