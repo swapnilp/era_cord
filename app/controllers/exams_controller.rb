@@ -10,6 +10,13 @@ class ExamsController < ApplicationController
       jkci_class = JkciClass.where(id: params[:jkci_class_id]).first
       return render json: {success: false, message: "Invalid Class"} unless jkci_class
       exams = jkci_class.exams.includes({subject: :standard}, {jkci_class: :batch} ).roots.order("exam_date desc") 
+
+      if params[:filter].present? &&  JSON.parse(params[:filter])['filterExamType'].present?
+        exams = exams.where(is_group: JSON.parse(params[:filter])['filterExamType'] == "Grouped")
+      end
+      if params[:filter].present? &&  JSON.parse(params[:filter])['filterExamStatus'].present?
+        exams = exams.send(JSON.parse(params[:filter])['filterExamStatus'].downcase.to_sym)
+      end
       #@organisation.exams.roots.order("id desc").page(params[:page])
     else
       exams = Exam.joins(:jkci_class).includes({subject: :standard}, {jkci_class: :batch}).roots.order("exam_date desc").where("exams.organisation_id in (?)", Organisation.current_id)
