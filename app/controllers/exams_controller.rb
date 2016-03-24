@@ -23,6 +23,9 @@ class ExamsController < ApplicationController
       if params[:filter].present? &&  JSON.parse(params[:filter])['filterExamType'].present?
         exams = exams.where(is_group: JSON.parse(params[:filter])['filterExamType'] == "Grouped")
       end
+      if params[:filter].present? &&  JSON.parse(params[:filter])['filterExamStatus'].present?
+        exams = exams.send(JSON.parse(params[:filter])['filterExamStatus'].downcase.to_sym)
+      end
     end
     
     exams = exams.page(params[:page])

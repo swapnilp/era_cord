@@ -29,6 +29,10 @@ class Exam < ActiveRecord::Base
   scope :unpublished_exams, -> { where(is_result_decleared: [nil, false], is_completed: true).order("id desc")}
   scope :grouped_exams, -> { where(is_group: true)}
   scope :ungrouped_exams, -> { where(is_group: false)}
+  scope :published, -> { where(is_result_decleared: true)}
+  scope :conducted, -> { where(is_completed: true)}
+  scope :verified, -> { where(create_verification: true)}
+  scope :created, -> { where(create_verification: false)}
   
   validates :name, :exam_date,  presence: true
   validates_presence_of :exam_type, :marks, :subject_id, :if => lambda { self.is_group == false }

@@ -361,10 +361,12 @@ class JkciClass < ActiveRecord::Base
 
     # ---- For Exam Presenty only ##
     if params == 'exams'
-      kexam_catlogs = exam_catlogs.joins(:student, :exam).select("exam_catlogs.id, students.first_name as first_name, students.last_name as last_name, students.p_mobile as p_mobile, exams.exam_date as exam_date, exam_catlogs.is_present").where(is_present: false)
+      kexam_catlogs = exam_catlogs.joins(:student, :exam).select("exam_catlogs.id, students.first_name as first_name, students.last_name as last_name, students.p_mobile as p_mobile, exams.exam_date as exam_date, exam_catlogs.is_present").where("exam_date <= ? and exam_date >= ? and is_present = ?", end_date, start_date, false)
       kexam_catlogs.each do |exam_catlog|
-        present_reports["#{exam_catlog.first_name} #{exam_catlog.last_name}"] ||= (["#{exam_catlog.first_name} #{exam_catlog.last_name}"] << ['p']*dates.count).flatten
-        present_reports["#{exam_catlog.first_name} #{exam_catlog.last_name}"][date_hash[exam_catlog.exam_date.strftime("%m-%d")]+1] = "a"
+        if exam_catlog.exam_date.present?
+          present_reports["#{exam_catlog.first_name} #{exam_catlog.last_name}"] ||= (["#{exam_catlog.first_name} #{exam_catlog.last_name}"] << ['p']*dates.count).flatten
+          present_reports["#{exam_catlog.first_name} #{exam_catlog.last_name}"][date_hash[exam_catlog.exam_date.strftime("%m-%d")]+1] = "a"
+        end
       end
     end
     reports = []
