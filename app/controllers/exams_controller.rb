@@ -233,7 +233,7 @@ class ExamsController < ApplicationController
     jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
     return render json: {success: false, message: "Invalid Calss"} unless jkci_class
     exam = jkci_class.exams.where(id: params[:id]).first
-    sub_classes = jkci_class.sub_classes.select([:id, :name, :jkci_class_id])
+    sub_classes = jkci_class.sub_classes.select([:id, :name, :jkci_class_id, :destription])
     subjects = jkci_class.standard.subjects
     
     if exam && !exam.is_completed

@@ -1,7 +1,7 @@
 class GroupExamDataSerializer < ActiveModel::Serializer
-  attributes :id, :class_name, :subjects, :sub_classes
+  attributes :id, :name, :class_name, :subjects, :sub_classes
 
-
+  
   def class_name
     object.jkci_class.class_name
   end
