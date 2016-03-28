@@ -1,7 +1,15 @@
 class Notification < ActiveRecord::Base
   
+  belongs_to :jkci_class
+  counter_culture :jkci_class, :column_name => Proc.new {|model| model.is_pending? ? 'notifications_count' : nil }
+  
   default_scope { where(organisation_id: Organisation.current_id) }  
   scope :pending, -> { where(is_completed: [nil, false], verification_require: true )}
+
+
+  def is_pending?
+    [nil, false].include?(is_completed) &&  verification_require == true 
+  end
 
   def self.add_create_exam(obj_id, org)
     exam = org.exams.where(id: obj_id).first

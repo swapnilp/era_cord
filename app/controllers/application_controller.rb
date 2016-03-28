@@ -11,6 +11,7 @@ class ApplicationController < ActionController::Base
   rescue_from CanCan::AccessDenied do |exception|
     render json: { success: false, message: exception.message }, status: 403
   end
+  rescue_from ActiveRecord::RecordNotFound, :with => :record_not_found
   
   def authenticate_user!(options={})
     super(options)
@@ -30,6 +31,9 @@ class ApplicationController < ActionController::Base
     render opts.merge(json: { success: false, message: message, errors: object.errors.full_messages }, status: 422)
   end
 
+  def record_not_found(error)
+    render :json => {success: false, :error => error.message}, :status => :not_found
+  end 
 
   protected
 
