@@ -1,5 +1,6 @@
 class ExamsController < ApplicationController
   before_action :authenticate_user!
+  before_action :active_standards!, only: [:calender_index, :index]
   load_and_authorize_resource param_method: :my_sanitizer
   #include ExamsHelper
 
@@ -19,7 +20,7 @@ class ExamsController < ApplicationController
       end
       #@organisation.exams.roots.order("id desc").page(params[:page])
     else
-      exams = Exam.joins(:jkci_class).includes({subject: :standard}, {jkci_class: :batch}).roots.order("exam_date desc").where("exams.organisation_id in (?)", Organisation.current_id)
+      exams = Exam.joins(:jkci_class).includes({subject: :standard}, {jkci_class: :batch}).roots.where("exams.organisation_id in (?) and jkci_classes.standard_id in (?)", Organisation.current_id, @active_standards).order("exam_date desc")
       #@organisation.exams.roots.order("id desc").page(params[:page])
       if params[:filter].present? &&  JSON.parse(params[:filter])['filterStandard'].present?
         exams = exams.where("jkci_classes.standard_id = ?", JSON.parse(params[:filter])['filterStandard'])
@@ -46,7 +47,7 @@ class ExamsController < ApplicationController
   end
 
   def calender_index
-    exams = Exam.includes({subject: :standard}, :organisation ).joins(:jkci_class).where("jkci_classes.is_current_active = ? ", true).where(organisation_id: Organisation.current_id)
+    exams = Exam.includes({subject: :standard}, :organisation ).joins(:jkci_class).where("jkci_classes.is_current_active = ? && jkci_classes.standard_id in (?) ", true, @active_standards).where(organisation_id: Organisation.current_id)
     if params[:start]
       exams = exams.where("exam_date >= ? ", Date.parse(params[:start]))
     end

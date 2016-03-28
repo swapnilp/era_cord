@@ -1,6 +1,6 @@
 class OrganisationCoursesSerializer < ActiveModel::Serializer
   include ActionView::Helpers::DateHelper
-  attributes :id, :name, :assign_to, :actions, :last_login, :standard_id, :is_selected
+  attributes :id, :name, :assign_to, :actions, :last_login, :standard_id, :is_selected, :is_root, :is_active
 
   def name
     object.standard.std_name
@@ -20,6 +20,10 @@ class OrganisationCoursesSerializer < ActiveModel::Serializer
     else
       ''
     end
+  end
+
+  def is_root
+    scope[:is_root]
   end
 
   def is_selected

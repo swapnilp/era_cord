@@ -5,6 +5,7 @@ class OrganisationsController < ApplicationController
   #                                          :remaining_cources, :add_remaining_cources, :delete_users, 
   #                                          :edit_password, :update_password, :launch_sub_organisation]
   before_action :authenticate_user!, except: [:new, :create, :regenerate_organisation_code]
+  before_action :active_standards!, only: [:index]
 
   def show
     if current_user.has_role? :organisation
@@ -40,12 +41,12 @@ class OrganisationsController < ApplicationController
 
   def organisation_cources
     organisation_standards = @organisation.organisation_standards.includes(:standard, :assigned_organisation)
-    render json: {body: ActiveModel::ArraySerializer.new(organisation_standards, each_serializer: OrganisationCoursesSerializer).as_json }
+    render json: {body: ActiveModel::ArraySerializer.new(organisation_standards, each_serializer: OrganisationCoursesSerializer, scope: {is_root: @organisation.root?}).as_json }
   end
 
   def organisation_classes
-    organisation_classes = @organisation.jkci_classes.order("id desc")
-    other_organisation_classes = JkciClass.where(organisation_id: @organisation.descendant_ids).order("standard_id asc")
+    organisation_classes = @organisation.jkci_classes.where(standard_id: @active_standards).order("id desc")
+    other_organisation_classes = JkciClass.where(organisation_id: @organisation.descendant_ids, standard_id: standards).order("standard_id asc")
 
     render json: {success: true, classes: organisation_classes.map(&:organisation_class_json), 
       other_classes: other_organisation_classes.map(&:organisation_class_json)}
@@ -84,7 +85,7 @@ class OrganisationsController < ApplicationController
   end
   
   def organisation_standards
-    organisation_standards = @organisation.standards.includes(:organisation_standards)
+    organisation_standards = @organisation.standards.includes(:organisation_standards).where("organisation_standards.is_active = ?", true)
     render json: {success: true, organisation_standards: organisation_standards.map{|org_standard| org_standard.organisation_json({}, @organisation)}}
   end
 
@@ -177,7 +178,7 @@ class OrganisationsController < ApplicationController
   end
 
   def get_organisation_standards
-    standards = @organisation.standards.where("organisation_standards.is_assigned_to_other = ? ", false)
+    standards = @organisation.standards.where("organisation_standards.is_assigned_to_other = ? and organisation_standards.is_active = ?", false, true)
       .where(id: params[:standards].split(','))
     render json: standards, each_serializer: StandardSerializer
   end
@@ -249,6 +250,24 @@ class OrganisationsController < ApplicationController
     headers, labels, reports = @organisation.off_class_graph_report(params[:duration_type])
     sum_data = reports.map(&:sum)
     render json: {success: true, headers: headers, labels: labels, data: reports, sum_data: sum_data}
+  end
+
+  def disable_organisation_standard
+    unless @organisation.root?
+      return render json: {success: false, message: "Contact to root organisation."}
+    end
+    organisation_standards = OrganisationStandard.where(standard_id: params[:standard_id])
+    organisation_standards.update_all({is_active: false})
+    render json: {success: true}
+  end
+
+  def enable_organisation_standard
+    unless @organisation.root?
+      return render json: {success: false, message: "Contact to root organisation."}
+    end
+    organisation_standards = OrganisationStandard.where(standard_id: params[:standard_id])
+    organisation_standards.update_all({is_active: true})
+    render json: {success: true}
   end
   
   #################

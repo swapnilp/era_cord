@@ -1,10 +1,11 @@
 class JkciClassesController < ApplicationController
   before_action :authenticate_user!
+  before_action :active_standards!, only: [:index]
   skip_before_filter :authenticate_with_token!, only: [:sub_organisation_class_report]
   load_and_authorize_resource param_method: :my_sanitizer
 
   def index
-    jkci_classes = @organisation.jkci_classes.active.order("id desc")
+    jkci_classes = @organisation.jkci_classes.where(standard_id: @active_standards).active.order("id desc")
     #jkci_classes = @organisation.standards.where("organisation_standards.is_assigned_to_other = false").map(&:jkci_classes).map(&:last)
     render json: {body: ActiveModel::ArraySerializer.new(jkci_classes, each_serializer: JkciClassIndexSerializer).as_json}
   end

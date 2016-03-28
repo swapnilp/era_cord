@@ -19,6 +19,13 @@ class ApplicationController < ActionController::Base
     #@organisation.update_attributes({last_signed_in: Time.now}) if @organisation.present?
   end
 
+  def active_standards!
+    @active_standards ||= []
+    if @organisation.present? && @active_standards.blank?
+      @active_standards = @organisation.root.organisation_standards.active.map(&:standard_id)
+    end
+  end
+
   def render_422(object, message, opts = {})
     render opts.merge(json: { success: false, message: message, errors: object.errors.full_messages }, status: 422)
   end

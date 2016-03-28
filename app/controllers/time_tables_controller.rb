@@ -1,5 +1,6 @@
 class TimeTablesController < ApplicationController
   before_action :authenticate_user!
+  before_action :active_standards!, only: [:calender_index]
   load_and_authorize_resource param_method: :my_sanitizer
 
   def index
@@ -10,7 +11,7 @@ class TimeTablesController < ApplicationController
   end
 
   def calender_index
-    time_table_classes = TimeTableClass.includes({subject: :standard}, :sub_class).joins(time_table: :jkci_class).where("jkci_classes.is_current_active = ? and time_table_classes.organisation_id in (?) ", true, Organisation.current_id)
+    time_table_classes = TimeTableClass.includes({subject: :standard}, :sub_class).joins(time_table: :jkci_class).where("jkci_classes.is_current_active = ? and time_table_classes.organisation_id in (?) && jkci_classes.standard_id in (?)", true, Organisation.current_id, @active_standards)
 
     if params[:standard]
       jkci_class  = JkciClass.select([:id, :standard_id, :organisation_id, :is_current_active]).where(standard_id: params[:standard], is_current_active: true).first

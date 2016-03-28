@@ -167,6 +167,8 @@ Rails.application.routes.draw do
   get 'organisations/off_class_graph_report' => "organisations#off_class_graph_report"
   get 'organisations/organisation_standards' => "organisations#organisation_standards"
   get 'organisations/standard/:standard_id/remaining_organisations' => "organisations#remaining_standard_organisations"
+  get 'organisations/standard/:standard_id/disable_standard' => "organisations#disable_organisation_standard"
+  get 'organisations/standard/:standard_id/enable_standard' => "organisations#enable_organisation_standard"
   get '/remaining_cources' => "organisations#remaining_cources"
   get '/organisations/get_sub_organisations' => "organisations#sub_organisations_list"
   get '/organisations/add_standards' => "organisations#add_standards"
