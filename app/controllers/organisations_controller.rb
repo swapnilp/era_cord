@@ -5,7 +5,7 @@ class OrganisationsController < ApplicationController
   #                                          :remaining_cources, :add_remaining_cources, :delete_users, 
   #                                          :edit_password, :update_password, :launch_sub_organisation]
   before_action :authenticate_user!, except: [:new, :create, :regenerate_organisation_code]
-  before_action :active_standards!, only: [:index]
+  before_action :active_standards!, only: [:organisation_classes]
 
   def show
     if current_user.has_role? :organisation
