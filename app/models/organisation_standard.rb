@@ -25,7 +25,9 @@ class OrganisationStandard < ActiveRecord::Base
                     is_assigned_to_other: is_assigned_to_other,
                     assigned_organisation_id: assigned_organisation_id,
                     is_parent_organisation: organisation.root?,
-                    is_children: org.present? ? org.children.exists?(id: self.organisation_id) : nil
+                    is_children: org.present? ? org.children.exists?(id: self.organisation_id) : nil,
+                    email: organisation.email,
+                    mobile: organisation.mobile
                   })
     
   end

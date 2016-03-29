@@ -46,7 +46,7 @@ class OrganisationsController < ApplicationController
 
   def organisation_classes
     organisation_classes = @organisation.jkci_classes.where(standard_id: @active_standards).order("id desc")
-    other_organisation_classes = JkciClass.where(organisation_id: @organisation.descendant_ids, standard_id: @active_standards).order("standard_id asc")
+    other_organisation_classes = JkciClass.includes(:organisation).where(organisation_id: @organisation.descendant_ids, standard_id: @active_standards).order("standard_id asc")
 
     render json: {success: true, classes: organisation_classes.map(&:organisation_class_json), 
       other_classes: other_organisation_classes.map(&:organisation_class_json)}
