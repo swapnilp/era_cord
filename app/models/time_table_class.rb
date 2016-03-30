@@ -18,7 +18,8 @@ class TimeTableClass < ActiveRecord::Base
                     end_time: end_time.gsub(":", '.').to_f,
                     slot_type: slot_type,
                     sub_class_id: sub_class_id,
-                    sub_class_name: sub_class.try(:name)
+                    sub_class_name: sub_class.try(:name),
+                    class_room: class_room
                   })
   end
 
