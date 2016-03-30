@@ -91,7 +91,9 @@ class StudentsController < ApplicationController
     end
   end
 
-  
+  def get_graph_data
+    
+  end
   
   def download_report
     @student = @organisation.students.where(id: params[:id]).first

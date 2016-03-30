@@ -30,4 +30,10 @@ class ExamCatlog < ActiveRecord::Base
     return self.is_present == false
   end
 
+  def make_percentage
+    if marks.present?
+      exam.marks
+    end
+  end
+
 end
