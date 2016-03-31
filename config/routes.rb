@@ -44,6 +44,7 @@ Rails.application.routes.draw do
   resources :students, except: [:update] do
     member do
       get 'download_report'
+      get 'get_graph_data'
       post 'update'
       post 'toggle_sms'
     end

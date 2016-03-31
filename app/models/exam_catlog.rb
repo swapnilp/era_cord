@@ -31,8 +31,8 @@ class ExamCatlog < ActiveRecord::Base
   end
 
   def make_percentage
-    if marks.present?
-      exam.marks
+    if marks.present? && self.marks.present?
+      self.update(percentage: ((marks / exam.marks)*100))
     end
   end
 

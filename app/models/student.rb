@@ -91,6 +91,27 @@ class Student < ActiveRecord::Base
     jkci_classes.select([:id, :class_name, :class_start_time, :teacher_id]).includes([:teacher])
   end
 
+  def exams_graph_reports(graph_type="day")
+    reports = {}
+    if graph_type == "day"
+      reports = self.exam_catlogs.joins(:exam).where("exams.exam_date > ?", Date.today - 50.days).group_by_period(graph_type.to_sym, "exams.exam_date", format: "%d-%b").average(:percentage).map{|x,y| {x =>  y.to_f.round(2)}}
+    end
+    if graph_type == "week"
+      reports = self.exam_catlogs.joins(:exam).where("exams.exam_date > ?", Date.today - 30.weeks).group_by_period(graph_type.to_sym, "exams.exam_date", format: "%d-%b", week_start: :mon).average(:percentage).map{|x,y| {x =>  y.to_f.round(2)}}
+    end
+    if graph_type == "month"
+      reports = self.exam_catlogs.joins(:exam).where("exams.exam_date > ?", Date.today - 10.months).group_by_period(graph_type.to_sym, "exams.exam_date", format: "%b-%Y").average(:percentage).map{|x,y| {x =>  y.to_f.round(2)}}
+    end
+    if reports == []
+      reports = {} 
+    else
+      reports = reports.reduce(:merge)
+      reports = reports.select{|x,y| y > 0}
+    end
+    
+    return reports.keys, reports.values
+  end
+  
   def learned_point(class_id= nil, min_date_filter = nil, max_date_filter = nil, only_presents= nil, only_absents= nil)
     jk_catlogs = class_catlogs.order('id desc')#.includes([:daily_teaching_points])
 

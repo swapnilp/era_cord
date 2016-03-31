@@ -92,7 +92,13 @@ class StudentsController < ApplicationController
   end
 
   def get_graph_data
-    
+    student = Student.where(id: params[:id]).first
+    if student
+      keys, values = student.exams_graph_reports(params[:time_zone])
+      render json: {success: true, keys: keys, values: values}
+    else
+      render json: {success: false}
+    end
   end
   
   def download_report

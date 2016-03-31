@@ -163,6 +163,13 @@ class Exam < ActiveRecord::Base
           Delayed::Job.enqueue ExamResultSmsSend.new(self.result_message_send)
         end
       end
+      if self.is_group
+        self.descendants.each do |child_exam|
+          child_exam.exam_catlogs.only_results.map(&:make_percentage)
+        end
+      else
+        self.exam_catlogs.only_results.map(&:make_percentage)
+      end
     else
       self.root.publish_results unless self.root.children.map(&:is_result_decleared).include?(nil)
     end
