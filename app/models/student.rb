@@ -91,25 +91,60 @@ class Student < ActiveRecord::Base
     jkci_classes.select([:id, :class_name, :class_start_time, :teacher_id]).includes([:teacher])
   end
 
-  def exams_graph_reports(graph_type="day")
+  def exams_graph_reports(graph_type="month", type = 'all' , subject_id = nil)
     reports = {}
+    exam_katlogs = self.exam_catlogs.joins(:exam)
+    if subject_id.present?
+      exam_katlogs = exam_katlogs.where("exams.subject_id = ?", subject_id)
+    end
     if graph_type == "day"
-      reports = self.exam_catlogs.joins(:exam).where("exams.exam_date > ?", Date.today - 50.days).group_by_period(graph_type.to_sym, "exams.exam_date", format: "%d-%b").average(:percentage).map{|x,y| {x =>  y.to_f.round(2)}}
+      reports = exam_katlogs.where("exams.exam_date > ?", Date.today - 50.days).group_by_period(graph_type.to_sym, "exams.exam_date", format: "%d-%b").average(:percentage).map{|x,y| {x =>  y.to_f.round(2)}}
     end
     if graph_type == "week"
-      reports = self.exam_catlogs.joins(:exam).where("exams.exam_date > ?", Date.today - 30.weeks).group_by_period(graph_type.to_sym, "exams.exam_date", format: "%d-%b", week_start: :mon).average(:percentage).map{|x,y| {x =>  y.to_f.round(2)}}
+      reports = exam_katlogs.where("exams.exam_date > ?", Date.today - 30.weeks).group_by_period(graph_type.to_sym, "exams.exam_date", format: "%d-%b", week_start: :mon).average(:percentage).map{|x,y| {x =>  y.to_f.round(2)}}
     end
     if graph_type == "month"
-      reports = self.exam_catlogs.joins(:exam).where("exams.exam_date > ?", Date.today - 10.months).group_by_period(graph_type.to_sym, "exams.exam_date", format: "%b-%Y").average(:percentage).map{|x,y| {x =>  y.to_f.round(2)}}
+      reports = exam_katlogs.where("exams.exam_date > ?", Date.today - 10.months).group_by_period(graph_type.to_sym, "exams.exam_date", format: "%b-%Y").average(:percentage).map{|x,y| {x =>  y.to_f.round(2)}}
     end
     if reports == []
       reports = {} 
     else
       reports = reports.reduce(:merge)
-      reports = reports.select{|x,y| y > 0}
     end
     
-    return reports.keys, reports.values
+    if type == 'all'
+      reports = reports.select{|x,y| y > 0} 
+      return reports.keys, reports.values
+    else
+      reports
+    end
+  end
+
+  def exams_graph_reports_by_subject(graph_type="month")
+    reports  = {};
+    headers = [];
+    g_reports = {};
+    
+    if graph_type == 'day'
+      headers = ((Date.today - 50.days)..Date.today).to_a.map{|date| date.strftime("%d-%b")}
+    elsif graph_type == 'week'
+      date = Date.today.beginning_of_week
+      headers = ((date - 30.weeks)..date).time_step(1.week).to_a.map{|date| date.strftime("%d-%b")}
+    elsif graph_type == 'month'
+      headers = ((Date.today - 10.months)..Date.today).time_step(1.month).to_a.map{|date| date.strftime("%b-%Y")}
+    end
+    
+    self.subjects.each do |subject|
+      reports[subject.name] = self.exams_graph_reports(graph_type, 'subject' , subject.id)
+      g_reports[subject.name] = [0]* headers.size
+    end
+    
+    headers.each_with_index do |h_date, index|
+      g_reports.keys.each do |key|
+        g_reports[key][index] = reports[key][h_date] || 0
+      end
+    end
+    return headers, g_reports.keys, g_reports.values 
   end
   
   def learned_point(class_id= nil, min_date_filter = nil, max_date_filter = nil, only_presents= nil, only_absents= nil)
