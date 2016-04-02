@@ -1,7 +1,6 @@
 class Notification < ActiveRecord::Base
   
-  belongs_to :jkci_class
-  counter_culture :jkci_class, :column_name => Proc.new {|model| model.is_pending? ? 'notifications_count' : nil }, :touch => true
+  belongs_to :jkci_class, :counter_cache => true
   
   default_scope { where(organisation_id: Organisation.current_id) }  
   scope :pending, -> { where(is_completed: [nil, false], verification_require: true )}

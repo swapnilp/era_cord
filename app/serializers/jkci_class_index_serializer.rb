@@ -7,7 +7,7 @@ class JkciClassIndexSerializer < ActiveModel::Serializer
   end
   
   def remaining_activity
-    object.notifications.count
+    object.pending_notifications.count
   end
   
 end

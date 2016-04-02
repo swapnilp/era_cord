@@ -191,7 +191,7 @@ class JkciClassesController < ApplicationController
     jkci_class = JkciClass.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     
-    notifications = jkci_class.role_exam_notifications(current_user).page(params[:page])
+    notifications = jkci_class.role_exam_notifications(current_user).order("id desc").page(params[:page])
     render json: {success: true, notifications: notifications, count: notifications.total_count}
   end
 
