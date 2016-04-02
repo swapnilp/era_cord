@@ -133,7 +133,8 @@ class Student < ActiveRecord::Base
     elsif graph_type == 'month'
       headers = ((Date.today - 10.months)..Date.today).time_step(1.month).to_a.map{|date| date.strftime("%b-%Y")}
     end
-    
+
+    p self.subjects
     self.subjects.each do |subject|
       reports[subject.name] = self.exams_graph_reports(graph_type, 'subject' , subject.id)
       g_reports[subject.name] = [0]* headers.size
