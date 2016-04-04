@@ -1,6 +1,6 @@
 class OrganisationCoursesSerializer < ActiveModel::Serializer
   include ActionView::Helpers::DateHelper
-  attributes :id, :name, :assign_to, :actions, :last_login, :standard_id, :is_selected, :is_root, :is_active, :assigned_org_info
+  attributes :id, :name, :assign_to, :actions, :last_login, :standard_id, :is_selected, :is_root, :is_active, :assigned_org_info, :total_fee
 
   def name
     object.standard.std_name

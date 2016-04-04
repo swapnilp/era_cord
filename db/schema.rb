@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160404040637) do
+ActiveRecord::Schema.define(version: 20160404085932) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -307,11 +307,12 @@ ActiveRecord::Schema.define(version: 20160404040637) do
   create_table "organisation_standards", force: :cascade do |t|
     t.integer  "organisation_id",          limit: 4
     t.integer  "standard_id",              limit: 4
-    t.boolean  "is_active",                limit: 1, default: true
-    t.datetime "created_at",                                         null: false
-    t.datetime "updated_at",                                         null: false
-    t.boolean  "is_assigned_to_other",     limit: 1, default: false
+    t.boolean  "is_active",                limit: 1,  default: true
+    t.datetime "created_at",                                          null: false
+    t.datetime "updated_at",                                          null: false
+    t.boolean  "is_assigned_to_other",     limit: 1,  default: false
     t.integer  "assigned_organisation_id", limit: 4
+    t.float    "total_fee",                limit: 24, default: 0.0
   end
 
   create_table "organisations", force: :cascade do |t|
@@ -424,6 +425,16 @@ ActiveRecord::Schema.define(version: 20160404040637) do
     t.datetime "updated_at",                            null: false
     t.boolean  "is_active",  limit: 1,   default: true
     t.integer  "priority",   limit: 4
+  end
+
+  create_table "student_fees", force: :cascade do |t|
+    t.integer  "student_id",    limit: 4
+    t.integer  "jkci_class_id", limit: 4
+    t.integer  "batch_id",      limit: 4
+    t.date     "date"
+    t.float    "amount",        limit: 24
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
   end
 
   create_table "student_subjects", force: :cascade do |t|

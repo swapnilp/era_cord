@@ -41,7 +41,7 @@ class OrganisationsController < ApplicationController
 
   def organisation_cources
     organisation_standards = @organisation.organisation_standards.includes(:standard, :assigned_organisation)
-    render json: {body: ActiveModel::ArraySerializer.new(organisation_standards, each_serializer: OrganisationCoursesSerializer, scope: {is_root: @organisation.root?}).as_json }
+    render json: {success: true, body: ActiveModel::ArraySerializer.new(organisation_standards, each_serializer: OrganisationCoursesSerializer, scope: {is_root: @organisation.root?}).as_json, is_root:  @organisation.root?}
   end
 
   def organisation_classes
@@ -54,7 +54,11 @@ class OrganisationsController < ApplicationController
 
   def remaining_cources
     standards = Standard.select([:id, :name, :stream]).where("id not in (?)", ([0] + @organisation.standards.map(&:id)))
-    render json: {body: ActiveModel::ArraySerializer.new(standards, each_serializer: StandardSerializer).as_json}
+    if @organisation.root?
+      render json: {body: ActiveModel::ArraySerializer.new(standards, each_serializer: StandardSerializer).as_json}
+    else
+      render json: {body: [].as_json}
+    end
   end
 
   def remaining_standard_organisations
@@ -268,6 +272,37 @@ class OrganisationsController < ApplicationController
     organisation_standards = OrganisationStandard.where(standard_id: params[:standard_id])
     organisation_standards.update_all({is_active: true})
     render json: {success: true}
+  end
+
+  def get_standard_fee
+    if @organisation.root?
+      organisation_standard= OrganisationStandard.where(id: params[:course_id]).first
+      if organisation_standard.present?
+        render json: {success: true, fee: organisation_standard.total_fee, name: organisation_standard.standard.std_name}
+      else
+        render json: {success: false, message: "Wrong standard selected"}
+      end
+    else
+      render json: {success: false, message: "Must be root organiser"}
+    end
+  end
+
+  def update_standard_fee
+    unless @organisation.root?
+      return render json: {success: false, message: "Must be root organiser"}
+    end
+
+    if current_user &&  current_user.valid_password?(params[:fee][:password])
+      organisation_standard= OrganisationStandard.where(id: params[:course_id]).first
+      organisation_standard.update_attributes({total_fee: params[:fee][:fee]})
+      if organisation_standard.present?
+        render json: {success: true, message: "Fee is updated"}
+      else
+        render json: {success: false, message: "Wrong standard selected"}
+      end
+    else
+      render json: {success: false, message: "Please enter valid password"}
+    end
   end
   
   def get_class_rooms
