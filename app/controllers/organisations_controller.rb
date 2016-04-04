@@ -270,6 +270,13 @@ class OrganisationsController < ApplicationController
     render json: {success: true}
   end
   
+  def get_class_rooms
+    time = Time.now.strftime("%H.%M").to_f
+    cwday = Date.today.cwday
+    class_rooms = TimeTableClass.joins(time_table: :jkci_class).where("jkci_classes.is_current_active = ? && time_table_classes.start_time <= ? && time_table_classes.end_time >= ? && time_table_classes.cwday = ?", true,time, time, cwday )
+    render json: {success: true, class_rooms: class_rooms.map(&:class_rooms_json), cwday: cwday, time: Time.now}
+  end
+  
   #################
 
   def new_users

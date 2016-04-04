@@ -166,6 +166,7 @@ Rails.application.routes.draw do
   get 'organisations/absenty_graph_report' => "organisations#absenty_graph_report"
   get 'organisations/exams_graph_report' => "organisations#exams_graph_report"
   get 'organisations/off_class_graph_report' => "organisations#off_class_graph_report"
+  get 'organisations/get_class_rooms' => "organisations#get_class_rooms"
   get 'organisations/organisation_standards' => "organisations#organisation_standards"
   get 'organisations/standard/:standard_id/remaining_organisations' => "organisations#remaining_standard_organisations"
   get 'organisations/standard/:standard_id/disable_standard' => "organisations#disable_organisation_standard"

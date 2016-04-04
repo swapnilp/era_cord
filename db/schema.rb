@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160330045231) do
+ActiveRecord::Schema.define(version: 20160404040637) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -512,8 +512,8 @@ ActiveRecord::Schema.define(version: 20160330045231) do
     t.integer  "time_table_id",   limit: 4
     t.boolean  "is_break",        limit: 1
     t.string   "slot_type",       limit: 255
-    t.string   "start_time",      limit: 255
-    t.string   "end_time",        limit: 255
+    t.float    "start_time",      limit: 24
+    t.float    "end_time",        limit: 24
     t.integer  "durations",       limit: 4
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
