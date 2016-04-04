@@ -271,10 +271,27 @@ class OrganisationsController < ApplicationController
   end
   
   def get_class_rooms
-    time = Time.now.strftime("%H.%M").to_f
-    cwday = Date.today.cwday
-    class_rooms = TimeTableClass.joins(time_table: :jkci_class).where("jkci_classes.is_current_active = ? && time_table_classes.start_time <= ? && time_table_classes.end_time >= ? && time_table_classes.cwday = ?", true,time, time, cwday )
-    render json: {success: true, class_rooms: class_rooms.map(&:class_rooms_json), cwday: cwday, time: Time.now}
+    if params[:filter] && JSON.parse(params[:filter])["class_time"]
+      time = JSON.parse(params[:filter])["class_time"].to_time
+    else
+      time = Time.now
+    end
+
+    if params[:filter] && JSON.parse(params[:filter])["end_time"]
+      end_time = JSON.parse(params[:filter])["end_time"].to_time
+    else
+      end_time = time + 2.hours
+    end
+    
+    if params[:filter] && JSON.parse(params[:filter])["selectedWeekDay"]
+      cwday = JSON.parse(params[:filter])["selectedWeekDay"]
+    else
+      cwday = Date.today.cwday
+    end
+    filter_time = time.strftime("%H.%M").to_f
+    filter_end_time = end_time.strftime("%H.%M").to_f
+    class_rooms = TimeTableClass.joins(time_table: :jkci_class).where("jkci_classes.is_current_active = ? && (time_table_classes.start_time >= ? && time_table_classes.end_time <= ?) && time_table_classes.cwday = ?", true, filter_time, filter_end_time, cwday)
+    render json: {success: true, class_rooms: class_rooms.map(&:class_rooms_json), cwday: cwday, time: time, end_time: end_time}
   end
   
   #################
