@@ -118,6 +118,42 @@ class StudentsController < ApplicationController
     end
   end
 
+  def get_fee_info 
+    if current_user.has_role?("accountant")
+      student = Student.where(id: params[:id]).first
+      if student.present?
+        render json: {success: true, jkci_classes: student.class_students.map(&:fee_info_json), name: student.name, p_mobile: student.p_mobile, mobile: student.mobile, batch: student.batch.name}
+      else
+        render json: {success: false, message: "Student not present"}
+      end
+    else
+       render json: {success: false, message: "Not Authorised"}
+    end
+  end
+
+  def paid_student_fee
+    if current_user && current_user.has_role?("accountant") 
+      if !current_user.valid_password?(params[:student_fee][:password])
+        return render json: {success: false, valid_password: false, message: "Please Enter valid password"}
+      end
+      student = Student.where(id: params[:id]).first
+      return render json: {success: false, valid_password: false, message: "Student not present"} unless student.present?
+      params_data = pay_fee_params
+      student_fee = student.student_fees.build(params_data)
+      student_fee.batch_id = student.batch_id
+      student_fee.date = Date.today
+      student_fee.organisation_id = @organisation.id
+      if student_fee.save
+        render json: {success: true, message: "Fee is Paid"}
+      else
+        render json: {success: false, message: "Something went wrong"}
+      end
+    else
+       render json: {success: false, valid_password: true, message: "Not Authorised", valid_password: true}
+    end
+
+  end
+
   ##################
 
   def filter_students_data
@@ -216,6 +252,10 @@ class StudentsController < ApplicationController
   def my_sanitizer
     #params.permit!
     params.require(:student).permit!
+  end
+  
+  def pay_fee_params
+    params.require(:student_fee).permit(:student_id, :jkci_class_id, :amount, :payment_type, :bank_name, :cheque_number, :cheque_issue_date)
   end
 
 end

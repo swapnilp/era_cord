@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160404085932) do
+ActiveRecord::Schema.define(version: 20160405150204) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -428,13 +428,18 @@ ActiveRecord::Schema.define(version: 20160404085932) do
   end
 
   create_table "student_fees", force: :cascade do |t|
-    t.integer  "student_id",    limit: 4
-    t.integer  "jkci_class_id", limit: 4
-    t.integer  "batch_id",      limit: 4
+    t.integer  "student_id",        limit: 4
+    t.integer  "jkci_class_id",     limit: 4
+    t.integer  "batch_id",          limit: 4
     t.date     "date"
-    t.float    "amount",        limit: 24
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.float    "amount",            limit: 24
+    t.datetime "created_at",                                     null: false
+    t.datetime "updated_at",                                     null: false
+    t.string   "payment_type",      limit: 255, default: "cash"
+    t.string   "bank_name",         limit: 255
+    t.string   "cheque_number",     limit: 255
+    t.string   "cheque_issue_date", limit: 255
+    t.integer  "organisation_id",   limit: 4
   end
 
   create_table "student_subjects", force: :cascade do |t|

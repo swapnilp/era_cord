@@ -45,6 +45,8 @@ Rails.application.routes.draw do
     member do
       get 'download_report'
       get 'get_graph_data'
+      get 'get_fee_info'
+      post 'paid_student_fee'
       post 'update'
       post 'toggle_sms'
     end

@@ -14,6 +14,7 @@ class Student < ActiveRecord::Base
   has_many :exams, through: :exam_catlogs 
   has_many :student_subjects
   has_many :subjects, through: :student_subjects
+  has_many :student_fees
   belongs_to :batch
   belongs_to :user
   belongs_to :standard

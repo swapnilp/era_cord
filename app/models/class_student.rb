@@ -46,6 +46,15 @@ class ClassStudent < ActiveRecord::Base
                     is_duplicate_accepted: is_duplicate_accepted
                   })
   end
+
+  def fee_info_json(options = {})
+    options.merge({
+                    id: id,
+                    student_id: student_id,
+                    class_id: jkci_class_id,
+                    class_name: jkci_class.class_name
+                  })
+  end
   
   
 end
