@@ -27,6 +27,7 @@ class Ability
       can :calender_index, TimeTable
       
       can :organisation_cources, Organisation
+      can :get_class_rooms, Organisation
       
       can :read, Exam
       can :calender_index, Exam
@@ -49,6 +50,9 @@ class Ability
       can :get_exam_info, Exam if roles.include? 'create_exam'
       can :create, Exam if roles.include? 'create_exam'
       can :upload_paper, Exam if roles.include? 'create_exam'
+      can :save_exam_points, Exam
+      can :get_chapters_points, Exam
+      can :manage_points, Exam
       
       can :read, JkciClass
       can :get_unassigned_classes, JkciClass
@@ -63,6 +67,7 @@ class Ability
       can :get_notifications, JkciClass
       can :toggle_class_sms, JkciClass
       can :toggle_exam_sms, JkciClass
+      can :presenty_catlog, JkciClass
 
       can :read, Notification
       
@@ -85,7 +90,17 @@ class Ability
       can :filter_students, Student 
       can :disable_student, Student 
       can :download_report, Student
+      can :get_graph_data, Student
+      can :get_fee_info, Student if roles.include? 'accountant' 
+      can :paid_student_fee, Student if roles.include? 'accountant' 
       can :manage, Contact
+
+    elsif roles.include? 'accountant'
+      can :read, Student
+      can :filter_students, Student 
+      can :download_report, Student
+      can :get_fee_info, Student if roles.include? 'accountant' 
+      can :paid_student_fee, Student if roles.include? 'accountant' 
     else
       can :read, Gallery
       can :read, Event
