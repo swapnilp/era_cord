@@ -18,7 +18,7 @@ class OrganisationsController < ApplicationController
 
   def edit
     if current_user.has_role? :organisation
-      render json: {success: true, organisation: @organisation.as_json}
+      render json: {success: true, organisation: @organisation.as_json.except(:is_send_message)}
     else
       render json: {success: false}
     end
@@ -27,7 +27,15 @@ class OrganisationsController < ApplicationController
   def update
     if current_user.has_role? :organisation
       if current_user.valid_password?(update_organisation_params["password"])
-        @organisation.update({mobile: update_organisation_params["mobile"], short_name: update_organisation_params["short_name"]})
+        change_account_sms = false
+        if update_organisation_params["account_sms"] != @organisation.account_sms && @organisation.root?
+          change_account_sms = true
+        end
+        @organisation.update({mobile: update_organisation_params["mobile"], short_name: update_organisation_params["short_name"], account_sms: update_organisation_params["account_sms"]})
+        if change_account_sms
+          Delayed::Job.enqueue OrganisationRegistationSms.new(@organisation.account_sms_message)
+        end
+        
         render json: {success: true}
       else
         render json: {success: false, message: "Enter valid password"}
@@ -501,6 +509,6 @@ class OrganisationsController < ApplicationController
   end
 
   def update_organisation_params
-    params.require(:organisation).permit(:mobile, :password, :short_name)
+    params.require(:organisation).permit(:name, :email, :mobile, :password, :short_name, :account_sms)
   end
 end

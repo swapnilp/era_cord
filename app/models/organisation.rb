@@ -391,6 +391,12 @@ class Organisation < ActiveRecord::Base
     url_arry = [url, message, self.id, self.id]
   end
 
+  def account_sms_message
+    message = "#{self.name} accounts detail shares with #{self.account_sms} number. Please check that number is correct or not. Eracord"
+    url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=update&dmobile=91#{self.mobile}&message=#{message}"
+    url_arry = [url, message, self.id, self.id]
+  end
+
   def manage_standards(standard_ids)
     new_standards = Standard.select([:id, :name, :stream]).where("id in (?)", (standard_ids.split(',').map(&:to_i) + [0]))
     new_standards = new_standards.where("id not in (?)", (self.standards.map(&:id) + [0]) )
@@ -489,7 +495,9 @@ class Organisation < ActiveRecord::Base
                     email: email,
                     mobile: mobile,
                     short_name: short_name, 
-                    is_send_message: is_send_message ? 'Enabled' : 'Disabled'
+                    is_send_message: is_send_message ? 'Enabled' : 'Disabled',
+                    account_sms: account_sms
+                    
                   })
     
   end
