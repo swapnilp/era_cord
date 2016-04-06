@@ -20,5 +20,12 @@ class StudentFee < ActiveRecord::Base
     url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=update&dmobile=91#{self.organisation.root.account_sms}&message=#{message}"
     url_arry = [url, message, self.id, self.organisation.root.id]
   end
+
+  def as_json(options ={})
+    options.merge({
+                    id: id,
+                    
+                  })
+  end
   
 end

@@ -46,6 +46,7 @@ Rails.application.routes.draw do
       get 'download_report'
       get 'get_graph_data'
       get 'get_fee_info'
+      get 'get_payments_info'
       post 'paid_student_fee'
       post 'update'
       post 'toggle_sms'

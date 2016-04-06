@@ -151,7 +151,19 @@ class StudentsController < ApplicationController
     else
        render json: {success: false, valid_password: true, message: "Not Authorised", valid_password: true}
     end
+  end
 
+  def get_payments_info 
+    if current_user.has_role?("accountant")
+      student = Student.where(id: params[:id]).first
+      if student.present?
+        render json: {success: true, jkci_classes: student.class_students.map(&:fee_info_json), name: student.name, p_mobile: student.p_mobile, mobile: student.mobile, batch: student.batch.name, payments: []}
+      else
+        render json: {success: false, message: "Student not present"}
+      end
+    else
+       render json: {success: false, message: "Not Authorised"}
+    end
   end
 
   ##################
