@@ -119,7 +119,7 @@ class StudentsController < ApplicationController
   end
 
   def get_fee_info 
-    if current_user.has_role?("accountant")
+    if current_user && (ACCOUNT_HANDLE_ROLES && current_user.roles.map(&:name)).size >0
       student = Student.where(id: params[:id]).first
       if student.present?
         render json: {success: true, jkci_classes: student.class_students.map(&:fee_info_json), name: student.name, p_mobile: student.p_mobile, mobile: student.mobile, batch: student.batch.name}
@@ -132,7 +132,7 @@ class StudentsController < ApplicationController
   end
 
   def paid_student_fee
-    if current_user && current_user.has_role?("accountant") 
+    if current_user && (ACCOUNT_HANDLE_ROLES && current_user.roles.map(&:name)).size >0
       if !current_user.valid_password?(params[:student_fee][:password])
         return render json: {success: false, valid_password: false, message: "Please Enter valid password"}
       end
@@ -154,15 +154,15 @@ class StudentsController < ApplicationController
   end
 
   def get_payments_info 
-    if current_user.has_role?("accountant")
+    if current_user && (FULL_ACCOUNT_HANDLE_ROLES && current_user.roles.map(&:name)).size >0
       student = Student.where(id: params[:id]).first
       if student.present?
-        render json: {success: true, jkci_classes: student.class_students.map(&:fee_info_json), name: student.name, p_mobile: student.p_mobile, mobile: student.mobile, batch: student.batch.name, payments: []}
+        render json: {success: true, jkci_classes: student.class_students.map(&:fee_info_json), name: student.name, p_mobile: student.p_mobile, mobile: student.mobile, batch: student.batch.name, payments: student.student_fees.as_json}
       else
         render json: {success: false, message: "Student not present"}
       end
     else
-       render json: {success: false, message: "Not Authorised"}
+      render json: {success: false, message: "Not Authorised"}
     end
   end
 
@@ -267,7 +267,7 @@ class StudentsController < ApplicationController
   end
   
   def pay_fee_params
-    params.require(:student_fee).permit(:student_id, :jkci_class_id, :amount, :payment_type, :bank_name, :cheque_number, :cheque_issue_date)
+    params.require(:student_fee).permit(:student_id, :jkci_class_id, :amount, :payment_type, :bank_name, :cheque_number, :cheque_issue_date, :book_number, :receipt_number)
   end
 
 end
