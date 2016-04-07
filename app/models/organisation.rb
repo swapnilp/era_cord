@@ -401,7 +401,7 @@ class Organisation < ActiveRecord::Base
     new_standards = Standard.select([:id, :name, :stream]).where("id in (?)", (standard_ids.split(',').map(&:to_i) + [0]))
     new_standards = new_standards.where("id not in (?)", (self.standards.map(&:id) + [0]) )
     new_standards.each do |std|
-      self.standards << std
+      self.standards.find_or_initialize_by({standard_id: std.id}).save
       self.create_class(std)
     end
   end

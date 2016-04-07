@@ -55,7 +55,7 @@ class StudentsController < ApplicationController
   end
   
   def show
-    student = @organisation.students.includes({subjects: :standard}).where(id: params[:id]).first
+    student = Student.includes({subjects: :standard}).where(id: params[:id]).first
     if student
       render json: {success: true, body: StudentSerializer.new(student).as_json}
     else
@@ -65,7 +65,7 @@ class StudentsController < ApplicationController
   end
 
   def edit
-    student = @organisation.students.where(id: params[:id]).first
+    student = Student.where(id: params[:id]).first
     batches = Batch.active
     standards = @organisation.standards.active
     subjects = (@student.standard.try(:subjects).try(:optional) || @standards.first.try(:subjects)).try(:optional) || []

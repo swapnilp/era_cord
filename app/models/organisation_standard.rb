@@ -32,4 +32,12 @@ class OrganisationStandard < ActiveRecord::Base
     
   end
 
+  def filter_json(options ={})
+    options.merge({
+                    id: id,
+                    standard_id: standard_id,
+                    name: standard.name
+                  })
+  end
+
 end

@@ -35,5 +35,22 @@ class StudentFee < ActiveRecord::Base
                     receipt_number: receipt_number
                   })
   end
+
+  def index_json(options ={})
+    options.merge({
+                    name: student.name,
+                    parent_name: student.middle_name,
+                    p_mobile: student.mobile,
+                    jkci_class: jkci_class.try(:class_name),
+                    date: date.to_date,
+                    amount: amount,
+                    payment_type: payment_type,
+                    bank_name: bank_name,
+                    cheque_number: cheque_number,
+                    cheque_issue_date: cheque_issue_date,
+                    book_number: book_number,
+                    receipt_number: receipt_number
+                  })
+  end
   
 end

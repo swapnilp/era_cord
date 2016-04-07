@@ -59,6 +59,11 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :student_fees, only: [:index] do
+    collection do
+      get "filter_data"
+    end
+  end
 
   get "get_unassigned_classes" => "jkci_classes#get_unassigned_classes"
   get "sub_organisation/:sub_organisation_id/class/:jkci_class_id/get_report" => "jkci_classes#sub_organisation_class_report", as: "sub_organisation_class_report"
