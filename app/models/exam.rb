@@ -177,7 +177,7 @@ class Exam < ActiveRecord::Base
   end
 
   def publish_absentee
-    if self.organisation.is_send_message && self.jkci_class.enable_exam_sms
+    if self.organisation.is_send_message && self.jkci_class.enable_exam_sms && self.root?
       Delayed::Job.enqueue ExamAbsentSmsSend.new(self.absenty_message_send)
     end
   end
