@@ -35,16 +35,22 @@ class StudentsController < ApplicationController
   
   def create
     params.permit!
-    student = @organisation.students.build(params[:student])
+    #student = @organisation.students.build(params[:student])
+    student = @organisation.students.find_or_initialize_by({first_name: params[:student][:first_name] ,middle_name: params[:student][:middle_name], last_name: params[:student][:last_name], mobile: params[:student][:mobile], p_mobile: params[:student][:p_mobile], standard_id: params[:student][:standard_id]})
+    if params[:class_id].present?
+      jkci_class = @organisation.jkci_classes.where(id: params[:class_id]).first
+      student.batch_id = jkci_class.batch_id
+    end
+    
     if student.save
+      student.update_attributes({gender: params[:student][:gender], initl: params[:student][:initl], parent_name: params[:student][:parent_name]})
       student.add_students_subjects(params[:o_subjects], @organisation)
       if params[:class_id].present?
-        jkci_class = @organisation.jkci_classes.where(id: params[:class_id]).first
-        jkci_class.class_students.build({student_id: student.id, organisation_id: @organisation.id}).save  if jkci_class.present?
+        jkci_class.class_students.find_or_initialize_by({student_id: student.id, organisation_id: @organisation.id}).save  if jkci_class.present?
       end
       render json: {success: true}
     else
-      render json: {success: false, message: students.errors.full_messages.join(' , ')}
+      render json: {success: false, message: student.errors.full_messages.join(' , ')}
     end
   end
   
