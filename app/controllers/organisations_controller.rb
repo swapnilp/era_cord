@@ -249,19 +249,19 @@ class OrganisationsController < ApplicationController
   def absenty_graph_report
     headers, labels, reports = @organisation.class_absenty_graph_report(params[:duration_type])
     sum_data = reports.map(&:sum)
-    render json: {success: true, headers: headers, labels: labels, data: reports, sum_data: sum_data}
+    render json: {success: true, headers: headers, labels: labels, data: reports, sum_data: sum_data, is_display: sum_data.flatten.sum > 0}
   end
 
   def exams_graph_report
     headers, labels, reports = @organisation.class_exams_graph_report(params[:duration_type])
     sum_data = reports.map(&:sum)
-    render json: {success: true, headers: headers, labels: labels, data: reports, sum_data: sum_data}
+    render json: {success: true, headers: headers, labels: labels, data: reports, sum_data: sum_data, is_display: sum_data.flatten.sum > 0}
   end
 
   def off_class_graph_report
     headers, labels, reports = @organisation.off_class_graph_report(params[:duration_type])
     sum_data = reports.map(&:sum)
-    render json: {success: true, headers: headers, labels: labels, data: reports, sum_data: sum_data}
+    render json: {success: true, headers: headers, labels: labels, data: reports, sum_data: sum_data, is_display: sum_data.flatten.sum > 0}
   end
 
   def disable_organisation_standard
