@@ -3,7 +3,9 @@ class StudentFeesController < ApplicationController
   
   def index
     if current_user && (FULL_ACCOUNT_HANDLE_ROLES && current_user.roles.map(&:name)).size >0
-      student_fees = StudentFee.includes(:student, :jkci_class).all.order("id desc")
+      student_fees = StudentFee.includes(:jkci_class, :student).order("id desc")
+
+      
       if params[:filter].present? &&  JSON.parse(params[:filter])['batch'].present?
         student_fees = student_fees.where(batch_id: JSON.parse(params[:filter])['batch'])
         batch_id = JSON.parse(params[:filter])['batch']
@@ -22,6 +24,11 @@ class StudentFeesController < ApplicationController
       end
       if params[:filter].present? &&  JSON.parse(params[:filter])['payment_type'].present?
         student_fees = student_fees.where("payment_type = ?", JSON.parse(params[:filter])['payment_type'])
+      end
+      if params[:filter].present? &&  JSON.parse(params[:filter])['name'].present?
+        query = "%#{JSON.parse(params[:filter])['name']}%"
+        student_ids = Student.where("CONCAT_WS(' ', first_name, last_name) LIKE ? || CONCAT_WS(' ', last_name, first_name) LIKE ? || p_mobile like ?", query, query, query).map(&:id)
+        student_fees = student_fees.where(student_id: student_ids)
       end
       total_amount = student_fees.map(&:amount).sum 
       student_fees = student_fees.page(params[:page])

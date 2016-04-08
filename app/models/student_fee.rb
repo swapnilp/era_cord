@@ -23,7 +23,7 @@ class StudentFee < ActiveRecord::Base
 
   def as_json(options ={})
     options.merge({
-                    id: id,
+                    id: self.id,
                     jkci_class: jkci_class.try(:class_name),
                     date: date.to_date,
                     amount: amount,
