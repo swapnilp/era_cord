@@ -80,10 +80,10 @@ class ExamsController < ApplicationController
   end
   
   def create
-    params.permit!
     jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
-    exam = jkci_class.exams.build(params[:exam].merge({organisation_id: @organisation.id}))
+    exam = jkci_class.exams.build(create_params)
+    exam.organisation_id = @organisation.id
     if exam.save
       Notification.add_create_exam(exam.id, @organisation) if exam.root?
       render json: {success: true, id: exam.id}
@@ -514,6 +514,10 @@ class ExamsController < ApplicationController
   def my_sanitizer
     #params.permit!
     params.require(:exam).permit!
+  end
+  
+  def create_params
+    params.require(:exam).permit(:name, :conducted_by, :marks, :exam_date, :duration, :subject_id, :exam_type, :sub_classes, :jkci_class_id, :is_group)
   end
 
   def update_params

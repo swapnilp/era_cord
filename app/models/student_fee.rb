@@ -39,7 +39,7 @@ class StudentFee < ActiveRecord::Base
   def index_json(options ={})
     options.merge({
                     name: student.name,
-                    parent_name: student.middle_name,
+                    parent_name: "#{student.middle_name} #{student.last_name}",
                     p_mobile: student.mobile,
                     jkci_class: jkci_class.try(:class_name),
                     date: date.to_date,
@@ -51,6 +51,20 @@ class StudentFee < ActiveRecord::Base
                     book_number: book_number,
                     receipt_number: receipt_number
                   })
+  end
+
+  def self.graph_reports(graph_type="month", student_fees= [])
+    reports = {}
+    if graph_type == "day"
+      reports = student_fees.where("date > ?", Date.today - 50.days).group_by_period(graph_type.to_sym, "date", format: "%d-%b").sum(:amount)
+    end
+    if graph_type == "week"
+      reports = student_fees.where("date > ?", Date.today - 30.weeks).group_by_period(graph_type.to_sym, "date", format: "%d-%b", week_start: :mon).sum(:amount)
+    end
+    if graph_type == "month"
+      reports = student_fees.where("date > ?", Date.today - 10.months).group_by_period(graph_type.to_sym, "date", format: "%b-%Y").sum(:amount)
+    end
+    return reports
   end
   
 end

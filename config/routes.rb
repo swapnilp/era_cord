@@ -62,6 +62,7 @@ Rails.application.routes.draw do
   resources :student_fees, only: [:index] do
     collection do
       get "filter_data"
+      get "graph_data"
     end
   end
 
