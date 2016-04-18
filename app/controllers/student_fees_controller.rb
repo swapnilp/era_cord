@@ -8,7 +8,8 @@ class StudentFeesController < ApplicationController
       total_amount = student_fees.map(&:amount).sum 
       student_fees = student_fees.page(params[:page])
       expected_fees = expected_filter
-      render json: {success: true, payments: student_fees.map(&:index_json), total_amount: total_amount, count: student_fees.total_count, expected_fees: expected_fees}
+      total_students = student_fees.map(&:student_id).uniq.count
+      render json: {success: true, payments: student_fees.map(&:index_json), total_amount: total_amount, count: student_fees.total_count, expected_fees: expected_fees, total_students: total_students}
     else
       render json: {success: false}
     end
@@ -65,10 +66,12 @@ class StudentFeesController < ApplicationController
     jkci_classes = JkciClass.all
     if params[:filter].present? &&  JSON.parse(params[:filter])['batch'].present?
       jkci_classes = jkci_classes.where(batch_id: JSON.parse(params[:filter])['batch'])
+    else
+      jkci_classes = jkci_classes.where(batch_id: Batch.active.last.id)
     end
 
     if params[:filter].present? &&  JSON.parse(params[:filter])['standard'].present?
-      jkci_classes = jkci_classes.where(standard_id: JSON.parse(params[:filter])['batch'])
+      jkci_classes = jkci_classes.where(standard_id: JSON.parse(params[:filter])['standard'])
     end
     fees = jkci_classes.map(&:expected_fee_collections).sum
   end
