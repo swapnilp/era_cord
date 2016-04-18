@@ -93,6 +93,7 @@ class Ability
       can :get_graph_data, Student
       can :get_fee_info, Student if roles.include? 'accountant' 
       can :paid_student_fee, Student if roles.include? 'accountant' 
+      can :get_payments_info, Student if roles.include? 'accountant' 
       can :manage, Contact
 
     elsif roles.include? 'accountant'

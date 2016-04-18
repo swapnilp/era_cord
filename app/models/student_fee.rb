@@ -25,7 +25,7 @@ class StudentFee < ActiveRecord::Base
     options.merge({
                     id: self.id,
                     jkci_class: jkci_class.try(:class_name),
-                    date: date.to_date,
+                    date: created_at.strftime("%d/%m/%Y @ %T"),
                     amount: amount,
                     payment_type: payment_type,
                     bank_name: bank_name,
@@ -42,7 +42,7 @@ class StudentFee < ActiveRecord::Base
                     parent_name: "#{student.middle_name} #{student.last_name}",
                     p_mobile: student.mobile,
                     jkci_class: jkci_class.try(:class_name),
-                    date: date.to_date,
+                    date: created_at.strftime("%d/%m/%Y @ %T"),
                     amount: amount,
                     payment_type: payment_type,
                     bank_name: bank_name,
