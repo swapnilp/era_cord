@@ -148,6 +148,7 @@ class JkciClass < ActiveRecord::Base
       new_next_class = JkciClass.find_or_initialize_by({batch_id: next_batch.id, standard_id: next_standard.id, organisation_id: Organisation.current_id })
       new_next_class.organisation_id = next_old_class.organisation_id
       new_next_class.class_name = "#{new_next_class.standard.std_name}-#{next_batch.name}"
+      new_next_class.fee = next_old_class.fee
       new_next_class.save
       new_next_class.make_active_class(next_old_class.organisation)
       if student_list.present?
@@ -380,6 +381,10 @@ class JkciClass < ActiveRecord::Base
     return reports
   end
 
+  def expected_fee_collections
+    fee * class_students_count
+  end
+  
   def subject_json(options={})
     options.merge({
                     id: id,
@@ -409,7 +414,8 @@ class JkciClass < ActiveRecord::Base
                     mobile: organisation.mobile,
                     email: organisation.email,
                     is_current_active: is_current_active,
-                    students_count: class_students_count
+                    students_count: class_students_count,
+                    fee: fee
                   })
   end
 

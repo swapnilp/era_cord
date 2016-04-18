@@ -7,7 +7,8 @@ class StudentFeesController < ApplicationController
       student_fees = filter_student_fees(fees)
       total_amount = student_fees.map(&:amount).sum 
       student_fees = student_fees.page(params[:page])
-      render json: {success: true, payments: student_fees.map(&:index_json), total_amount: total_amount, count: student_fees.total_count}
+      expected_fees = expected_filter
+      render json: {success: true, payments: student_fees.map(&:index_json), total_amount: total_amount, count: student_fees.total_count, expected_fees: expected_fees}
     else
       render json: {success: false}
     end
@@ -33,8 +34,6 @@ class StudentFeesController < ApplicationController
   protected
 
   def filter_student_fees(student_fees)
-
-    
     if params[:filter].present? &&  JSON.parse(params[:filter])['batch'].present?
       student_fees = student_fees.where(batch_id: JSON.parse(params[:filter])['batch'])
       batch_id = JSON.parse(params[:filter])['batch']
@@ -60,5 +59,17 @@ class StudentFeesController < ApplicationController
       student_fees = student_fees.where(student_id: student_ids)
     end
     return student_fees
+  end
+
+  def expected_filter
+    jkci_classes = JkciClass.all
+    if params[:filter].present? &&  JSON.parse(params[:filter])['batch'].present?
+      jkci_classes = jkci_classes.where(batch_id: JSON.parse(params[:filter])['batch'])
+    end
+
+    if params[:filter].present? &&  JSON.parse(params[:filter])['standard'].present?
+      jkci_classes = jkci_classes.where(standard_id: JSON.parse(params[:filter])['batch'])
+    end
+    fees = jkci_classes.map(&:expected_fee_collections).sum
   end
 end

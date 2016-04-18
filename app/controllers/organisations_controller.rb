@@ -295,6 +295,19 @@ class OrganisationsController < ApplicationController
     end
   end
 
+  def get_class_fee
+    if @organisation.root?
+      jkci_class= JkciClass.where(id: params[:class_id]).first
+      if jkci_class.present?
+        render json: {success: true, fee: jkci_class.fee, name: jkci_class.class_name}
+      else
+        render json: {success: false, message: "Wrong standard selected"}
+      end
+    else
+      render json: {success: false, message: "Must be root organiser"}
+    end
+  end
+
   def update_standard_fee
     unless @organisation.root?
       return render json: {success: false, message: "Must be root organiser"}
@@ -302,11 +315,29 @@ class OrganisationsController < ApplicationController
 
     if current_user &&  current_user.valid_password?(params[:fee][:password])
       organisation_standard= OrganisationStandard.where(id: params[:course_id]).first
-      organisation_standard.update_attributes({total_fee: params[:fee][:fee]})
       if organisation_standard.present?
+        organisation_standard.update_attributes({total_fee: params[:fee][:fee]})
         render json: {success: true, message: "Fee is updated"}
       else
         render json: {success: false, message: "Wrong standard selected"}
+      end
+    else
+      render json: {success: false, message: "Please enter valid password"}
+    end
+  end
+
+  def update_class_fee
+    unless @organisation.root?
+      return render json: {success: false, message: "Must be root organiser"}
+    end
+
+    if current_user &&  current_user.valid_password?(params[:fee][:password])
+      jkci_class= JkciClass.where(id: params[:class_id]).first
+      if jkci_class.present?
+        jkci_class.update_attributes({fee: params[:fee][:fee]})
+        render json: {success: true, message: "Fee is updated"}
+      else
+        render json: {success: false, message: "Wrong class selected"}
       end
     else
       render json: {success: false, message: "Please enter valid password"}
