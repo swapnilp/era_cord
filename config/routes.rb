@@ -51,6 +51,9 @@ Rails.application.routes.draw do
       post 'update'
       post 'toggle_sms'
     end
+    collection do 
+      get 'get_filter_values'
+    end
   end
 
   resources :standards, only: [] do

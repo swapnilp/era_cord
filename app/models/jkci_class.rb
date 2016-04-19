@@ -393,6 +393,13 @@ class JkciClass < ActiveRecord::Base
                   })
   end
 
+  def student_filter_json(options={})
+    options.merge({
+                    id: id,
+                    name: class_name
+                  })
+  end
+
   def unassigned_json(options = {})
     options.merge({
                     id: id,

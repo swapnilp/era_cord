@@ -5,10 +5,13 @@ class StudentsController < ApplicationController
   
 
   def index
-    students = @organisation.students.includes(:standard, :jkci_classes, {subjects: :standard}, :batch).select([:id, :first_name, :last_name, :standard_id, :group, :mobile, :p_mobile, :enable_sms, :gender, :is_disabled, :batch_id, :parent_name]).order("id desc")
+    students = Student.includes(:standard, :jkci_classes, {subjects: :standard}, :batch).select([:id, :first_name, :last_name, :standard_id, :group, :mobile, :p_mobile, :enable_sms, :gender, :is_disabled, :batch_id, :parent_name]).order("id desc")
     if params[:search]
       query = "%#{params[:search]}%"
       students = students.where("CONCAT_WS(' ', first_name, last_name) LIKE ? || CONCAT_WS(' ', last_name, first_name) LIKE ? || p_mobile like ?", query, query, query)
+    end
+    if params[:class_id]
+      students = students.joins(:class_students).where("class_students.jkci_class_id = ?", params[:class_id])
     end
     students = students.page(params[:page])
     render json: {success: true, body: ActiveModel::ArraySerializer.new(students, each_serializer: StudentSerializer).as_json, count: students.total_count}
@@ -96,7 +99,12 @@ class StudentsController < ApplicationController
       render json: {success: false, enable_sms: student.enable_sms}
     end
   end
-
+  
+  def get_filter_values
+    jkci_classes = JkciClass.active
+    render json: {success: true, classes: jkci_classes.map(&:student_filter_json)}
+  end
+  
   def get_graph_data
     student = Student.where(id: params[:id]).first
     

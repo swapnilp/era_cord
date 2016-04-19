@@ -317,6 +317,7 @@ class OrganisationsController < ApplicationController
       organisation_standard= OrganisationStandard.where(id: params[:course_id]).first
       if organisation_standard.present?
         organisation_standard.update_attributes({total_fee: params[:fee][:fee]})
+        JkciClass.where(standard_id: organisation_standard.id).active.update_all({fee: params[:fee][:fee]})
         render json: {success: true, message: "Fee is updated"}
       else
         render json: {success: false, message: "Wrong standard selected"}
