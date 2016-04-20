@@ -3,13 +3,17 @@ class StudentFeesController < ApplicationController
   
   def index
     if current_user && (FULL_ACCOUNT_HANDLE_ROLES && current_user.roles.map(&:name)).size >0
-      fees = StudentFee.includes(:jkci_class, :student).order("id desc")
+      fees = StudentFee.includes(:jkci_class, :student, {class_student: :jkci_class}).order("id desc")
       student_fees = filter_student_fees(fees)
       total_amount = student_fees.map(&:amount).sum 
-      student_fees = student_fees.page(params[:page])
       expected_fees = expected_filter
       total_students = student_fees.map(&:student_id).uniq.count
-      render json: {success: true, payments: student_fees.map(&:index_json), total_amount: total_amount, count: student_fees.total_count, expected_fees: expected_fees, total_students: total_students}
+      #student_fees = student_fees.page(params[:page])
+      #student_fees = Kaminari.paginate_array(student_fees.group_by{ |s| [s.student_id, s.jkci_class_id] }.values).page(2).per(2)
+      fees_group = student_fees.group_by{ |s| [s.student_id, s.jkci_class_id] }
+      student_fees_index = Kaminari.paginate_array(fees_group.values).map {|a| StudentFee.index_fee_json(a) }
+
+      render json: {success: true, payments: student_fees_index, total_amount: total_amount, count: fees_group.keys.count, expected_fees: expected_fees, total_students: total_students}
     else
       render json: {success: false}
     end

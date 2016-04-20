@@ -3,6 +3,7 @@ class StudentFee < ActiveRecord::Base
   belongs_to :batch
   belongs_to :jkci_class
   belongs_to :organisation
+  has_one :class_student, :class_name => "ClassStudent", :foreign_key => "student_id", primary_key: "student_id"
   
   default_scope { where(organisation_id: Organisation.current_id) }    
 
@@ -19,6 +20,19 @@ class StudentFee < ActiveRecord::Base
     message = "#{self.student.name} is deposited #{self.amount} fee on #{self.date.to_date} in #{self.organisation.root.name}"
     url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=update&dmobile=91#{self.organisation.root.account_sms}&message=#{message}"
     url_arry = [url, message, self.id, self.organisation.root.id]
+  end
+
+  def self.index_fee_json(index_arr)
+    {name: index_arr.first.student.name , 
+      parent_name: "#{index_arr.first.student.middle_name} #{index_arr.first.student.last_name}", 
+      p_mobile: index_arr.first.student.mobile,
+      jkci_class: index_arr.first.jkci_class.try(:class_name),
+      student_id: index_arr.first.student_id,
+      collected_fee: index_arr.map(&:amount).sum,
+      remaining_fee: index_arr.first.remaining_fee,
+      :transactions => index_arr.map(&:index_json),
+      total_transactions: index_arr.count
+    }
   end
 
   def as_json(options ={})
@@ -38,10 +52,6 @@ class StudentFee < ActiveRecord::Base
 
   def index_json(options ={})
     options.merge({
-                    name: student.name,
-                    parent_name: "#{student.middle_name} #{student.last_name}",
-                    p_mobile: student.mobile,
-                    jkci_class: jkci_class.try(:class_name),
                     date: created_at.strftime("%d/%m/%Y @ %T"),
                     amount: amount,
                     payment_type: payment_type,
@@ -50,8 +60,13 @@ class StudentFee < ActiveRecord::Base
                     cheque_issue_date: cheque_issue_date,
                     book_number: book_number,
                     receipt_number: receipt_number,
-                    student_id: student_id
                   })
+  end
+
+  def remaining_fee
+    col_fee = self.class_student.try(:collected_fee) || 0
+    class_fee = self.class_student.try(:jkci_class).try(:fee) || 0
+    return (class_fee - col_fee)
   end
 
   def self.graph_reports(graph_type="month", student_fees= [])
