@@ -51,8 +51,6 @@ class StudentFeesController < ApplicationController
       jkci_class = JkciClass.where(standard_id: JSON.parse(params[:filter])['standard'], batch_id: batch_id).first
       if jkci_class.present?
         student_fees = student_fees.where(jkci_class_id: jkci_class.try(:id))
-      else
-        student_fees = []
       end
     end
     if params[:filter].present? &&  JSON.parse(params[:filter])['payment_type'].present?
