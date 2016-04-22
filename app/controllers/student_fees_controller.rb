@@ -2,7 +2,7 @@ class StudentFeesController < ApplicationController
   before_action :authenticate_user!
   
   def index
-    if current_user && (FULL_ACCOUNT_HANDLE_ROLES && current_user.roles.map(&:name)).size >0
+    if current_user && (FULL_ACCOUNT_HANDLE_ROLES && current_user.roles.map(&:name)).size >0 && @organisation.root?
       fees = StudentFee.includes(:jkci_class, :student, {class_student: :jkci_class}).order("id desc")
       student_fees = filter_student_fees(fees)
       total_amount = student_fees.map(&:amount).sum 
@@ -15,24 +15,28 @@ class StudentFeesController < ApplicationController
 
       render json: {success: true, payments: student_fees_index, total_amount: total_amount, count: fees_group.keys.count, expected_fees: expected_fees, total_students: total_students}
     else
-      render json: {success: false}
+      render json: {success: false, message: "Unauthorized !!!! You Must be Root Organisation."}
     end
   end
 
   def filter_data
-    batches = Batch.all
-    organisation_standard = @organisation.organisation_standards.all
-    render json: {success: true, batches: batches.as_json, standards: organisation_standard.map(&:filter_json)}
+    if current_user && (FULL_ACCOUNT_HANDLE_ROLES && current_user.roles.map(&:name)).size >0 && @organisation.root?
+      batches = Batch.all
+      organisation_standard = @organisation.organisation_standards.all
+      render json: {success: true, batches: batches.as_json, standards: organisation_standard.map(&:filter_json)}
+    else
+      render json: {success: false, message: "Unauthorized !!!! You Must be Root Organisation."}
+    end
   end
 
   def graph_data
-    if current_user && (FULL_ACCOUNT_HANDLE_ROLES && current_user.roles.map(&:name)).size >0
+    if current_user && (FULL_ACCOUNT_HANDLE_ROLES && current_user.roles.map(&:name)).size >0 && @organisation.root?
       fees = StudentFee.all
       student_fees = filter_student_fees(fees)
       reports = StudentFee.graph_reports(graph_type="month", student_fees)       
       render json: {success: true, keys: reports.keys, values: reports.values}
     else
-      render json: {success: false}
+      render json: {success: false, message: "Unauthorized. You Must be Root Organisation."}
     end
   end
 
