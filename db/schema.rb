@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160419034339) do
+ActiveRecord::Schema.define(version: 20160422194454) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -86,6 +86,7 @@ ActiveRecord::Schema.define(version: 20160419034339) do
     t.string   "duplicate_field",       limit: 255
     t.boolean  "is_duplicate_accepted", limit: 1,   default: false
     t.float    "collected_fee",         limit: 24,  default: 0.0
+    t.integer  "exam_catlogs_count",    limit: 4,   default: 0
   end
 
   create_table "contacts", force: :cascade do |t|

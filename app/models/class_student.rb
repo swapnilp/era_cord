@@ -1,6 +1,8 @@
 class ClassStudent < ActiveRecord::Base
   belongs_to :jkci_class, counter_cache: true
   belongs_to :student
+
+  has_many :exam_catlogs,->(class_student) { where("student_id = ? ", class_student.student_id) }, through: :jkci_class
   
   default_scope { where(organisation_id: Organisation.current_id) }
   

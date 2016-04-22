@@ -3,6 +3,7 @@ class ExamCatlog < ActiveRecord::Base
   belongs_to :exam
   belongs_to :student
   belongs_to :jkci_class
+  belongs_to :class_student,->(exam_catlog) {where("jkci_class_id = ?", exam_catlog.jkci_class_id)}, :foreign_key => :student_id, primary_key: :student_id, :counter_cache => true
 
   scope :only_absents, -> {where(is_present: false)}
   scope :only_presents, -> {where(is_present: true)}
