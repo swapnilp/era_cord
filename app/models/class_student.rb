@@ -45,7 +45,8 @@ class ClassStudent < ActiveRecord::Base
                     p_mobile: student.p_mobile,
                     is_duplicate: is_duplicate,
                     duplicate_field: duplicate_field,
-                    is_duplicate_accepted: is_duplicate_accepted
+                    is_duplicate_accepted: is_duplicate_accepted,
+                    exams_count: exam_catlogs_count
                   })
   end
 
