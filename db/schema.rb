@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160422194454) do
+ActiveRecord::Schema.define(version: 20160423160228) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -336,6 +336,11 @@ ActiveRecord::Schema.define(version: 20160422194454) do
     t.boolean  "is_send_message",         limit: 1,     default: false
     t.string   "short_name",              limit: 255
     t.text     "account_sms",             limit: 65535
+    t.string   "pan_number",              limit: 255
+    t.string   "tan_number",              limit: 255
+    t.float    "service_tax",             limit: 24,    default: 14.0
+    t.boolean  "fee_include_service_tax", limit: 1,     default: false
+    t.boolean  "enable_service_tax",      limit: 1,     default: false
   end
 
   add_index "organisations", ["ancestry"], name: "index_organisations_on_ancestry", using: :btree
@@ -446,6 +451,7 @@ ActiveRecord::Schema.define(version: 20160422194454) do
     t.integer  "organisation_id",   limit: 4
     t.string   "book_number",       limit: 255
     t.string   "receipt_number",    limit: 255
+    t.float    "service_tax",       limit: 24,  default: 0.0
   end
 
   create_table "student_subjects", force: :cascade do |t|

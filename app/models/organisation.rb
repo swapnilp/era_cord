@@ -496,8 +496,12 @@ class Organisation < ActiveRecord::Base
                     mobile: mobile,
                     short_name: short_name, 
                     is_send_message: is_send_message ? 'Enabled' : 'Disabled',
-                    account_sms: account_sms
-                    
+                    account_sms: account_sms,
+                    pan_number: pan_number,
+                    tan_number: tan_number,
+                    service_tax: service_tax,
+                    fee_include_service_tax: fee_include_service_tax,
+                    enable_service_tax: enable_service_tax
                   })
     
   end
