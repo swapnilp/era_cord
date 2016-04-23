@@ -33,7 +33,7 @@ class OrganisationsController < ApplicationController
         end
         @organisation.update({mobile: update_organisation_params["mobile"], short_name: update_organisation_params["short_name"], account_sms: update_organisation_params["account_sms"]})
         if @organisation.root?
-          @organisation.update({enable_service_tax: update_organisation_params["enable_service_tax"], pan_number: update_organisation_params["pan_number"], tan_number: update_organisation_params["tan_number"], service_tax: update_organisation_params["service_tax"], fee_include_service_tax: update_organisation_params["fee_include_service_tax"]})
+          @organisation.update({enable_service_tax: update_organisation_params["enable_service_tax"], pan_number: update_organisation_params["pan_number"], tan_number: update_organisation_params["tan_number"], service_tax: update_organisation_params["service_tax"]})
         end
         
         if change_account_sms
@@ -545,6 +545,6 @@ class OrganisationsController < ApplicationController
   end
 
   def update_organisation_params
-    params.require(:organisation).permit(:name, :email, :mobile, :password, :short_name, :account_sms, :pan_number, :tan_number, :service_tax, :fee_include_service_tax, :enable_service_tax)
+    params.require(:organisation).permit(:name, :email, :mobile, :password, :short_name, :account_sms, :pan_number, :tan_number, :service_tax, :enable_service_tax)
   end
 end

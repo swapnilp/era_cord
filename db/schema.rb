@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160423160228) do
+ActiveRecord::Schema.define(version: 20160423191429) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -339,7 +339,6 @@ ActiveRecord::Schema.define(version: 20160423160228) do
     t.string   "pan_number",              limit: 255
     t.string   "tan_number",              limit: 255
     t.float    "service_tax",             limit: 24,    default: 14.0
-    t.boolean  "fee_include_service_tax", limit: 1,     default: false
     t.boolean  "enable_service_tax",      limit: 1,     default: false
   end
 
