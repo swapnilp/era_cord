@@ -136,7 +136,7 @@ class StudentsController < ApplicationController
     if current_user && (ACCOUNT_HANDLE_ROLES && current_user.roles.map(&:name)).size >0
       student = Student.where(id: params[:id]).first
       if student.present?
-        render json: {success: true, jkci_classes: student.class_students.map(&:fee_info_json), name: student.name, p_mobile: student.p_mobile, mobile: student.mobile, batch: student.batch.name}
+        render json: {success: true, jkci_classes: student.class_students.map(&:fee_info_json), name: student.name, p_mobile: student.p_mobile, mobile: student.mobile, batch: student.batch.name, enable_tax: @organisation.enable_service_tax, service_tax: @organisation.service_tax, fee_include_service_tax: @organisation.fee_include_service_tax}
       else
         render json: {success: false, message: "Student not present"}
       end
