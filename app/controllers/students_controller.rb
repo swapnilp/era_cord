@@ -14,7 +14,8 @@ class StudentsController < ApplicationController
       students = students.joins(:class_students).where("class_students.jkci_class_id = ?", params[:class_id])
     end
     students = students.page(params[:page])
-    render json: {success: true, body: ActiveModel::ArraySerializer.new(students, each_serializer: StudentSerializer).as_json, count: students.total_count}
+    roles = current_user.roles.map(&:name)
+    render json: {success: true, body: ActiveModel::ArraySerializer.new(students, each_serializer: StudentSerializer).as_json, count: students.total_count, has_show_pay_info: roles.include?('accountant'), has_pay_fee: (['accountant','accountant_clark'] & roles).size > 0}
   end
 
   def new
@@ -60,7 +61,8 @@ class StudentsController < ApplicationController
   def show
     student = Student.includes({subjects: :standard}).where(id: params[:id]).first
     if student
-      render json: {success: true, body: StudentSerializer.new(student).as_json}
+      roles = current_user.roles.map(&:name)
+      render json: {success: true, body: StudentSerializer.new(student).as_json, has_show_pay_info: roles.include?('accountant'), has_pay_fee: (['accountant','accountant_clark'] & roles).size > 0 }
     else
        render json: {success: false}
     end
