@@ -5,7 +5,8 @@ class StudentFeesController < ApplicationController
     if current_user && (FULL_ACCOUNT_HANDLE_ROLES && current_user.roles.map(&:name)).size >0 && @organisation.root?
       fees = StudentFee.includes(:jkci_class, :student, {class_student: :jkci_class}).order("id desc")
       student_fees = filter_student_fees(fees)
-      total_amount = student_fees.map(&:amount).sum 
+      total_amount = student_fees.map(&:amount).sum
+      total_tax = student_fees.map(&:service_tax).sum
       expected_fees = expected_filter
       total_students = student_fees.map(&:student_id).uniq.count
       #student_fees = student_fees.page(params[:page])
@@ -13,7 +14,7 @@ class StudentFeesController < ApplicationController
       fees_group = student_fees.group_by{ |s| [s.student_id, s.jkci_class_id] }
       student_fees_index = Kaminari.paginate_array(fees_group.values).map {|a| StudentFee.index_fee_json(a) }
 
-      render json: {success: true, payments: student_fees_index, total_amount: total_amount, count: fees_group.keys.count, expected_fees: expected_fees, total_students: total_students}
+      render json: {success: true, payments: student_fees_index, total_amount: total_amount, count: fees_group.keys.count, expected_fees: expected_fees, total_students: total_students, total_tax: total_tax}
     else
       render json: {success: false, message: "Unauthorized !!!! You Must be Root Organisation."}
     end

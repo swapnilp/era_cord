@@ -41,6 +41,7 @@ class StudentFee < ActiveRecord::Base
                     jkci_class: jkci_class.try(:class_name),
                     date: created_at.strftime("%d/%m/%Y @ %T"),
                     amount: amount,
+                    service_tax: service_tax,
                     payment_type: payment_type,
                     bank_name: bank_name,
                     cheque_number: cheque_number,
@@ -54,6 +55,7 @@ class StudentFee < ActiveRecord::Base
     options.merge({
                     date: created_at.strftime("%d/%m/%Y @ %T"),
                     amount: amount,
+                    service_tax: service_tax,
                     payment_type: payment_type,
                     bank_name: bank_name,
                     cheque_number: cheque_number,

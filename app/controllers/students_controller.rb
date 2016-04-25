@@ -159,6 +159,11 @@ class StudentsController < ApplicationController
       student_fee.batch_id = student.batch_id
       student_fee.date = Date.today
       student_fee.organisation_id = @organisation.id
+      if @organisation.enable_service_tax
+        student_fee.service_tax = (student_fee.amount.to_f * (@organisation.service_tax / 100))
+        student_fee.amount = student_fee.amount - student_fee.service_tax
+      end
+      
       if student_fee.save
         if student_fee.jkci_class_id.present?
           amount = StudentFee.where(student_id: student_fee.student_id, jkci_class_id: student_fee.jkci_class_id).map(&:amount).sum
@@ -177,7 +182,8 @@ class StudentsController < ApplicationController
     if current_user && (FULL_ACCOUNT_HANDLE_ROLES && current_user.roles.map(&:name)).size >0
       student = Student.where(id: params[:id]).first
       if student.present?
-        render json: {success: true, jkci_classes: student.class_students.map(&:fee_info_json), name: student.name, p_mobile: student.p_mobile, mobile: student.mobile, batch: student.batch.name, payments: student.student_fees.as_json, total_fee: student.student_fees.map(&:amount).sum, id: student.id}
+        total_amount = student.student_fees.map(&:amount).sum + student.student_fees.map(&:service_tax).sum
+        render json: {success: true, jkci_classes: student.class_students.map(&:fee_info_json), name: student.name, p_mobile: student.p_mobile, mobile: student.mobile, batch: student.batch.name, payments: student.student_fees.as_json, total_fee: total_amount, id: student.id}
       else
         render json: {success: false, message: "Student not present"}
       end
