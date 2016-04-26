@@ -169,7 +169,7 @@ class StudentsController < ApplicationController
           amount = StudentFee.where(student_id: student_fee.student_id, jkci_class_id: student_fee.jkci_class_id).map(&:amount).sum
           student_fee.class_student.update_attributes({collected_fee: amount})
         end
-        render json: {success: true, message: "Fee is Paid"}
+        render json: {success: true, message: "Fee is Paid", print_data: student_fee.print_data}
       else
         render json: {success: false, message: "Something went wrong"}
       end

@@ -22,6 +22,21 @@ class StudentFee < ActiveRecord::Base
     url_arry = [url, message, self.id, self.organisation.root.id]
   end
 
+  def print_data
+    {
+      student_name: student.name, 
+      amount: amount, 
+      service_tax: service_tax.to_f.round(2), 
+      class_name: jkci_class.try(:class_name), 
+      date: date.to_date, 
+      pan_number: organisation.pan_number, 
+      tan_number: organisation.tan_number,
+      organisation_name: organisation.name,
+      enable_service_tax: organisation.enable_service_tax,
+      s_tax: organisation.service_tax.to_f.round(2)
+    }
+  end
+
   def self.index_fee_json(index_arr)
     {name: index_arr.first.student.name , 
       parent_name: "#{index_arr.first.student.middle_name} #{index_arr.first.student.last_name}", 
