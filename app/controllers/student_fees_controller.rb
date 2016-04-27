@@ -41,6 +41,19 @@ class StudentFeesController < ApplicationController
     end
   end
 
+  def print_recipt
+    if current_user && (FULL_ACCOUNT_HANDLE_ROLES && current_user.roles.map(&:name)).size >0 && @organisation.root?
+      student_fee = StudentFee.where(id: params[:id], student_id: params[:student_id]).first
+      if student_fee
+        render json: {success: true, print_data: student_fee.print_data}
+      else
+        render json: {success: false, message: "Recipt not found"}
+      end
+    else
+      render json: {success: false, message: "Unauthorized. You Must be Root Organisation."}
+    end
+  end
+
   protected
 
   def filter_student_fees(student_fees)

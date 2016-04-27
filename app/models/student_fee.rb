@@ -33,12 +33,19 @@ class StudentFee < ActiveRecord::Base
       tan_number: organisation.tan_number,
       organisation_name: organisation.name,
       enable_service_tax: organisation.enable_service_tax,
-      s_tax: organisation.service_tax.to_f.round(2)
+      s_tax: organisation.service_tax.to_f.round(2),
+      payment_type: payment_type,
+      bank_name: bank_name,
+      cheque_number: cheque_number,
+      cheque_issue_date: cheque_issue_date,
+      book_number: book_number,
+      receipt_number: receipt_number
     }
   end
 
   def self.index_fee_json(index_arr)
-    {name: index_arr.first.student.name , 
+    {
+      name: index_arr.first.student.name , 
       parent_name: "#{index_arr.first.student.middle_name} #{index_arr.first.student.last_name}", 
       p_mobile: index_arr.first.student.mobile,
       jkci_class: index_arr.first.jkci_class.try(:class_name),
@@ -53,6 +60,7 @@ class StudentFee < ActiveRecord::Base
   def as_json(options ={})
     options.merge({
                     id: self.id,
+                    student_id: student_id,
                     jkci_class: jkci_class.try(:class_name),
                     date: created_at.strftime("%d/%m/%Y @ %T"),
                     amount: amount,
@@ -68,6 +76,8 @@ class StudentFee < ActiveRecord::Base
 
   def index_json(options ={})
     options.merge({
+                    id: id,
+                    student_id: student_id,
                     date: created_at.strftime("%d/%m/%Y @ %T"),
                     amount: amount,
                     service_tax: service_tax,

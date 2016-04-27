@@ -63,6 +63,10 @@ Rails.application.routes.draw do
   end
 
   resources :student_fees, only: [:index] do
+    member do
+      get 'print_recipt'
+    end
+    
     collection do
       get "filter_data"
       get "graph_data"
