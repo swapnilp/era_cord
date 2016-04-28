@@ -64,7 +64,7 @@ Rails.application.routes.draw do
 
   resources :student_fees, only: [:index] do
     member do
-      get 'print_recipt'
+      get 'print_receipt'
     end
     
     collection do
