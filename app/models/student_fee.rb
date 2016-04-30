@@ -3,11 +3,13 @@ class StudentFee < ActiveRecord::Base
   belongs_to :batch
   belongs_to :jkci_class
   belongs_to :organisation
+  belongs_to :user
   has_one :class_student, :class_name => "ClassStudent", :foreign_key => "student_id", primary_key: "student_id"
   
   default_scope { where(organisation_id: Organisation.current_id) }    
 
   after_create :send_account_sms
+  validates_presence_of :student_id, :batch_id, :date, :amount,  :payment_type, :organisation_id, :user_id
   
   def send_account_sms
     #org = Organisation.where(email: self.email).first
@@ -24,6 +26,7 @@ class StudentFee < ActiveRecord::Base
 
   def print_data
     {
+      id: id,
       student_name: student.name, 
       amount: amount, 
       service_tax: service_tax.to_f.round(2), 
@@ -39,7 +42,8 @@ class StudentFee < ActiveRecord::Base
       cheque_number: cheque_number,
       cheque_issue_date: cheque_issue_date,
       book_number: book_number,
-      receipt_number: receipt_number
+      receipt_number: receipt_number,
+      user: user.try(:email)
     }
   end
 

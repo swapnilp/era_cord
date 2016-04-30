@@ -159,6 +159,7 @@ class StudentsController < ApplicationController
       student_fee.batch_id = student.batch_id
       student_fee.date = Date.today
       student_fee.organisation_id = @organisation.id
+      student_fee.user_id = current_user.id
       if @organisation.enable_service_tax
         student_fee.service_tax = (student_fee.amount.to_f * (@organisation.service_tax / 100))
         student_fee.amount = student_fee.amount - student_fee.service_tax
