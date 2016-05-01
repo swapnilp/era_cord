@@ -14,7 +14,7 @@ class StudentFeesController < ApplicationController
       fees_group = student_fees.group_by{ |s| [s.student_id, s.jkci_class_id] }
       student_fees_index = Kaminari.paginate_array(fees_group.values).map {|a| StudentFee.index_fee_json(a) }
 
-      render json: {success: true, payments: student_fees_index, total_amount: total_amount, count: fees_group.keys.count, expected_fees: expected_fees, total_students: total_students, total_tax: total_tax}
+      render json: {success: true, payments: student_fees_index, total_amount: total_amount, count: fees_group.keys.count, expected_fees: expected_fees, total_students: total_students, total_tax: total_tax.round(2)}
     else
       render json: {success: false, message: "Unauthorized !!!! You Must be Root Organisation."}
     end

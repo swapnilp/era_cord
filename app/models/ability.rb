@@ -92,8 +92,8 @@ class Ability
       can :download_report, Student
       can :get_graph_data, Student
       can :get_filter_values, Student
-      can :get_fee_info, Student if roles.include? 'accountant' 
-      can :paid_student_fee, Student if roles.include? 'accountant' 
+      can :get_fee_info, Student if roles.include?('accountant')  || roles.include?('accountant_clark')
+      can :paid_student_fee, Student if roles.include?('accountant')  || roles.include?('accountant_clark')
       can :get_payments_info, Student if roles.include? 'accountant' 
       can :manage, Contact
 
