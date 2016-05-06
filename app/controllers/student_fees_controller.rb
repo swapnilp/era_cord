@@ -35,7 +35,7 @@ class StudentFeesController < ApplicationController
       fees = StudentFee.all
       student_fees = filter_student_fees(fees)
       reports = StudentFee.graph_reports(graph_type="month", student_fees)       
-      render json: {success: true, keys: reports.keys, values: reports.values}
+      render json: {success: true, keys: reports.keys, values: reports.values, total_amount: reports.values.sum}
     else
       render json: {success: false, message: "Unauthorized. You Must be Root Organisation."}
     end

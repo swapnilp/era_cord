@@ -28,6 +28,7 @@ class StudentFee < ActiveRecord::Base
     {
       id: id,
       student_name: student.name, 
+      mobile: student.p_mobile, 
       amount: amount, 
       service_tax: service_tax.to_f.round(2), 
       class_name: jkci_class.try(:class_name), 
@@ -111,6 +112,7 @@ class StudentFee < ActiveRecord::Base
     if graph_type == "month"
       reports = student_fees.where("date > ?", Date.today - 10.months).group_by_period(graph_type.to_sym, "date", format: "%b-%Y").sum(:amount)
     end
+    reports.each { |k, v| reports[k] = v.round(2) }
     return reports
   end
   
