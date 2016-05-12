@@ -34,7 +34,13 @@ class StudentFeesController < ApplicationController
     if current_user && (FULL_ACCOUNT_HANDLE_ROLES && current_user.roles.map(&:name)).size >0 && @organisation.root?
       fees = StudentFee.all
       student_fees = filter_student_fees(fees)
-      reports = StudentFee.graph_reports(graph_type="month", student_fees)       
+      if params[:filter].present?  
+        acc_type= JSON.parse(params[:filter])['selectedAccountType'] || 'Both'
+        acc_span = JSON.parse(params[:filter])['selectedAccountSpan'] || 'month'
+        reports = StudentFee.graph_reports(acc_span, student_fees, acc_type)
+      else
+        reports = StudentFee.graph_reports(graph_type="month", student_fees)
+      end
       render json: {success: true, keys: reports.keys, values: reports.values, total_amount: reports.values.sum}
     else
       render json: {success: false, message: "Unauthorized. You Must be Root Organisation."}

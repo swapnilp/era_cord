@@ -101,16 +101,25 @@ class StudentFee < ActiveRecord::Base
     return (class_fee - col_fee)
   end
 
-  def self.graph_reports(graph_type="month", student_fees= [])
+  def self.graph_reports(graph_type="month", student_fees= [], account_type = 'Both')
     reports = {}
     if graph_type == "day"
-      reports = student_fees.where("date > ?", Date.today - 50.days).group_by_period(graph_type.to_sym, "date", format: "%d-%b").sum(:amount)
+      reports = student_fees.where("date > ?", Date.today - 50.days).group_by_period(graph_type.to_sym, "date", format: "%d-%b")#.sum(:amount, :service_tax)
     end
     if graph_type == "week"
-      reports = student_fees.where("date > ?", Date.today - 30.weeks).group_by_period(graph_type.to_sym, "date", format: "%d-%b", week_start: :mon).sum(:amount)
+      reports = student_fees.where("date > ?", Date.today - 30.weeks).group_by_period(graph_type.to_sym, "date", format: "%d-%b", week_start: :mon)#.sum(:amount)
     end
     if graph_type == "month"
-      reports = student_fees.where("date > ?", Date.today - 10.months).group_by_period(graph_type.to_sym, "date", format: "%b-%Y").sum(:amount)
+      reports = student_fees.where("date > ?", Date.today - 10.months).group_by_period(graph_type.to_sym, "date", format: "%b-%Y")#.sum(:amount, :service_tax)
+    end
+    if account_type == 'Tax'
+      reports = reports.sum(:service_tax)
+    elsif account_type == 'Fee'
+      reports = reports.sum(:amount)
+    else
+      reports_amt = reports.sum(:amount)
+      reports_tax = reports.sum(:service_tax)
+      reports = reports_amt.merge(reports_tax){ |k, a_value, b_value| a_value + b_value }
     end
     reports.each { |k, v| reports[k] = v.round(2) }
     return reports
