@@ -181,6 +181,32 @@ class ExamsController < ApplicationController
     end
   end
 
+def add_ignored_student
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Calss"} unless jkci_class
+    exam_catlog = @organisation.exam_catlogs.where(id: params[:catlog_id], exam_id: params[:id]).first
+    if exam_catlog
+      exam_catlog.update_attributes({is_ingored: true})
+      #exam_catlog.exam.update_attributes({verify_absenty: false})
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+  end
+
+  def remove_ignored_student
+    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Calss"} unless jkci_class
+    exam_catlog = @organisation.exam_catlogs.where(id: params[:catlog_id], exam_id: params[:id], absent_sms_sent: [false, nil]).first
+    if exam_catlog
+      exam_catlog.update_attributes({is_ingored: nil, is_recover: nil})
+      #exam_catlog.exam.update_attributes({verify_absenty: false})
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+  end
+
   def add_exam_results
     jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
     return render json: {success: false, message: "Invalid Calss"} unless jkci_class

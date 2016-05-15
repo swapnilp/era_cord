@@ -41,7 +41,7 @@ class StudentFeesController < ApplicationController
       else
         reports = StudentFee.graph_reports(graph_type="month", student_fees)
       end
-      render json: {success: true, keys: reports.keys, values: reports.values, total_amount: reports.values.sum}
+      render json: {success: true, keys: reports.keys, values: reports.values, total_amount: reports.values.sum, min_date: reports.keys.map(&:to_date).min, max_date: reports.keys.map(&:to_date).max}
     else
       render json: {success: false, message: "Unauthorized. You Must be Root Organisation."}
     end

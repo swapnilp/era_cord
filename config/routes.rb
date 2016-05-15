@@ -147,6 +147,8 @@ Rails.application.routes.draw do
         post 'update'
         post 'add_absunt_students'
         post 'add_absunt_student'
+        post 'add_ignored_student'
+        post 'remove_ignored_student'
         post 'remove_absunt_student'
         post 'upload_paper'
         post 'add_exam_results'
