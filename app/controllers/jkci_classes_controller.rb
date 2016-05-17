@@ -1,7 +1,7 @@
 class JkciClassesController < ApplicationController
   before_action :authenticate_user!
   before_action :active_standards!, only: [:index]
-  skip_before_filter :authenticate_with_token!, only: [:sub_organisation_class_report]
+  #skip_before_filter :authenticate_with_token!, only: [:sub_organisation_class_report]
   load_and_authorize_resource param_method: :my_sanitizer
 
   def index
