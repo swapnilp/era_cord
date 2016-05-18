@@ -1,22 +1,9 @@
-<!DOCTYPE html>
-<html>
-  <head>
-  </head>
-  <body style="max-width:1145px;margin-left: auto; margin-right: auto;">
-    <div>
-      <h3 style="font-style: italic;">Hi <%= @organisation.name %>,</h3>
+<p>Hello <%= @organisation.name %>!</p>
 
-      <p style="  line-height: 27px;font-size: 20px;">
-        Please open below link for registation of EraCord organisation 
-	<strong>
-	  <a href="<%= APP_URL %>/users/sign_up?&email_code=<%= @organisation.email_code %>">Click Here</a>
-	</strong>
-      </p>
-    </div>
-    <div>
-      <p>Regards,</p>
-      <p>eraCord</p>
-    </div>
-  </body>
-</html>
+<p>Please open below link for registation of EraCord organisation </p>
+<p>
+  <a href="<%= APP_URL %>/users/sign_up?&email_code=<%= @organisation.email_code %>">Click Here</a>
+</p>
 
+<p>Regards,</p>
+<p>eraCord</p>

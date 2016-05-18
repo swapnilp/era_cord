@@ -85,6 +85,9 @@ class StudentFeesController < ApplicationController
       student_ids = Student.where("CONCAT_WS(' ', first_name, last_name) LIKE ? || CONCAT_WS(' ', last_name, first_name) LIKE ? || p_mobile like ?", query, query, query).map(&:id)
       student_fees = student_fees.where(student_id: student_ids)
     end
+    if params[:filter].present? &&  JSON.parse(params[:filter])['is_remaining'] == 'Remaining'
+      student_fees = student_fees.select{|sf| sf.remaining_fee > 0}
+    end
     return student_fees
   end
 

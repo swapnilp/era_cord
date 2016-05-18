@@ -50,8 +50,9 @@ class StudentFee < ActiveRecord::Base
 
   def self.index_fee_json(index_arr)
     {
-      name: index_arr.first.student.name , 
+      name: index_arr.first.student.name, 
       parent_name: "#{index_arr.first.student.middle_name} #{index_arr.first.student.last_name}", 
+      parent_occupation: index_arr.first.student.parent_occupation,
       p_mobile: index_arr.first.student.mobile,
       jkci_class: index_arr.first.jkci_class.try(:class_name),
       student_id: index_arr.first.student_id,
@@ -97,7 +98,8 @@ class StudentFee < ActiveRecord::Base
 
   def remaining_fee
     col_fee = self.class_student.try(:collected_fee) || 0
-    class_fee = self.class_student.try(:jkci_class).try(:fee) || 0
+    class_fee = self.try(:jkci_class).try(:fee) || 0
+    return 0 if class_fee == 0
     return (class_fee - col_fee)
   end
 

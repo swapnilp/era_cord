@@ -38,16 +38,14 @@ class StudentsController < ApplicationController
   end
   
   def create
-    params.permit!
     #student = @organisation.students.build(params[:student])
-    student = @organisation.students.find_or_initialize_by({first_name: params[:student][:first_name] ,middle_name: params[:student][:middle_name], last_name: params[:student][:last_name], mobile: params[:student][:mobile], p_mobile: params[:student][:p_mobile], standard_id: params[:student][:standard_id]})
+    student = @organisation.students.find_or_initialize_by(create_params.slice(:first_name, :middle_name, :last_name, :mobile, :p_mobile, :standard_id))
     if params[:class_id].present?
       jkci_class = @organisation.jkci_classes.where(id: params[:class_id]).first
       student.batch_id = jkci_class.batch_id
     end
-    
     if student.save
-      student.update_attributes({gender: params[:student][:gender], initl: params[:student][:initl], parent_name: params[:student][:parent_name]})
+      student.update_attributes(create_params.slice(:gender, :initl, :parent_name))
       student.add_students_subjects(params[:o_subjects], @organisation)
       if params[:class_id].present?
         jkci_class.class_students.find_or_initialize_by({student_id: student.id, organisation_id: @organisation.id}).save  if jkci_class.present?
@@ -82,9 +80,8 @@ class StudentsController < ApplicationController
   end
 
   def update
-    params.permit!
     student = @organisation.students.where(id: params[:id]).first
-    if student && student.update(params[:student])
+    if student && student.update(update_params)
       student.add_students_subjects(params[:o_subjects], @organisation)
       render json: {success: true}
     else
@@ -295,6 +292,14 @@ class StudentsController < ApplicationController
   
   def pay_fee_params
     params.require(:student_fee).permit(:student_id, :jkci_class_id, :amount, :payment_type, :bank_name, :cheque_number, :cheque_issue_date, :book_number, :receipt_number)
+  end
+
+  def create_params
+    params.require(:student).permit(:first_name, :last_name, :email, :mobile, :parent_name, :p_mobile, :p_email, :address, :rank, :middle_name, :batch_id, :gender, :initl, :standard_id, :parent_occupation)
+  end
+
+  def update_params
+    params.require(:student).permit(:first_name, :last_name, :email, :mobile, :parent_name, :p_mobile, :p_email, :address, :rank, :middle_name, :batch_id, :gender, :initl, :standard_id, :parent_occupation)
   end
 
 end

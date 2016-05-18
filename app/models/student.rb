@@ -243,6 +243,7 @@ class Student < ActiveRecord::Base
                     batch_id: batch_id, 
                     gender: gender, 
                     initl: initl,
+                    parent_occupation: parent_occupation,
                     standard_id: standard_id
                   })
   end
