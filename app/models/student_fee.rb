@@ -63,6 +63,18 @@ class StudentFee < ActiveRecord::Base
     }
   end
 
+  def self.print_fee_json(index_arr)
+    {
+      name: index_arr.first.student.name, 
+      p_mobile: index_arr.first.student.mobile,
+      jkci_class: index_arr.first.jkci_class.try(:class_name),
+      student_id: index_arr.first.student_id,
+      collected_fee: index_arr.map(&:amount).sum,
+      remaining_fee: index_arr.first.remaining_fee,
+      total_transactions: index_arr.count
+    }
+  end
+  
   def as_json(options ={})
     options.merge({
                     id: self.id,

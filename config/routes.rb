@@ -70,6 +70,7 @@ Rails.application.routes.draw do
     collection do
       get "filter_data"
       get "graph_data"
+      get 'print_account'
     end
   end
 
