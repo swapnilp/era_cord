@@ -68,6 +68,18 @@ class StudentFeesController < ApplicationController
     render json: {success: true, data:  account_json}
   end
 
+  def download_excel
+    fees = StudentFee.includes(:jkci_class, :student, {class_student: :jkci_class}).order("id desc")
+    student_fees = filter_student_fees(fees)
+    fees_groups = student_fees.group_by{ |s| [s.student_id, s.jkci_class_id] }
+    @accounts = fees_groups.values.collect {|fee_group| StudentFee.print_fee_json(fee_group)}
+    respond_to do |format|
+      format.xlsx{
+        response.headers['Content-Disposition'] = "attachment; filename='accounts_#{Date.today.strftime("%v")}.xlsx'"
+      }
+    end
+  end
+
   protected
 
   def filter_student_fees(student_fees)

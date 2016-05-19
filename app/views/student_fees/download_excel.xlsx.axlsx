@@ -1,0 +1,7 @@
+wb = xlsx_package.workbook
+wb.add_worksheet(name: "Students") do |sheet|
+  sheet.add_row  ACCOUNT_HEADER
+  @accounts.each do |account|
+    sheet.add_row [account[:name], account[:p_mobile], account[:jkci_class], account[:collected_fee], account[:remaining_fee], account[:total_transactions]]
+  end
+end

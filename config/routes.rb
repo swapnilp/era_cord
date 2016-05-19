@@ -71,6 +71,7 @@ Rails.application.routes.draw do
       get "filter_data"
       get "graph_data"
       get 'print_account'
+      get "download_excel"
     end
   end
 
