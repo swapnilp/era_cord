@@ -76,8 +76,14 @@ class StudentFee < ActiveRecord::Base
   end
 
   def self.remaining_students(class_student_ids, filter)
-    if filter[:batch].present?
+    remaining_students = ClassStudent.includes(:student, :jkci_class).where(collected_fee: 0.0)
+    if class_student_ids.present?
+      remaining_students = remaining_students.where("student_id not in (?)", class_student_ids)
     end
+    if JSON.parse(filter)['batch'].present?
+      remaining_students = remaining_students.where(batch_id: JSON.parse(filter)['batch'])
+    end
+    remaining_students.map(&:accounts_json)
   end
   
   def as_json(options ={})

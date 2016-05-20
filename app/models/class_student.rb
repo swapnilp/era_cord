@@ -58,6 +58,17 @@ class ClassStudent < ActiveRecord::Base
                     class_name: jkci_class.class_name
                   })
   end
-  
+
+  def accounts_json(options = {})
+    options.merge({
+                    name: student.name, 
+                    p_mobile: student.p_mobile,
+                    jkci_class: jkci_class.try(:class_name),
+                    student_id: student_id,
+                    collected_fee: 0,
+                    remaining_fee: jkci_class.try(:fee) || 0,
+                    total_transactions: 0
+                  })
+  end
   
 end

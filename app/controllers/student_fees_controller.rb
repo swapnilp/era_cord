@@ -16,11 +16,11 @@ class StudentFeesController < ApplicationController
       if params[:filter].present? &&  JSON.parse(params[:filter])['is_remaining'] == 'Remaining'
         student_ids = student_fees_index.collect {|student| student[:student_id]}
         remaining_students = StudentFee.remaining_students(student_ids, params[:filter])
+        student_fees_index = student_fees_index + remaining_students
       end
       student_fees_index = Kaminari.paginate_array(student_fees_index).page(params[:page]).per(10)
       #student_fees_index = Kaminari.paginate_array(fees_group.values).map {|a| StudentFee.index_fee_json(a) }
-
-      render json: {success: true, payments: student_fees_index, total_amount: total_amount, count: fees_group.keys.count, expected_fees: expected_fees, total_students: total_students, total_tax: total_tax.round(2)}
+      render json: {success: true, payments: student_fees_index, total_amount: total_amount, count: student_fees_index.total_count, expected_fees: expected_fees, total_students: student_fees_index.total_count, total_tax: total_tax.round(2)}
     else
       render json: {success: false, message: "Unauthorized !!!! You Must be Root Organisation."}
     end
@@ -71,6 +71,11 @@ class StudentFeesController < ApplicationController
     student_fees = filter_student_fees(fees)
     fees_groups = student_fees.group_by{ |s| [s.student_id, s.jkci_class_id] }
     account_json = fees_groups.values.collect {|fee_group| StudentFee.print_fee_json(fee_group)}
+    if params[:filter].present? &&  JSON.parse(params[:filter])['is_remaining'] == 'Remaining'
+      student_ids = account_json.collect {|student| student[:student_id]}
+      remaining_students = StudentFee.remaining_students(student_ids, params[:filter])
+      account_json = account_json+ remaining_students
+    end
     render json: {success: true, data:  account_json}
   end
 
@@ -79,6 +84,11 @@ class StudentFeesController < ApplicationController
     student_fees = filter_student_fees(fees)
     fees_groups = student_fees.group_by{ |s| [s.student_id, s.jkci_class_id] }
     @accounts = fees_groups.values.collect {|fee_group| StudentFee.print_fee_json(fee_group)}
+    if params[:filter].present? &&  JSON.parse(params[:filter])['is_remaining'] == 'Remaining'
+      student_ids = @accounts.collect {|student| student[:student_id]}
+      remaining_students = StudentFee.remaining_students(student_ids, params[:filter])
+      @accounts = @accounts + remaining_students
+    end
     respond_to do |format|
       format.xlsx{
         response.headers['Content-Disposition'] = "attachment; filename='accounts_#{Date.today.strftime("%v")}.xlsx'"
