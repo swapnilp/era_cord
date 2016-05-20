@@ -40,7 +40,7 @@ class JkciClass < ActiveRecord::Base
     organisation.students.where(id: associate_students).each do |student|
       #organisation.class_students.where("jkci_class_id not in (?)", [self.id]).where(student_id: student).destroy_all
       student.update_attributes({batch_id: self.batch_id})
-      self.class_students.find_or_initialize_by({student_id: student.id, organisation_id: self.organisation_id}).save
+      self.class_students.find_or_initialize_by({student_id: student.id, organisation_id: self.organisation_id, batch_id: self.batch_id}).save
     end
   end
   

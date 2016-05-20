@@ -12,7 +12,13 @@ class StudentFeesController < ApplicationController
       #student_fees = student_fees.page(params[:page])
       #student_fees = Kaminari.paginate_array(student_fees.group_by{ |s| [s.student_id, s.jkci_class_id] }.values).page(2).per(2)
       fees_group = student_fees.group_by{ |s| [s.student_id, s.jkci_class_id] }
-      student_fees_index = Kaminari.paginate_array(fees_group.values).map {|a| StudentFee.index_fee_json(a) }
+      student_fees_index = fees_group.values.collect {|fee_g| StudentFee.index_fee_json(fee_g)}
+      if params[:filter].present? &&  JSON.parse(params[:filter])['is_remaining'] == 'Remaining'
+        student_ids = student_fees_index.collect {|student| student[:student_id]}
+        remaining_students = StudentFee.remaining_students(student_ids, params[:filter])
+      end
+      student_fees_index = Kaminari.paginate_array(student_fees_index).page(params[:page]).per(10)
+      #student_fees_index = Kaminari.paginate_array(fees_group.values).map {|a| StudentFee.index_fee_json(a) }
 
       render json: {success: true, payments: student_fees_index, total_amount: total_amount, count: fees_group.keys.count, expected_fees: expected_fees, total_students: total_students, total_tax: total_tax.round(2)}
     else
@@ -112,6 +118,7 @@ class StudentFeesController < ApplicationController
   end
 
   def expected_filter
+    ## expected fees with Filter ##
     jkci_classes = JkciClass.all
     if params[:filter].present? &&  JSON.parse(params[:filter])['batch'].present?
       jkci_classes = jkci_classes.where(batch_id: JSON.parse(params[:filter])['batch'])

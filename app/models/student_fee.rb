@@ -74,6 +74,11 @@ class StudentFee < ActiveRecord::Base
       total_transactions: index_arr.count
     }
   end
+
+  def self.remaining_students(class_student_ids, filter)
+    if filter[:batch].present?
+    end
+  end
   
   def as_json(options ={})
     options.merge({
