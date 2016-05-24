@@ -1,5 +1,5 @@
 class ForgotPasswordMailer < ActionMailer::Base
-  default from: "swapnil.patil04@gmail.com"
+  default from: "admin@eracord.com"
   
   def send_email(reset_password)
     @reset_password = reset_password
