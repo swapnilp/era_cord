@@ -6,8 +6,8 @@ module Users
     skip_before_filter :authenticate_with_token!, only: [:new, :create, :destroy]
 
     def new
-      if params[:email_code].present?
-        @organisation = Organisation.where(email_code: params[:email_code]).first
+      if params[:email_token].present?
+        @organisation = Organisation.where(email_token: params[:email_token]).first
         raise ActionController::RoutingError.new('Not Found') unless @organisation.present?
       else
         @organisation = nil
@@ -20,7 +20,7 @@ module Users
     end
     
     def create
-      @organisation = Organisation.where(email_code: params[:email_code]).first
+      @organisation = Organisation.where(email_token: params[:email_token]).first
       raise ActionController::RoutingError.new('Not Found') unless @organisation.present?
       #super
       # add custom create logic here
