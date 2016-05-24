@@ -1,5 +1,7 @@
 class StudentFeesController < ApplicationController
   before_action :authenticate_user!
+  load_and_authorize_resource 
+  
   
   def index
     if current_user && (FULL_ACCOUNT_HANDLE_ROLES && current_user.roles.map(&:name)).size >0 && @organisation.root?

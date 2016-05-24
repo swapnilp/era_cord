@@ -135,7 +135,7 @@ class StudentsController < ApplicationController
     if current_user && (ACCOUNT_HANDLE_ROLES && current_user.roles.map(&:name)).size >0
       student = Student.where(id: params[:id]).first
       if student.present?
-        render json: {success: true, jkci_classes: student.class_students.map(&:fee_info_json), name: student.name, p_mobile: student.p_mobile, mobile: student.mobile, batch: student.batch.name, enable_tax: @organisation.enable_service_tax, service_tax: @organisation.service_tax}
+        render json: {success: true, jkci_classes: student.class_students.map(&:fee_info_json) + student.removed_class_students.map(&:fee_info_json), name: student.name, p_mobile: student.p_mobile, mobile: student.mobile, batch: student.batch.name, enable_tax: @organisation.enable_service_tax, service_tax: @organisation.service_tax}
       else
         render json: {success: false, message: "Student not present"}
       end
@@ -153,19 +153,20 @@ class StudentsController < ApplicationController
       return render json: {success: false, valid_password: false, message: "Student not present"} unless student.present?
       params_data = pay_fee_params
       student_fee = student.student_fees.build(params_data)
-      student_fee.batch_id = student.batch_id
+      student_fee.batch_id = student_fee.try(:jkci_class).try(:batch_id)
       student_fee.date = Date.today
       student_fee.organisation_id = @organisation.id
       student_fee.user_id = current_user.id
       if @organisation.enable_service_tax
         student_fee.service_tax = (student_fee.amount.to_f * (@organisation.service_tax / 100))
-        student_fee.amount = student_fee.amount - student_fee.service_tax
+        student_fee.amount = student_fee.amount
       end
       
       if student_fee.save
         if student_fee.jkci_class_id.present?
           amount = StudentFee.where(student_id: student_fee.student_id, jkci_class_id: student_fee.jkci_class_id).map(&:amount).sum
-          student_fee.class_student.update_attributes({collected_fee: amount})
+          class_student = student_fee.class_student || student_fee.removed_class_student
+          class_student.update_attributes({collected_fee: amount})
         end
         render json: {success: true, message: "Fee is Paid", student_id: student_fee.student_id, receipt_id: student_fee.id }
       else

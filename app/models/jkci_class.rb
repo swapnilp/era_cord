@@ -3,6 +3,7 @@ class JkciClass < ActiveRecord::Base
   belongs_to :teacher
   has_many :class_students
   has_many :students, through: :class_students
+  has_many :removed_class_students
   has_many :exams
   has_many :daily_teaching_points
   has_many :class_catlogs
@@ -153,9 +154,14 @@ class JkciClass < ActiveRecord::Base
       new_next_class.make_active_class(next_old_class.organisation)
       if student_list.present?
         Student.where(id: student_list).update_all({standard_id: next_standard.id, batch_id: next_batch.id, organisation_id: next_old_class.organisation_id})
-        self.class_students.includes(:student).where(student_id: student_list).update_all({jkci_class_id: new_next_class.id, roll_number: nil, organisation_id: next_old_class.organisation_id, sub_class: nil})
+        old_class_students = self.class_students.includes(:student).where(student_id: student_list)
+        RemovedClassStudent.add_removed_class_students(old_class_students.to_a)
+        old_class_students.update_all({jkci_class_id: new_next_class.id, roll_number: nil, organisation_id: next_old_class.organisation_id, sub_class: nil, batch_id: new_next_class.batch_id, collected_fee: 0})
         new_next_class.students.map{|c_student| c_student.add_students_subjects(nil, next_old_class.organisation)}
       end
+      
+      new_next_class.calculate_students_count
+      self.calculate_students_count
     end
     new_next_class
   end
@@ -167,6 +173,10 @@ class JkciClass < ActiveRecord::Base
       table << ["#{index}", "#{dtp.subject.try(:name)}", "#{dtp.chapter.try(:name)}", "#{dtp.points}", "#{dtp.date.try(:to_date)}", "#{dtp.is_sms_sent}", "#{dtp.sub_classes}"]
     end
     table
+  end
+  
+  def calculate_students_count
+    JkciClass.reset_counters(self.id, :class_students)
   end
   
   def class_students_table_format
@@ -279,7 +289,7 @@ class JkciClass < ActiveRecord::Base
           end
           
           if student.id
-            self_class.class_students.find_or_initialize_by({student_id: student.id, organisation_id: self_class.organisation_id}).save
+            self_class.class_students.find_or_initialize_by({student_id: student.id, organisation_id: self_class.organisation_id, batch_id: self_class.batch_id}).save
           end
         end
       }
@@ -382,7 +392,7 @@ class JkciClass < ActiveRecord::Base
   end
 
   def expected_fee_collections
-    fee * class_students_count
+    fee * (class_students_count + self.removed_class_students.count)
   end
   
   def subject_json(options={})

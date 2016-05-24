@@ -4,7 +4,12 @@ class StudentFee < ActiveRecord::Base
   belongs_to :jkci_class
   belongs_to :organisation
   belongs_to :user
-  has_one :class_student, :class_name => "ClassStudent", :foreign_key => "student_id", primary_key: "student_id"
+  
+  #has_one :class_student, :class_name => "ClassStudent", :foreign_key => "student_id", primary_key: "student_id"
+  
+  has_one :class_student, ->(student_fee){ where("class_students.batch_id = :batch_id",  batch_id: student_fee.try(:batch_id)) }, class_name: "ClassStudent", :foreign_key => "student_id", primary_key: "student_id"
+  
+  has_one :removed_class_student, ->(student_fee){ where("removed_class_students.batch_id = :batch_id",  batch_id: student_fee.batch_id) }, class_name: "RemovedClassStudent", :foreign_key => "student_id", primary_key: "student_id"
   
   default_scope { where(organisation_id: Organisation.current_id) }    
 
@@ -76,14 +81,17 @@ class StudentFee < ActiveRecord::Base
   end
 
   def self.remaining_students(class_student_ids, filter)
-    remaining_students = ClassStudent.includes(:student, :jkci_class).where(collected_fee: 0.0)
+    r_students = ClassStudent.includes(:student, :jkci_class).where(collected_fee: 0.0)
+    removed_students = RemovedClassStudent.includes(:student, :jkci_class)
     if class_student_ids.present?
-      remaining_students = remaining_students.where("student_id not in (?)", class_student_ids)
+      r_students = r_students.where("student_id not in (?)", class_student_ids)
+      removed_students = removed_students.where("student_id not in (?)", class_student_ids)
     end
     if JSON.parse(filter)['batch'].present?
-      remaining_students = remaining_students.where(batch_id: JSON.parse(filter)['batch'])
+      r_students = r_students.where(batch_id: JSON.parse(filter)['batch'])
+      removed_students = removed_students.where(batch_id: JSON.parse(filter)['batch'])
     end
-    remaining_students.map(&:accounts_json)
+    r_students.map(&:accounts_json) + removed_students.map(&:accounts_json)
   end
   
   def as_json(options ={})
@@ -120,7 +128,7 @@ class StudentFee < ActiveRecord::Base
   end
 
   def remaining_fee
-    col_fee = self.class_student.try(:collected_fee) || 0
+    col_fee = self.class_student.try(:collected_fee) || self.removed_class_student.try(:collected_fee) || 0
     class_fee = self.try(:jkci_class).try(:fee) || 0
     return 0 if class_fee == 0
     return (class_fee - col_fee)

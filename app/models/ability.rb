@@ -28,6 +28,9 @@ class Ability
       
       can :organisation_cources, Organisation
       can :get_class_rooms, Organisation
+      can :exams_graph_report, Organisation
+      can :off_class_graph_report, Organisation
+      can :absenty_graph_report, Organisation
       
       can :read, Exam
       can :calender_index, Exam
@@ -96,13 +99,15 @@ class Ability
       can :paid_student_fee, Student if roles.include?('accountant')  || roles.include?('accountant_clark')
       can :get_payments_info, Student if roles.include? 'accountant' 
       can :manage, Contact
+      can :print_receipt, StudentFee if roles.include?('accountant') || roles.include?('accountant_clark')
 
-    elsif roles.include? 'accountant'
-      can :read, Student
-      can :filter_students, Student 
-      can :download_report, Student
-      can :get_fee_info, Student if roles.include? 'accountant' 
-      can :paid_student_fee, Student if roles.include? 'accountant' 
+      if roles.include? 'accountant'
+        can :index, StudentFee
+        can :filter_data, StudentFee
+        can :graph_data, StudentFee
+        can :print_account, StudentFee
+        can :download_excel, StudentFee
+      end
     else
       can :read, Gallery
       can :read, Event

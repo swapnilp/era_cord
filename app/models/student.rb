@@ -7,6 +7,7 @@ class Student < ActiveRecord::Base
   has_many :exam_absents
   has_many :exam_results
   has_many :class_students
+  has_many :removed_class_students
   has_many :jkci_classes, through: :class_students
   has_many :class_catlogs
   has_many :daily_teaching_points, through: :class_catlogs 

@@ -5,6 +5,7 @@ class ClassStudent < ActiveRecord::Base
   has_many :exam_catlogs,->(class_student) { where("student_id = ? ", class_student.student_id) }, through: :jkci_class
   
   default_scope { where(organisation_id: Organisation.current_id) }
+  scope :active, -> { where(deleted_at: nil) }
   
   def add_sub_class(sub_class_id)
     sub_classes = self.sub_class.split(',').map(&:to_i)
