@@ -12,6 +12,13 @@ Rails.application.routes.draw do
     registrations: 'users/registrations',
   },
   skip: [:confirmations]
+
+  resources :register_organisations do
+    member do 
+      get :sms_confirmation
+      post :verify_confirmation
+    end
+  end
   
   # as :user do
   #   put 'users/change-password', to: 'users/registrations#update', as: 'user_password_change'

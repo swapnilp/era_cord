@@ -7,7 +7,7 @@ module Users
 
     def new
       if params[:email_token].present?
-        @organisation = Organisation.where(email_token: params[:email_token]).first
+        @organisation = Organisation.where(email_code: params[:email_token]).first
         raise ActionController::RoutingError.new('Not Found') unless @organisation.present?
       else
         @organisation = nil
@@ -20,7 +20,7 @@ module Users
     end
     
     def create
-      @organisation = Organisation.where(email_token: params[:email_token]).first
+      @organisation = Organisation.where(email_code: params[:email_token]).first
       raise ActionController::RoutingError.new('Not Found') unless @organisation.present?
       #super
       # add custom create logic here

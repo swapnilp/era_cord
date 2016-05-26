@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160522051356) do
+ActiveRecord::Schema.define(version: 20160526044106) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -546,6 +546,19 @@ ActiveRecord::Schema.define(version: 20160522051356) do
     t.integer  "organisation_id", limit: 4
   end
 
+  create_table "temporary_organisations", force: :cascade do |t|
+    t.string   "name",          limit: 255, default: "",    null: false
+    t.string   "email",         limit: 255, default: "",    null: false
+    t.string   "mobile",        limit: 255, default: "",    null: false
+    t.string   "short_name",    limit: 255, default: ""
+    t.string   "user_email",    limit: 255, default: ""
+    t.string   "user_sms_code", limit: 255
+    t.string   "id_hash",       limit: 255
+    t.boolean  "is_confirmed",  limit: 1,   default: false
+    t.datetime "created_at",                                null: false
+    t.datetime "updated_at",                                null: false
+  end
+
   create_table "time_table_classes", force: :cascade do |t|
     t.integer  "organisation_id", limit: 4
     t.integer  "sub_class_id",    limit: 4
@@ -593,6 +606,7 @@ ActiveRecord::Schema.define(version: 20160522051356) do
     t.string   "uid",                    limit: 255
     t.text     "tokens",                 limit: 65535
     t.datetime "token_expires_at"
+    t.string   "mobile",                 limit: 255
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
