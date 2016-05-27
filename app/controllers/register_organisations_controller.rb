@@ -11,11 +11,16 @@ class RegisterOrganisationsController < ApplicationController
     @register_organisation = TemporaryOrganisation.new(create_params)
     user = User.where(email: create_params[:user_email]).first 
     if user && user.valid_password?(params[:temporary_organisation][:password])
-      if @register_organisation.save
-        @register_organisation.generate_code(user)
-        redirect_to sms_confirmation_register_organisation_path(@register_organisation.id_hash)
+      if user.has_role? :creator
+        if @register_organisation.save
+          @register_organisation.generate_code(user)
+          redirect_to sms_confirmation_register_organisation_path(@register_organisation.id_hash)
+        else
+          render :new
+        end
       else
-        render :new
+        flash[:notice] = "You are not authorised for add Organisation"
+        redirect_to root_url
       end
     else
       render :new
