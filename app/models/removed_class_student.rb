@@ -38,7 +38,8 @@ class RemovedClassStudent < ActiveRecord::Base
                     id: id,
                     student_id: student_id,
                     class_id: jkci_class_id,
-                    class_name: jkci_class.class_name
+                    class_name: jkci_class.class_name,
+                    remaining_fee: jkci_class.fee - collected_fee
                   })
   end
 end
