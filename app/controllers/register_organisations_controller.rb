@@ -2,6 +2,7 @@ class RegisterOrganisationsController < ApplicationController
   skip_before_filter :authenticate_with_token!, only: [:new, :create, :destroy, :sms_confirmation, :verify_confirmation]
   skip_before_filter :verify_authenticity_token, only: [:new, :create, :destroy, :sms_confirmation, :verify_confirmation]
   skip_before_filter :require_no_authentication, :only => [ :new, :create, :cancel, :sms_confirmation, :verify_confirmation ]
+  http_basic_authenticate_with name: ORG_CREATE_U_NAME, password: ORG_CREATE_U_PASSWORD
   
   def new
     @register_organisation = TemporaryOrganisation.new
