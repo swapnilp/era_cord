@@ -32,7 +32,8 @@ class Standard < ActiveRecord::Base
       options.merge({
                       id: self.id,
                       name: std_name,
-                      organisaitons: organisation_standards.map{|org_standard| org_standard.as_json({}, org)}
+                      organisaitons: organisation_standards.map{|org_standard| org_standard.as_json({}, org)},
+                      is_permission: org.root? || org.subtree_ids.include?(organisation_standards.where(is_assigned_to_other: false).first.organisation_id)
                     })
     else
       options.merge({

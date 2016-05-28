@@ -317,7 +317,7 @@ class JkciClassesController < ApplicationController
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     file = params[:file]
     if jkci_class && file
-      if  JkciClass.import_students_excel(file, jkci_class, @organisation)
+      if JkciClass.import_students_excel(file, jkci_class, @organisation)
         jkci_class.update_attributes({is_student_verified: false})
         jkci_class.check_duplicates(false)
         render json: {success: true}

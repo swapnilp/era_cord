@@ -33,7 +33,7 @@ class JkciClass < ActiveRecord::Base
   
   #default_scope  {where(is_active: true)} 
   default_scope { where(organisation_id: Organisation.current_id) }
-  scope :active, -> { where(is_current_active: true) }
+  scope :active, -> { where(is_current_active: true, is_active: true) }
 
   after_create :generate_time_table
 
@@ -285,12 +285,23 @@ class JkciClass < ActiveRecord::Base
             student.parent_name = record['parent_name']
             student.standard_id = self_class.standard_id
             student.batch_id = self_class.batch_id
-            student.save!
+            student.save! if student.valid?
           end
-          
-          if student.id
-            self_class.class_students.find_or_initialize_by({student_id: student.id, organisation_id: self_class.organisation_id, batch_id: self_class.batch_id}).save
-          end
+        end
+      }
+    end
+
+    transaction do
+      spreadsheet[0].each_with_index { |row, index|
+        vals = [];
+        row && row.each_with_index { |cell|
+          val = cell && cell.value || ""
+          vals << val 
+        }
+        record = header.zip(vals).to_h
+        student = org.students.where(record.slice("first_name", "last_name", "p_mobile")).first
+        if student.present?
+          self_class.class_students.find_or_initialize_by({student_id: student.id, organisation_id: self_class.organisation_id, batch_id: self_class.batch_id}).save
         end
       }
     end
@@ -383,8 +394,6 @@ class JkciClass < ActiveRecord::Base
       end
     end
     reports = []
-    p 'date_hash.keys'
-    p date_hash.keys
     reports << ([""] << date_hash.keys).flatten
     reports << present_reports.values
 
@@ -392,7 +401,7 @@ class JkciClass < ActiveRecord::Base
   end
 
   def expected_fee_collections
-    fee * (class_students_count + self.removed_class_students.count)
+    (fee || 0) * (class_students_count + self.removed_class_students.count)
   end
   
   def subject_json(options={})

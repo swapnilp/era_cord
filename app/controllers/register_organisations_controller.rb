@@ -9,7 +9,7 @@ class RegisterOrganisationsController < ApplicationController
   end
   
   def create
-    @register_organisation = TemporaryOrganisation.new(create_params)
+    @register_organisation = TemporaryOrganisation.new(create_params.slice(:name, :email, :mobile, :short_name, :user_email))
     user = User.where(email: create_params[:user_email]).first 
     if user && user.valid_password?(params[:temporary_organisation][:password])
       if user.has_role? :creator
@@ -17,6 +17,7 @@ class RegisterOrganisationsController < ApplicationController
           @register_organisation.generate_code(user)
           redirect_to sms_confirmation_register_organisation_path(@register_organisation.id_hash)
         else
+          
           render :new
         end
       else
@@ -52,6 +53,6 @@ class RegisterOrganisationsController < ApplicationController
   
   protected
   def create_params
-    params.require(:temporary_organisation).permit(:name, :email, :mobile, :short_name, :user_email)
+    params.require(:temporary_organisation).permit(:name, :email, :mobile, :short_name, :user_email, :password)
   end
 end

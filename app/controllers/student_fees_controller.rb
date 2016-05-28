@@ -31,7 +31,7 @@ class StudentFeesController < ApplicationController
   def filter_data
     if current_user && (FULL_ACCOUNT_HANDLE_ROLES && current_user.roles.map(&:name)).size >0 && @organisation.root?
       batches = Batch.all
-      organisation_standard = @organisation.organisation_standards.all
+      organisation_standard = @organisation.organisation_standards.active
       render json: {success: true, batches: batches.as_json, standards: organisation_standard.map(&:filter_json)}
     else
       render json: {success: false, message: "Unauthorized !!!! You Must be Root Organisation."}
@@ -110,7 +110,7 @@ class StudentFeesController < ApplicationController
     end
     
     if params[:filter].present? &&  JSON.parse(params[:filter])['standard'].present?
-      jkci_class = JkciClass.where(standard_id: JSON.parse(params[:filter])['standard'], batch_id: batch_id).first
+      jkci_class = JkciClass.where(standard_id: JSON.parse(params[:filter])['standard'], batch_id: batch_id, is_active: true).first
       if jkci_class.present?
         student_fees = student_fees.where(jkci_class_id: jkci_class.try(:id))
       end
@@ -131,7 +131,7 @@ class StudentFeesController < ApplicationController
 
   def expected_filter
     ## expected fees with Filter ##
-    jkci_classes = JkciClass.all
+    jkci_classes = JkciClass.where(is_active: true)
     if params[:filter].present? &&  JSON.parse(params[:filter])['batch'].present?
       jkci_classes = jkci_classes.where(batch_id: JSON.parse(params[:filter])['batch'])
     else

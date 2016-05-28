@@ -41,7 +41,7 @@ class ExamsController < ApplicationController
   end
 
   def get_filter_data
-    standards = @organisation.standards
+    standards = @organisation.standards.where("organisation_standards.is_active = ?", true)
     batches = Batch.all
     render json: {success: true, standards: standards.as_json, batches: batches.as_json}
   end

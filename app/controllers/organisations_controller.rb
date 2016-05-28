@@ -75,9 +75,14 @@ class OrganisationsController < ApplicationController
 
   def remaining_standard_organisations
     #standard = Standard.where(id: params[:standard_id])
-    ids = [0] << @organisation.descendants.joins(:organisation_standards).where("organisation_standards.standard_id = ? && organisation_standards.is_assigned_to_other = ?", params[:standard_id], false).map(&:id)
-    organisations = @organisation.descendants.where("id not in (?)", ids.flatten)
-    render json: {success: true, body: ActiveModel::ArraySerializer.new(organisations, each_serializer: SubOrganisationSerializer).as_json}
+    org_standard_id = @organisation.descendants.joins(:organisation_standards).where("organisation_standards.standard_id = ? && organisation_standards.is_assigned_to_other = ?", params[:standard_id], false).map(&:id)
+    if @organisation.root? || @organisation.subtree_ids.include?(org_standard_id[0])
+      ids = [0] << org_standard_id
+      organisations = @organisation.descendants.where("id not in (?)", ids.flatten)
+      render json: {success: true, body: ActiveModel::ArraySerializer.new(organisations, each_serializer: SubOrganisationSerializer).as_json}
+    else
+      render json: {success: false, message: "You Don't have permission to handle this standard"}
+    end
   end
 
   def switch_organisation_standard
@@ -273,7 +278,9 @@ class OrganisationsController < ApplicationController
       return render json: {success: false, message: "Contact to root organisation."}
     end
     organisation_standards = OrganisationStandard.where(standard_id: params[:standard_id])
+    organisation_classes = JkciClass.where(standard_id: params[:standard_id])
     organisation_standards.update_all({is_active: false})
+    organisation_classes.update_all({is_active: false})
     render json: {success: true}
   end
 
@@ -282,7 +289,9 @@ class OrganisationsController < ApplicationController
       return render json: {success: false, message: "Contact to root organisation."}
     end
     organisation_standards = OrganisationStandard.where(standard_id: params[:standard_id])
+    organisation_classes = JkciClass.where(standard_id: params[:standard_id])
     organisation_standards.update_all({is_active: true})
+    organisation_classes.update_all({is_active: true})
     render json: {success: true}
   end
 
@@ -321,7 +330,7 @@ class OrganisationsController < ApplicationController
       organisation_standard= OrganisationStandard.where(id: params[:course_id]).first
       if organisation_standard.present?
         organisation_standard.update_attributes({total_fee: params[:fee][:fee]})
-        JkciClass.where(standard_id: organisation_standard.id).active.update_all({fee: params[:fee][:fee]})
+        JkciClass.where(standard_id: organisation_standard.standard_id).active.update_all({fee: params[:fee][:fee]})
         render json: {success: true, message: "Fee is updated"}
       else
         render json: {success: false, message: "Wrong standard selected"}
