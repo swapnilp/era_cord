@@ -89,7 +89,11 @@ class User < ActiveRecord::Base
   end
 
   def add_organiser_roles
-    ["admin", "clark", "verify_exam", "exam_conduct", "verify_exam_absenty", "add_exam_result", "verify_exam_result", "publish_exam", "create_exam", "add_exam_absenty", "create_daily_teach", "add_daily_teach_absenty", "verify_daily_teach_absenty", "publish_daily_teach_absenty", "manage_class_sms", "organisation", "add_student", "manage_student_subject", "manage_class_student", "manage_roll_number", "manage_class", "manage_organiser", "toggle_student_sms", 'accountant'].each do |u_role|
+    u_roles = ["admin", "clark", "verify_exam", "exam_conduct", "verify_exam_absenty", "add_exam_result", "verify_exam_result", "publish_exam", "create_exam", "add_exam_absenty", "create_daily_teach", "add_daily_teach_absenty", "verify_daily_teach_absenty", "publish_daily_teach_absenty", "manage_class_sms", "organisation", "add_student", "manage_student_subject", "manage_class_student", "manage_roll_number", "manage_class", "manage_organiser", "toggle_student_sms"]
+    if organisation.root?
+      u_roles << 'accountant'
+    end
+    u_roles.each do |u_role|
       self.add_role u_role.to_sym 
     end
   end
