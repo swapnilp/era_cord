@@ -1,7 +1,9 @@
 class RemovedClassStudent < ActiveRecord::Base
   belongs_to :jkci_class
   belongs_to :student
-
+  
+  default_scope { where(organisation_id: Organisation.current_id) }
+  
   def self.add_removed_class_students(class_students)
     if class_students.is_a?(Array)
       class_students.each do |class_student|
@@ -39,7 +41,7 @@ class RemovedClassStudent < ActiveRecord::Base
                     student_id: student_id,
                     class_id: jkci_class_id,
                     class_name: jkci_class.class_name,
-                    remaining_fee: jkci_class.fee - collected_fee
+                    remaining_fee: jkci_class.fee - self.collected_fee
                   })
   end
 end

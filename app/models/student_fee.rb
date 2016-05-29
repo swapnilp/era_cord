@@ -128,7 +128,12 @@ class StudentFee < ActiveRecord::Base
   end
 
   def remaining_fee
-    col_fee = self.class_student.try(:collected_fee) || self.removed_class_student.try(:collected_fee) || 0
+    klass_student = ClassStudent.where(student_id: self.student_id, jkci_class_id: self.jkci_class_id, batch_id: self.batch_id).first
+    unless klass_student.present?
+      klass_student = RemovedClassStudent.where(student_id: self.student_id, jkci_class_id: self.jkci_class_id, batch_id: self.batch_id).first
+    end
+
+    col_fee = klass_student.try(:collected_fee) || 0 
     class_fee = self.try(:jkci_class).try(:fee) || 0
     return 0 if class_fee == 0
     return (class_fee - col_fee)

@@ -48,7 +48,11 @@ class StudentsController < ApplicationController
       student.update_attributes(create_params.slice(:gender, :initl, :parent_name))
       student.add_students_subjects(params[:o_subjects], @organisation)
       if params[:class_id].present?
-        jkci_class.class_students.find_or_initialize_by({student_id: student.id, organisation_id: @organisation.id}).save  if jkci_class.present?
+        if jkci_class.present?
+          class_student = jkci_class.class_students.find_or_initialize_by({student_id: student.id, organisation_id: @organisation.id})
+          class_student.batch_id = jkci_class.batch_id
+          class_student.save 
+        end
       end
       render json: {success: true}
     else

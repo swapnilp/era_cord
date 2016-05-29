@@ -41,7 +41,11 @@ class JkciClass < ActiveRecord::Base
     organisation.students.where(id: associate_students).each do |student|
       #organisation.class_students.where("jkci_class_id not in (?)", [self.id]).where(student_id: student).destroy_all
       student.update_attributes({batch_id: self.batch_id})
-      self.class_students.find_or_initialize_by({student_id: student.id, organisation_id: self.organisation_id, batch_id: self.batch_id}).save
+      removed_class_student = self.removed_class_students.where(student_id: student.id).first
+      klass_student = self.class_students.find_or_initialize_by({student_id: student.id, organisation_id: self.organisation_id, batch_id: self.batch_id})
+      klass_student.collected_fee = removed_class_student.collected_fee if removed_class_student.present?
+      klass_student.save
+      removed_class_student.destroy if removed_class_student.present?
     end
   end
   
@@ -50,7 +54,10 @@ class JkciClass < ActiveRecord::Base
   end
 
   def remove_student_from_class(associate_student, organisation)
-    self.students.delete(organisation.students.where(id: associate_student))
+    #self.students.delete(organisation.students.where(id: associate_student))
+    klass_students = self.class_students.where(student_id: associate_student)
+    RemovedClassStudent.add_removed_class_students(klass_students.to_a)
+    klass_students.destroy_all
   end
   
   def jk_exams
