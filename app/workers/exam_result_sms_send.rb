@@ -10,9 +10,11 @@ class ExamResultSmsSend < Struct.new(:exam_arry)
       message = exam[1]
       obj_id = exam[2]
       org_id = exam[3]
+      student_id = exam[4]
+      number = exam[5]
       
       deliver_sms(URI::encode(url))
-      SmsSent.new({obj_type: "exam_result", obj_id: obj_id, message: message, is_parent: true, organisation_id: org_id}).save
+      SmsSent.new({obj_type: "exam_result", obj_id: obj_id, message: message, is_parent: true, organisation_id: org_id, student_id: student_id, number: number}).save
     end
 
   end

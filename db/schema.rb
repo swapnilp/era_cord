@@ -11,13 +11,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160526044106) do
+ActiveRecord::Schema.define(version: 20160530174926) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
     t.string   "description", limit: 255
     t.string   "location",    limit: 255
     t.date     "date"
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+  end
+
+  create_table "answers", force: :cascade do |t|
+    t.integer  "question_id", limit: 4
+    t.string   "answer",      limit: 255
+    t.integer  "answer_id",   limit: 4
     t.datetime "created_at",              null: false
     t.datetime "updated_at",              null: false
   end
@@ -362,6 +370,14 @@ ActiveRecord::Schema.define(version: 20160526044106) do
     t.string   "subject",    limit: 255
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
+  end
+
+  create_table "questions", force: :cascade do |t|
+    t.string   "email",      limit: 255
+    t.string   "question",   limit: 255
+    t.string   "is_admin",   limit: 255, default: "1"
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
   end
 
   create_table "removed_class_students", force: :cascade do |t|

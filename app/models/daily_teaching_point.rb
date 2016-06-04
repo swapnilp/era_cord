@@ -120,7 +120,7 @@ class DailyTeachingPoint < ActiveRecord::Base
         message = "We regret to convey you that your son/daughter #{class_catlog.student.short_name} is absent for #{self.jkci_class.class_name} lectures.Plz contact us. JKSai!!"
         url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=update&dmobile=#{class_catlog.student.sms_mobile}&message=#{message}"
         unless class_catlog.sms_sent
-          url_arry << [url, message, class_catlog.id, self.organisation_id]
+          url_arry << [url, message, class_catlog.id, self.organisation_id, class_catlog.student.sms_mobile]
           #class_catlog.update_attributes({sms_sent: true})
         end
       end

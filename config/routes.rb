@@ -19,6 +19,8 @@ Rails.application.routes.draw do
       post :verify_confirmation
     end
   end
+
+  resources :sms_sent, only: [:index]
   
   # as :user do
   #   put 'users/change-password', to: 'users/registrations#update', as: 'user_password_change'

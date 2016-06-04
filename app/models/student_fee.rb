@@ -26,7 +26,7 @@ class StudentFee < ActiveRecord::Base
   def fee_paid_sms
     message = "#{self.student.name} is deposited #{self.amount} fee on #{self.date.to_date} in #{self.organisation.root.name}"
     url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=update&dmobile=91#{self.organisation.root.account_sms}&message=#{message}"
-    url_arry = [url, message, self.id, self.organisation.root.id]
+    url_arry = [url, message, self.id, self.organisation.root.id, self.student_id, self.organisation.root.account_sms]
   end
 
   def print_data
