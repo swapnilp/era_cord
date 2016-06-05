@@ -21,6 +21,8 @@ Rails.application.routes.draw do
   end
 
   resources :sms_sent, only: [:index]
+
+  resources :parents_meetings, only: [:index, :new, :create]
   
   # as :user do
   #   put 'users/change-password', to: 'users/registrations#update', as: 'user_password_change'

@@ -6,7 +6,6 @@ class SmsSent < ActiveRecord::Base
 
   after_save :update_record
 
-
   scope :our_organisations, -> { where(organisation_id: Organisation.current_id, obj_type: ["Activation", "absent_exam", "exam result", "exam_result", "group_exam_result", "activation_sms", "student_fee"]) }
   
 
