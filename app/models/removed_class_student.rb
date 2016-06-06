@@ -19,6 +19,7 @@ class RemovedClassStudent < ActiveRecord::Base
       
       removed_class_student = RemovedClassStudent.find_or_initialize_by({student_id: class_student.student_id, organisation_id: class_student.organisation_id, batch_id: class_student.batch_id, jkci_class_id: class_student.jkci_class_id})
       removed_class_student.collected_fee = class_student.collected_fee
+      removed_class_student.other_fee = class_student.other_fee
       removed_class_student.save
     end
   end

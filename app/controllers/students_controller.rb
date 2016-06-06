@@ -169,9 +169,10 @@ class StudentsController < ApplicationController
       
       if student_fee.save
         if student_fee.jkci_class_id.present?
-          amount = StudentFee.where(student_id: student_fee.student_id, jkci_class_id: student_fee.jkci_class_id).map(&:amount).sum
+          amount = StudentFee.where(student_id: student_fee.student_id, jkci_class_id: student_fee.jkci_class_id, is_fee: true).map(&:amount).sum
+          other_amount = StudentFee.where(student_id: student_fee.student_id, jkci_class_id: student_fee.jkci_class_id, is_fee: false).map(&:amount).sum
           class_student = student_fee.class_student || student_fee.removed_class_student
-          class_student.update_attributes({collected_fee: amount})
+          class_student.update_attributes({collected_fee: amount, other_fee: other_amount})
         end
         render json: {success: true, message: "Fee is Paid", student_id: student_fee.student_id, receipt_id: student_fee.id }
       else

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160605080053) do
+ActiveRecord::Schema.define(version: 20160606063840) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -96,6 +96,7 @@ ActiveRecord::Schema.define(version: 20160605080053) do
     t.float    "collected_fee",         limit: 24,  default: 0.0
     t.integer  "exam_catlogs_count",    limit: 4,   default: 0
     t.integer  "batch_id",              limit: 4
+    t.float    "other_fee",             limit: 24,  default: 0.0
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -396,8 +397,9 @@ ActiveRecord::Schema.define(version: 20160605080053) do
     t.integer  "organisation_id", limit: 4
     t.float    "collected_fee",   limit: 24
     t.integer  "batch_id",        limit: 4
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.datetime "created_at",                               null: false
+    t.datetime "updated_at",                               null: false
+    t.float    "other_fee",       limit: 24, default: 0.0
   end
 
   create_table "reset_passwords", force: :cascade do |t|
@@ -489,6 +491,8 @@ ActiveRecord::Schema.define(version: 20160605080053) do
     t.string   "receipt_number",    limit: 255
     t.float    "service_tax",       limit: 24,  default: 0.0
     t.integer  "user_id",           limit: 4
+    t.boolean  "is_fee",            limit: 1,   default: true
+    t.string   "reason",            limit: 255, default: "Fee"
   end
 
   create_table "student_subjects", force: :cascade do |t|

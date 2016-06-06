@@ -44,6 +44,7 @@ class JkciClass < ActiveRecord::Base
       removed_class_student = self.removed_class_students.where(student_id: student.id).first
       klass_student = self.class_students.find_or_initialize_by({student_id: student.id, organisation_id: self.organisation_id, batch_id: self.batch_id})
       klass_student.collected_fee = removed_class_student.collected_fee if removed_class_student.present?
+      klass_student.other_fee = removed_class_student.other_fee if removed_class_student.present?
       klass_student.save
       removed_class_student.destroy if removed_class_student.present?
     end
