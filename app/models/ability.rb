@@ -100,6 +100,7 @@ class Ability
       can :get_payments_info, Student if roles.include? 'accountant' 
       can :manage, Contact
       can :print_receipt, StudentFee if roles.include?('accountant') || roles.include?('accountant_clark')
+      can :new, Student if roles.include?('accountant') || roles.include?('accountant_clark')
 
       if roles.include? 'accountant'
         can :index, StudentFee

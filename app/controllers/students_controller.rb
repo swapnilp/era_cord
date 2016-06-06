@@ -32,7 +32,7 @@ class StudentsController < ApplicationController
     else
       standards = @organisation.standards.active
       subjects = standards.first.try(:subjects).try(:optional) || []  
-      batches = Batch.all
+      batches = Batch.all.active
       render json: {success: true, standards: standards, subjects: subjects.as_json, batches: batches}
     end
   end
@@ -43,18 +43,19 @@ class StudentsController < ApplicationController
     if params[:class_id].present?
       jkci_class = @organisation.jkci_classes.where(id: params[:class_id]).first
       student.batch_id = jkci_class.batch_id
+    else
+      student.batch_id = create_params[:batch_id]
+      jkci_class = @organisation.jkci_classes.where(standard_id: create_params[:standard_id], batch_id: create_params[:batch_id]).active.last
     end
     if student.save
       student.update_attributes(create_params.slice(:gender, :initl, :parent_name))
       student.add_students_subjects(params[:o_subjects], @organisation)
-      if params[:class_id].present?
-        if jkci_class.present?
-          class_student = jkci_class.class_students.find_or_initialize_by({student_id: student.id, organisation_id: @organisation.id})
-          class_student.batch_id = jkci_class.batch_id
-          class_student.save 
-        end
+      if jkci_class.present?
+        class_student = jkci_class.class_students.find_or_initialize_by({student_id: student.id, organisation_id: @organisation.id})
+        class_student.batch_id = jkci_class.batch_id
+        class_student.save 
       end
-      render json: {success: true}
+      render json: {success: true, student_id: student.id}
     else
       render json: {success: false, message: student.errors.full_messages.join(' , ')}
     end
@@ -64,7 +65,7 @@ class StudentsController < ApplicationController
     student = Student.includes({subjects: :standard}).where(id: params[:id]).first
     if student
       roles = current_user.roles.map(&:name)
-      render json: {success: true, body: StudentSerializer.new(student).as_json, has_show_pay_info: roles.include?('accountant'), has_pay_fee: (['accountant','accountant_clark'] & roles).size > 0 }
+      render json: {success: true, body: StudentSerializer.new(student).as_json, has_show_pay_info: roles.include?('accountant'), has_pay_fee: (['accountant','accountant_clark'] & roles).size > 0, classes: student.jkci_classes.map(&:student_filter_json) }
     else
        render json: {success: false}
     end

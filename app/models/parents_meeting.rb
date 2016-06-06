@@ -1,5 +1,6 @@
 class ParentsMeeting < ActiveRecord::Base
-  
+
+  has_many :meetings_students
   default_scope { where(organisation_id: Organisation.current_id) }  
 
   belongs_to :batch
@@ -10,6 +11,7 @@ class ParentsMeeting < ActiveRecord::Base
 
   def as_json(options= {})
     options.merge({
+                    id: id,
                     agenda: agenda,
                     date: date.strftime("%d %b %Y %I:%M %p"),
                     contact_person: contact_person,

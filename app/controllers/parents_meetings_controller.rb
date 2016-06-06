@@ -20,6 +20,15 @@ class ParentsMeetingsController < ApplicationController
     end
   end
 
+  def show
+    parents_meeting = ParentsMeeting.where(id: params[:id]).first
+    if parents_meeting.present?
+      render json: {success: true, parents_meeting: parents_meeting.as_json}
+    else
+      render json: {success: false}
+    end
+  end
+
   private
 
   def create_params
