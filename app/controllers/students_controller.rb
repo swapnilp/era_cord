@@ -162,7 +162,7 @@ class StudentsController < ApplicationController
       student_fee.date = Date.today
       student_fee.organisation_id = @organisation.id
       student_fee.user_id = current_user.id
-      if @organisation.enable_service_tax
+      if @organisation.enable_service_tax && student_fee.is_fee
         student_fee.service_tax = (student_fee.amount.to_f * (@organisation.service_tax / 100))
         student_fee.amount = student_fee.amount
       end
@@ -298,7 +298,7 @@ class StudentsController < ApplicationController
   end
   
   def pay_fee_params
-    params.require(:student_fee).permit(:student_id, :jkci_class_id, :amount, :payment_type, :bank_name, :cheque_number, :cheque_issue_date, :book_number, :receipt_number)
+    params.require(:student_fee).permit(:student_id, :jkci_class_id, :amount, :payment_type, :bank_name, :cheque_number, :cheque_issue_date, :book_number, :receipt_number, :is_fee, :reason)
   end
 
   def create_params
