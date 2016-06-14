@@ -24,7 +24,12 @@ Rails.application.routes.draw do
 
   resources :parents_meetings, only: [:index, :new, :create, :show]
   
-  resources :questions, only: [:index, :show]
+  resources :questions, only: [:index, :show] do
+    collection do 
+      get :filter_info
+    end
+  end
+  
   
   # as :user do
   #   put 'users/change-password', to: 'users/registrations#update', as: 'user_password_change'

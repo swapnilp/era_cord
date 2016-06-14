@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160606063840) do
+ActiveRecord::Schema.define(version: 20160612130157) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -389,6 +389,8 @@ ActiveRecord::Schema.define(version: 20160606063840) do
     t.string   "is_admin",   limit: 255, default: "1"
     t.datetime "created_at",                           null: false
     t.datetime "updated_at",                           null: false
+    t.string   "tag",        limit: 255
+    t.string   "page",       limit: 255
   end
 
   create_table "removed_class_students", force: :cascade do |t|
