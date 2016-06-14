@@ -334,7 +334,7 @@ ul.nostyle i {
 }
 
 #hero-banner {
-  background: url('/assets/bg1.png') no-repeat 77% bottom;
+  background: url('https://s3.amazonaws.com/Eracord/Eracord/images/bg1.png') no-repeat 77% bottom;
 }
 
 #hero-banner h2 {
