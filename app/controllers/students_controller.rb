@@ -140,7 +140,8 @@ class StudentsController < ApplicationController
     if current_user && (ACCOUNT_HANDLE_ROLES && current_user.roles.map(&:name)).size >0
       student = Student.where(id: params[:id]).first
       if student.present?
-        render json: {success: true, jkci_classes: student.class_students.map(&:fee_info_json) + student.removed_class_students.map(&:fee_info_json), name: student.name, p_mobile: student.p_mobile, mobile: student.mobile, batch: student.batch.name, enable_tax: @organisation.enable_service_tax, service_tax: @organisation.service_tax}
+        payment_reasons = PaymentReason.where("id > 1")
+        render json: {success: true, jkci_classes: student.class_students.map(&:fee_info_json) + student.removed_class_students.map(&:fee_info_json), name: student.name, p_mobile: student.p_mobile, mobile: student.mobile, batch: student.batch.name, enable_tax: @organisation.enable_service_tax, service_tax: @organisation.service_tax, payment_reasons: payment_reasons.as_json}
       else
         render json: {success: false, message: "Student not present"}
       end
@@ -298,7 +299,7 @@ class StudentsController < ApplicationController
   end
   
   def pay_fee_params
-    params.require(:student_fee).permit(:student_id, :jkci_class_id, :amount, :payment_type, :bank_name, :cheque_number, :cheque_issue_date, :book_number, :receipt_number, :is_fee, :reason)
+    params.require(:student_fee).permit(:student_id, :jkci_class_id, :amount, :payment_type, :bank_name, :cheque_number, :cheque_issue_date, :book_number, :receipt_number, :is_fee, :payment_reason_id)
   end
 
   def create_params

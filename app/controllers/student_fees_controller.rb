@@ -5,7 +5,7 @@ class StudentFeesController < ApplicationController
   
   def index
     if current_user && (FULL_ACCOUNT_HANDLE_ROLES && current_user.roles.map(&:name)).size >0 && @organisation.root?
-      fees = StudentFee.includes(:jkci_class, :student, {class_student: :jkci_class}).order("id desc")
+      fees = StudentFee.includes(:jkci_class, :student, :payment_reason, {class_student: :jkci_class}).order("id desc")
       student_fees = filter_student_fees(fees)
       total_amount = student_fees.map(&:amount).sum
       total_tax = student_fees.map(&:service_tax).sum

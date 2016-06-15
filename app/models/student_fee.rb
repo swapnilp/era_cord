@@ -4,6 +4,7 @@ class StudentFee < ActiveRecord::Base
   belongs_to :jkci_class
   belongs_to :organisation
   belongs_to :user
+  belongs_to :payment_reason
   
   #has_one :class_student, :class_name => "ClassStudent", :foreign_key => "student_id", primary_key: "student_id"
   
@@ -125,7 +126,7 @@ class StudentFee < ActiveRecord::Base
                     cheque_issue_date: cheque_issue_date,
                     book_number: book_number,
                     receipt_number: receipt_number,
-                    reason: reason
+                    reason: payment_reason.reason
                   })
   end
 
