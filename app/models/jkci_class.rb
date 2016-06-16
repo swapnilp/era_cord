@@ -22,6 +22,7 @@ class JkciClass < ActiveRecord::Base
   has_many :time_tables
   has_many :off_classes
   has_many :student_fees
+  has_many :parents_meetings
   
   has_many :chapters, through: :subject
 
@@ -436,6 +437,14 @@ class JkciClass < ActiveRecord::Base
                     mobile: organisation.mobile,
                     email: organisation.email
                     
+                  })
+  end
+
+  def meeting_json(options = {})
+    options.merge({
+                    id: id,
+                    name: class_name
+                    #children: sub_classes.map(&:meeting_json)
                   })
   end
 

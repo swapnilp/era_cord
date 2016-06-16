@@ -16,6 +16,10 @@ class SubClass < ActiveRecord::Base
     "#{name}-#{self.students.count}"
   end
 
+  def class_name
+    "#{jkci_class.class_name}-#{name}"
+  end
+
   def as_json(options= {})
     output = if options[:selected].present?
                options.merge({
@@ -41,5 +45,13 @@ class SubClass < ActiveRecord::Base
                     name: name,
                     students_count: students.count
                   })
+  end
+
+  def meeting_json(options= {})
+    options.merge({
+                    id: self.id,
+                    name: class_name
+                  })
+    
   end
 end

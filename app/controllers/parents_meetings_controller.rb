@@ -11,6 +11,11 @@ class ParentsMeetingsController < ApplicationController
     render json: {success: true, parents_meetings: parents_meetings.as_json, count: parents_meetings.total_count}
   end
 
+  def new
+    jkci_classes = JkciClass.active
+    render json: {success: true, classes: jkci_classes.map(&:meeting_json)}
+  end
+
   def create
     parents_meeting = ParentsMeeting.new(create_params.merge({organisation_id: @organisation.id}))
     if parents_meeting.save

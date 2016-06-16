@@ -1,6 +1,8 @@
 class ParentsMeeting < ActiveRecord::Base
 
   has_many :meetings_students
+  belongs_to :jkci_class
+  
   default_scope { where(organisation_id: Organisation.current_id) }  
 
   belongs_to :batch
