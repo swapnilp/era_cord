@@ -72,5 +72,13 @@ class ClassStudent < ActiveRecord::Base
                     total_transactions: 0
                   })
   end
+
+  def meetings_json(options = {})
+    options.merge({
+                    id: student_id,
+                    name: student.name, 
+                    p_mobile: student.p_mobile
+                  })
+  end
   
 end

@@ -22,7 +22,11 @@ Rails.application.routes.draw do
 
   resources :sms_sent, only: [:index]
 
-  resources :parents_meetings, only: [:index, :new, :create, :show]
+  resources :parents_meetings, only: [:index, :new, :create, :show] do
+    collection do 
+      get :get_class_students
+    end
+  end
   
   resources :questions, only: [:index, :show] do
     collection do 

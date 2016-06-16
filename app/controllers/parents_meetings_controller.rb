@@ -34,6 +34,16 @@ class ParentsMeetingsController < ApplicationController
     end
   end
 
+  def get_class_students
+    jkci_class = JkciClass.where(id: params[:class_id]).first
+    if jkci_class.present?
+      class_students = ClassStudent.includes(:student).where(jkci_class_id: params[:class_id])
+      render json: {success: true, students: class_students.map(&:meetings_json)}
+    else
+      render json: {success: false}
+    end
+  end
+
   private
 
   def create_params
