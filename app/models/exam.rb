@@ -297,7 +297,7 @@ class Exam < ActiveRecord::Base
     table_head
   end
 
-  def grouped_exam_report
+  def grouped_exam_report(for_sms = false)
     return [] unless self.is_group
     #ex_students = self.exam_students
    # g_exams_ids = self.descendants.order("id ASC").map(&:id)
@@ -326,10 +326,13 @@ class Exam < ActiveRecord::Base
       students_report[exam_catlog.student.name][exams_hash[exam_catlog.exam_id]] = exam_catlog.is_present? ? exam_catlog.marks.to_i : 'A'
       students_report[exam_catlog.student.name][1] = exam_catlog.student.name
       students_report[exam_catlog.student.name][2] = exam_catlog.student.p_mobile
+      students_report[exam_catlog.student.name][0] = exam_catlog.student_id if for_sms
     end
     reports = students_report.values
-    reports.each_with_index do |val, index|
-      reports[index][0] = index+1
+    unless for_sms
+      reports.each_with_index do |val, index|
+        reports[index][0] = index+1
+      end
     end
     reports
   end
@@ -345,7 +348,7 @@ class Exam < ActiveRecord::Base
   def grouped_exams_sms
     group_exams = grouped_exam_report_table_head
     reports = []
-    grouped_exam_report.each do |report|
+    grouped_exam_report(true).each do |report|
       report_hash = []
       group_exams[3..10].zip(report[3..14]){ |a,b| a1,a2=a.split('//');report_hash << "#{a1}=#{b == '0' ? 'A' : b}/#{a2}" if b != 'nil' }
       reports << [report[1] + " got " + report_hash.join(',') + " marks in #{self.name} exams", "91"+report[2], report[0]]
