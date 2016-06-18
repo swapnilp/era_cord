@@ -27,6 +27,8 @@ class SmsSent < ActiveRecord::Base
       exam_catlog = ExamCatlog.unscoped.where(exam_id: ids, student_id: student_id)
       exam_catlog.update_all({absent_sms_sent: true})
     end
+    if self.obj_type == "meeting"
+    end
   end
 
   def self.my_organisation(org_id)

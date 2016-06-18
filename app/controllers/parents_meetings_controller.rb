@@ -19,6 +19,7 @@ class ParentsMeetingsController < ApplicationController
   def create
     parents_meeting = ParentsMeeting.new(create_params.merge({organisation_id: @organisation.id}))
     if parents_meeting.save
+      parents_meeting.create_meetings_students(@organisation.root, params[:student_list])
       render json: {success: true}
     else
       render json: {success: false}
