@@ -8,7 +8,7 @@ class ClassStudent < ActiveRecord::Base
   scope :active, -> { where(deleted_at: nil) }
   
   def add_sub_class(sub_class_id)
-    sub_classes = self.sub_class.split(',').map(&:to_i)
+    sub_classes = self.sub_class.present? ? self.sub_class.split(',').map(&:to_i) : [0]
     sub_classes << sub_class_id
     self.update_attributes({sub_class: ",#{sub_classes.uniq.join(',')},"})
   end
