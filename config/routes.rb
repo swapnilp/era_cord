@@ -75,6 +75,7 @@ Rails.application.routes.draw do
     end
     collection do 
       get 'get_filter_values'
+      get 'sync_organisation_students'
     end
   end
 
@@ -133,7 +134,11 @@ Rails.application.routes.draw do
       post 'upgrade_batch'
       #delete 'remove_students'
     end
-
+    collection do 
+      get :sync_organisation_classes
+      get :sync_organisation_class_students
+    end
+    
     resources :sub_classes, only: [:index, :create, :show, :destroy] do
       member do
         get 'students'

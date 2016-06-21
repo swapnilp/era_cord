@@ -332,7 +332,7 @@ class JkciClassesController < ApplicationController
   def presenty_catlog
     jkci_class = JkciClass.where(id: params[:id]).first
     if jkci_class
-      catlogs = jkci_class.presenty_catlog(params[:filter])
+      catlogs = jkci_class.presenty_catlog(params[:filter], false)
       render json: {success: true, catlogs: catlogs}
     else
       render json: {success: false, message: "File Not Present"}
@@ -344,7 +344,7 @@ class JkciClassesController < ApplicationController
     if jkci_class
       start_date = Date.parse(params[:start_date]).to_date rescue nil
       end_date = Date.parse(params[:end_date]).to_date rescue nil
-      @catlogs = jkci_class.presenty_catlog(params[:filter], start_date , end_date)
+      @catlogs = jkci_class.presenty_catlog(params[:filter], true, start_date , end_date)
     else
       @catlogs = []
     end
@@ -352,6 +352,16 @@ class JkciClassesController < ApplicationController
     respond_to do |format|
       format.xlsx
     end
+  end
+
+  def sync_organisation_classes
+    jkci_classes = JkciClass.select([:id, :class_name, :is_active, :is_current_active]).active
+    render json: {success: true, jkci_classes: jkci_classes.map(&:sync_json)}
+  end
+
+  def sync_organisation_class_students
+    class_students = ClassStudent.select([:id, :jkci_class_id, :student_id, :sub_class]).joins(:jkci_class).where("jkci_classes.is_current_active = ?", true)
+    render json: {success: true, class_students: class_students.map(&:sync_json)}
   end
 
   ####################################

@@ -294,6 +294,16 @@ class Student < ActiveRecord::Base
                   })
   end
 
+  def sync_json(options = {})
+    options.merge({
+                    id: id,
+                    first_name: first_name, 
+                    last_name: last_name, 
+                    standard_id: standard_id,
+                    middle_name: middle_name
+                  })
+  end
+
   
   def self.to_csv(options = {})
     CSV.generate(options) do |csv|

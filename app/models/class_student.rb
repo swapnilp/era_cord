@@ -80,5 +80,14 @@ class ClassStudent < ActiveRecord::Base
                     p_mobile: student.p_mobile
                   })
   end
+
+  def sync_json(options = {})
+    options.merge({
+                    id: id,
+                    jkci_class_id: jkci_class_id,
+                    student_id: student_id,
+                    sub_class: sub_class
+                  })
+  end
   
 end

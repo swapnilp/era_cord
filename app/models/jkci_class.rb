@@ -368,7 +368,7 @@ class JkciClass < ActiveRecord::Base
     reports
   end
 
-  def presenty_catlog(params = '', start_date = Date.today - 1.months, end_date = Date.today, isDownload = false)
+  def presenty_catlog(params = '', isDownload = false, start_date = Date.today - 1.months, end_date = Date.today)
     start_date = Date.today - 1.months unless start_date.present?
     end_date = Date.today unless end_date.present?
     dates = (start_date..end_date).to_a
@@ -379,7 +379,11 @@ class JkciClass < ActiveRecord::Base
     
     present_reports ={}
     students.select([:id, :first_name, :last_name, :p_mobile, :parent_name]).each do |student|
-      present_reports["#{student.first_name} #{student.last_name}"] ||= ([{id: "#{student.id}", name: "#{student.first_name} #{student.last_name}", parent_name: "#{student.parent_name}", p_mobile: "#{student.p_mobile}"}] << ['p']*dates.count).flatten
+      if isDownload
+        present_reports["#{student.first_name} #{student.last_name}"] ||= (["#{student.first_name} #{student.last_name}"] << ['p']*dates.count).flatten
+      else
+        present_reports["#{student.first_name} #{student.last_name}"] ||= ([{id: "#{student.id}", name: "#{student.first_name} #{student.last_name}", parent_name: "#{student.parent_name}", p_mobile: "#{student.p_mobile}"}] << ['p']*dates.count).flatten
+      end
     end
 
     # ---- For Class Presenty only ##
@@ -472,4 +476,10 @@ class JkciClass < ActiveRecord::Base
     
   end
   
+  def sync_json(options = {})
+    options.merge({
+                    id: id, 
+                    class_name: class_name
+                  })
+  end
 end
