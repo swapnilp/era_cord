@@ -1,8 +1,8 @@
 module Organisations
   class SessionsController < Devise::SessionsController
-    skip_before_filter :authenticate_with_token!, only: [:new, :create, :destroy]
+    skip_before_filter :authenticate_with_token!, only: [:create, :destroy]
     skip_before_filter :verify_authenticity_token, only: [:create, :destroy]
-    skip_before_filter :require_no_authentication, :only => [ :new, :create, :cancel ]
+    skip_before_filter :require_no_authentication, :only => [:create, :cancel ]
 
     respond_to :json
 
