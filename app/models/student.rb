@@ -229,6 +229,10 @@ class Student < ActiveRecord::Base
     self.student_subjects.destroy_all
   end
 
+  def total_remaining_fees
+    self.class_students.map(&:remaining_class_fee) + self.removed_class_students.map(&:remaining_class_fee)
+  end
+
   def as_json(options= {})
     options.merge({
                     first_name: first_name, 

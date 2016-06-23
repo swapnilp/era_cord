@@ -13,6 +13,10 @@ class ClassStudent < ActiveRecord::Base
     self.update_attributes({sub_class: ",#{sub_classes.uniq.join(',')},"})
   end
 
+  def remaining_class_fee
+    jkci_class.fee - self.collected_fee
+  end
+
   def remove_sub_class(sub_class_id)
     sub_classes = self.sub_class.split(',').map(&:to_i)
     sub_classes.delete(sub_class_id)

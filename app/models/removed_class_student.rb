@@ -24,6 +24,10 @@ class RemovedClassStudent < ActiveRecord::Base
     end
   end
 
+  def remaining_class_fee
+    jkci_class.fee - self.collected_fee
+  end
+
   def accounts_json(options = {})
     options.merge({
                     name: student.name, 
