@@ -1,8 +1,16 @@
 class JkciClassesController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: [:sync_organisation_classes, :sync_organisation_class_students]
+  before_action :authenticate_organisation!, only: [:sync_organisation_classes, :sync_organisation_class_students]
+  
   before_action :active_standards!, only: [:index]
   #skip_before_filter :authenticate_with_token!, only: [:sub_organisation_class_report]
-  load_and_authorize_resource param_method: :my_sanitizer
+  load_and_authorize_resource param_method: :my_sanitizer, except: [:sync_organisation_classes, :sync_organisation_class_students]
+
+  skip_before_filter :authenticate_with_token!, only: [:sync_organisation_classes, :sync_organisation_class_students]
+  skip_before_filter :verify_authenticity_token, only: [:sync_organisation_classes, :sync_organisation_class_students]
+  skip_before_filter :require_no_authentication, :only => [:sync_organisation_classes, :sync_organisation_class_students]
+  before_action :authenticate_organisation!, only: [:sync_organisation_classes, :sync_organisation_class_students]
+  before_filter :authenticate_org_with_token!, only: [:sync_organisation_classes, :sync_organisation_class_students]
 
   def index
     jkci_classes = @organisation.jkci_classes.where(standard_id: @active_standards).active.order("id desc")
