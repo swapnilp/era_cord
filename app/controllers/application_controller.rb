@@ -20,6 +20,13 @@ class ApplicationController < ActionController::Base
     #@organisation.update_attributes({last_signed_in: Time.now}) if @organisation.present?
   end
 
+  def authenticate_organisation!(options={})
+    super(options)
+    @organisation ||= current_organisation
+    Organisation.current_id = @organisation.present? ? @organisation.root.subtree.map(&:id) : nil
+    #@organisation.update_attributes({last_signed_in: Time.now}) if @organisation.present?
+  end
+
   def active_standards!
     @active_standards ||= []
     if @organisation.present? && @active_standards.blank?

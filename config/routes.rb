@@ -13,6 +13,15 @@ Rails.application.routes.draw do
   },
   skip: [:confirmations]
 
+  devise_for :organisations,
+  controllers: {
+    sessions:      'organisations/sessions'
+   # passwords:     'users/passwords'
+    #unlocks:       'users/unlocks',
+    #registrations: 'users/registrations',
+  },
+  skip: [:confirmations]
+
   resources :register_organisations do
     member do 
       get :sms_confirmation

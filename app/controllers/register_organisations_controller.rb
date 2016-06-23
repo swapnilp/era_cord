@@ -10,6 +10,13 @@ class RegisterOrganisationsController < ApplicationController
   
   def create
     @register_organisation = TemporaryOrganisation.new(create_params.slice(:name, :email, :mobile, :short_name, :user_email))
+    org_emails = Organisation.select([:email]).roots.map(&:email)
+    if org_emails.include? @register_organisation.email 
+      @register_organisation.errors.add(:email, "Email allready registered. Please contact eracoed admin.")
+      render :new
+      return 0
+    end
+
     user = User.where(email: create_params[:user_email]).first 
     if user && user.valid_password?(params[:temporary_organisation][:password])
       if user.has_role? :creator
@@ -17,7 +24,6 @@ class RegisterOrganisationsController < ApplicationController
           @register_organisation.generate_code(user)
           redirect_to sms_confirmation_register_organisation_path(@register_organisation.id_hash)
         else
-          
           render :new
         end
       else

@@ -40,6 +40,40 @@ module TokenAcceptor
     end
   end
 
+
+  def authenticate_org_with_token!
+    token = request.headers['Authorization'].presence
+    token = params[:authorization_token] unless token
+
+    return reject_token if token.nil?
+
+    if current_organisation && current_organisation.validate_auth_token(token)
+      return true 
+    end 
+    
+    # Since we're sent 'Bearer <token>', get rid of the 'Bearer' part
+    token.gsub!(/\ABearer\s/, '')
+
+    return reject_token unless token_valid? token
+
+    # Grab the payload without verifying (yet)
+    token_payload, token_header = JWT.decode(token, nil, false)
+    # If the token says it's expired, trust it
+    return reject_token if token_expired? token_header
+    
+    organisation = Organisation.find_by(email: token_payload['email'])
+
+    if organisation && organisation.validate_auth_token(token)
+      
+      if current_organisation && current_organisation.id == organisation.id
+      else
+        sign_in organisation
+      end
+    else
+      reject_token
+    end
+  end
+
   def reject_token
     warden.custom_failure!
     render json: { success: false, message: 'Invalid token.' }, status: 401
