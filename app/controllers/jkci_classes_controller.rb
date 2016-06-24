@@ -25,7 +25,7 @@ class JkciClassesController < ApplicationController
   end
 
   def get_exam_info
-    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    jkci_class = @organisation.jkci_classes.includes({subjects: :standard}).where(id: params[:id]).first
     if jkci_class
       render json: {success: true, data: ClassExamDataSerializer.new(jkci_class).as_json} 
     else
@@ -34,7 +34,7 @@ class JkciClassesController < ApplicationController
   end
 
   def get_dtp_info
-    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    jkci_class = @organisation.jkci_classes.includes({subjects: :standard}).where(id: params[:id]).first
     if jkci_class
       render json: {success: true, data: ClassExamDataSerializer.new(jkci_class).as_json} 
     else
@@ -246,7 +246,7 @@ class JkciClassesController < ApplicationController
   end
 
   def get_timetable
-    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    jkci_class = @organisation.jkci_classes.includes({subjects: :standard}).where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
 
     time_table = jkci_class.time_tables.where(sub_class_id: nil).first
