@@ -11,7 +11,7 @@ class StudentsController < ApplicationController
   before_filter :authenticate_org_with_token!, only: [:sync_organisation_students]
 
   def index
-    students = Student.includes(:standard, :jkci_classes, {subjects: :standard}, :batch, :removed_class_students).select([:id, :first_name, :last_name, :standard_id, :group, :mobile, :p_mobile, :enable_sms, :gender, :is_disabled, :batch_id, :parent_name]).order("id desc")
+    students = Student.includes(:standard, :jkci_classes, :batch, :removed_class_students).select([:id, :first_name, :last_name, :standard_id, :group, :mobile, :p_mobile, :enable_sms, :gender, :is_disabled, :batch_id, :parent_name]).order("id desc")
     if params[:search]
       query = "%#{params[:search]}%"
       students = students.where("CONCAT_WS(' ', first_name, last_name) LIKE ? || CONCAT_WS(' ', last_name, first_name) LIKE ? || p_mobile like ?", query, query, query)
@@ -71,7 +71,7 @@ class StudentsController < ApplicationController
     student = Student.includes({subjects: :standard}, :class_students, :removed_class_students).where(id: params[:id]).first
     if student
       roles = current_user.roles.map(&:name)
-      render json: {success: true, body: StudentSerializer.new(student).as_json, has_show_pay_info: roles.include?('accountant'), has_pay_fee: (['accountant','accountant_clark'] & roles).size > 0, classes: student.jkci_classes.map(&:student_filter_json), remaining_fee: student.total_remaining_fees.sum }
+      render json: {success: true, body: StudentShowSerializer.new(student).as_json, has_show_pay_info: roles.include?('accountant'), has_pay_fee: (['accountant','accountant_clark'] & roles).size > 0, classes: student.jkci_classes.map(&:student_filter_json), remaining_fee: student.total_remaining_fees.sum }
     else
        render json: {success: false}
     end

@@ -29,7 +29,7 @@ class ClassStudent < ActiveRecord::Base
                     student_id: student_id, 
                     roll_number: roll_number,
                     name: student.name,
-                    o_subjects: student.subjects.optional.map(&:id)
+                    o_subjects: student.student_subjects.map(&:subject_id)
                   })
   end
 

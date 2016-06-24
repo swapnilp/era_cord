@@ -1,5 +1,5 @@
-class StudentSerializer < ActiveModel::Serializer
-  attributes :id, :name, :batch, :standard, :parent_name, :p_mobile, :mobile, :class_names, :roll_number, :enable_sms, :remaining_fee
+class StudentShowSerializer < ActiveModel::Serializer
+  attributes :id, :name, :batch, :standard, :parent_name, :p_mobile, :mobile, :class_names, :roll_number, :enable_sms, :remaining_fee, :subjects
   
   def name
     object.name
@@ -19,6 +19,10 @@ class StudentSerializer < ActiveModel::Serializer
 
   def remaining_fee
     object.total_remaining_fees.sum
+  end
+
+  def subjects
+    object.subjects.map(&:std_name).join(', ')
   end
 
   def roll_number

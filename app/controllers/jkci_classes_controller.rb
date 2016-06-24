@@ -97,7 +97,7 @@ class JkciClassesController < ApplicationController
   def students
     jkci_class = JkciClass.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
-    students = jkci_class.students.includes({subjects: :standard}, :standard, :batch, :jkci_classes).select("class_students.roll_number, students.*")
+    students = jkci_class.students.includes(:standard, :batch, :jkci_classes, :removed_class_students).select("class_students.roll_number, students.*")
     if params[:search]
       query = "%#{params[:search]}%"
       students = students.where("CONCAT_WS(' ', first_name, last_name) LIKE ? || CONCAT_WS(' ', last_name, first_name) LIKE ? || p_mobile like ?", query, query, query)
@@ -134,7 +134,7 @@ class JkciClassesController < ApplicationController
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     subjects = jkci_class.subjects.optional
-    students = jkci_class.class_students
+    students = jkci_class.class_students.includes({student: :student_subjects})
     render json: {success: true, subjects: subjects, students: students.map(&:subject_json), jkci_class: jkci_class.subject_json} 
   end
 
