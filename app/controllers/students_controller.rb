@@ -1,15 +1,16 @@
 class StudentsController < ApplicationController
   before_action :authenticate_user!, except: [:sync_organisation_students]
-  before_action :authenticate_organisation!, only: [:sync_organisation_students]
+ 
   #skip_before_filter :authenticate_with_token!, only: [:download_report]
   load_and_authorize_resource param_method: :my_sanitizer, except: [:sync_organisation_students]
   
   skip_before_filter :authenticate_with_token!, only: [:sync_organisation_students]
   skip_before_filter :verify_authenticity_token, only: [:sync_organisation_students]
   skip_before_filter :require_no_authentication, :only => [:sync_organisation_students]
-  before_action :authenticate_organisation!, only: [:sync_organisation_students]
-  before_filter :authenticate_org_with_token!, only: [:sync_organisation_students]
 
+  before_filter :authenticate_org_with_token!, only: [:sync_organisation_students]
+  before_action :authenticate_organisation!, only: [:sync_organisation_students]
+  
   def index
     students = Student.includes(:standard, :jkci_classes, :batch, :removed_class_students).select([:id, :first_name, :last_name, :standard_id, :group, :mobile, :p_mobile, :enable_sms, :gender, :is_disabled, :batch_id, :parent_name]).order("id desc")
     if params[:search]
