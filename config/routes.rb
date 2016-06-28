@@ -113,6 +113,10 @@ Rails.application.routes.draw do
   get "/class/:id/download_class_student_list" => "jkci_classes#download_class_student_list", as: "download_class_student_list"
   get "/class/:id/download_class_syllabus" => "jkci_classes#download_class_syllabus", as: "download_class_syllabus"
   get "/classes/:id/download_excel" => "jkci_classes#download_excel"
+
+  scope '/organisations' do
+    resources :teachers
+  end
   
   resources :jkci_classes do
     member do

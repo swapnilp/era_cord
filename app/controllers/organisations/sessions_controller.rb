@@ -3,13 +3,14 @@ module Organisations
     skip_before_filter :authenticate_with_token!, only: [:create, :destroy]
     skip_before_filter :verify_authenticity_token, only: [:create, :destroy]
     skip_before_filter :require_no_authentication, :only => [:create, :cancel ]
+    skip_before_action :verify_authenticity_token, :only => [:create, :cancel ]
 
     respond_to :json
 
     def create
       resource = resource_from_credentials
       return invalid_login_attempt unless resource
-
+      
       if resource.valid_password? params[:organisation][:password]
         render json: resource, success: true, status: :created, serializer: OrganisationLoginSerializer, root: false
       else
