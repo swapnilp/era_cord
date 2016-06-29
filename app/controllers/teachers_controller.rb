@@ -24,6 +24,16 @@ class TeachersController < ApplicationController
     end
   end
 
+  def show
+    teacher = Teacher.where(id: params[:id]).first
+    if teacher
+      render json: {success: true, teacher: teacher.as_json}
+    else
+      render json: {success: false}
+    end
+  end
+
+
   def edit
     teacher = Teacher.where(id: params[:id]).first
     if teacher

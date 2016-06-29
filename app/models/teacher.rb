@@ -18,7 +18,8 @@ class Teacher < ActiveRecord::Base
                     id: self.id,
                     name: self.name,
                     mobile: self.mobile,
-                    email: self.email
+                    email: self.email,
+                    is_full_time: self.is_full_time
                   })
   end
 
@@ -28,7 +29,8 @@ class Teacher < ActiveRecord::Base
                     first_name: self.first_name,
                     last_name: self.last_name,
                     mobile: self.mobile,
-                    email: self.email
+                    email: self.email,
+                    is_full_time: self.is_full_time
                   })
   end
 end
