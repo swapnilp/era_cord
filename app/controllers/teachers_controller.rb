@@ -4,7 +4,6 @@ class TeachersController < ApplicationController
   #skip_before_filter :authenticate_with_token!, only: [:download_report]
   load_and_authorize_resource param_method: :my_sanitizer
   
-
   def index
     teachers = Teacher.all
     render json: {success: true, teachers: teachers.as_json}
@@ -33,7 +32,6 @@ class TeachersController < ApplicationController
     end
   end
 
-
   def edit
     teacher = Teacher.where(id: params[:id]).first
     if teacher
@@ -45,15 +43,53 @@ class TeachersController < ApplicationController
 
   def update
     teacher = Teacher.where(id: params[:id]).first
-    if teacher.update_attributes(update_params)
+    if teacher && teacher.update_attributes(update_params)
       render json: {success: true, teacher_id: teacher.id}
     else
-      render json: {success: false, message: teacher.errors.full_messages.join(' , ')}
+      render json: {success: false, message: teacher.present? ? teacher.errors.full_messages.join(' , ') : "Record not found"}
+    end
+  end
+
+  def get_subjects
+    teacher = Teacher.where(id: params[:id]).first
+    if teacher
+      render json: {success: true, subjects: teacher.teacher_subjects.as_json}
+    else
+      render json: {success: false}
+    end
+  end
+
+  def get_remaining_subjects
+    teacher = Teacher.where(id: params[:id]).first
+    if teacher
+      subjects = teacher.remaining_subjects(@organisation.root)
+      render json: {success: true, subjects: subjects.as_json}
+    else
+      render json: {success: false}
+    end
+  end
+
+  def save_subjects
+    teacher = Teacher.where(id: params[:id]).first
+    if teacher
+      teacher.save_subjects(@organisation.root, params[:subjects].split(','))
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+  end
+
+  def remove_subjects
+    teacher = Teacher.where(id: params[:id]).first
+    if teacher
+      teacher.remove_subject(params[:subject_id])
+      render json: {success: true}
+    else
+      render json: {success: false}
     end
   end
   
   private
-  
   
   def create_params
     params.require(:teacher).permit(:first_name, :last_name, :email, :mobile, :is_full_time)

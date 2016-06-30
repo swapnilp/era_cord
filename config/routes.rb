@@ -115,7 +115,14 @@ Rails.application.routes.draw do
   get "/classes/:id/download_excel" => "jkci_classes#download_excel"
 
   scope '/organisations' do
-    resources :teachers
+    resources :teachers do
+      member do
+        get :get_remaining_subjects
+        get :save_subjects
+        get :get_subjects
+        get "subjects/:subject_id/remove" => "teachers#remove_subjects"
+      end
+    end
   end
   
   resources :jkci_classes do

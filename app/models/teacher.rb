@@ -4,13 +4,26 @@ class Teacher < ActiveRecord::Base
   has_many :teacher_subjects
   has_many :subjects, through: :teacher_subjects
   has_many :daily_teaching_points
-
   validates :email, uniqueness: true, presence: true
   
   default_scope { where(organisation_id: Organisation.current_id) }  
   
   def name
     "#{first_name} #{last_name}"
+  end
+
+  def remaining_subjects(org)
+    subjects = Subject.includes(:standard).where("standard_id in (?) && id not in (?)", [0] + org.organisation_standards.map(&:standard_id), [0] + teacher_subjects.map(&:subject_id))
+  end
+
+  def save_subjects(org, subject_ids)
+    Subject.includes(:standard).where("standard_id in (?) && id in (?)", [0] + org.organisation_standards.map(&:standard_id), [0] + subject_ids).each do |subject|
+      teacher_subjects.find_or_initialize_by({subject_id: subject.id, organisation_id: org.id}).save
+    end
+  end
+
+  def remove_subject(subject_id)
+    teacher_subjects.where(id: subject_id).first.try(:destroy)
   end
 
   def as_json(options={})
