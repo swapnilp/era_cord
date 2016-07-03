@@ -4,12 +4,21 @@ class Teacher < ActiveRecord::Base
   has_many :teacher_subjects
   has_many :subjects, through: :teacher_subjects
   has_many :daily_teaching_points
+  belongs_to :g_teacher
   validates :email, uniqueness: true, presence: true
   
   default_scope { where(organisation_id: Organisation.current_id) }  
   
   def name
     "#{first_name} #{last_name}"
+  end
+
+  def self.get_g_teacher(teacher_params)
+    gt = GTeacher.find_or_initialize_by(teacher_params.slice(:first_name, :last_name, :email))
+    gt.mobile = teacher_params[:mobile]
+    gt.address = teacher_params[:address]
+    gt.save
+    return gt
   end
 
   def remaining_subjects(org)

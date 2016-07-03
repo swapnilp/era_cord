@@ -14,7 +14,9 @@ class TeachersController < ApplicationController
   end
   
   def create
+    g_teacher = Teacher.get_g_teacher(create_params)
     teacher = Teacher.new(create_params)
+    teacher.g_teacher_id = g_teacher.id
     teacher.organisation_id = @organisation.id
     if teacher.save
       render json: {success: true, teacher_id: teacher.id}
