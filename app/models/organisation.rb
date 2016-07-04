@@ -21,8 +21,8 @@ class Organisation < ActiveRecord::Base
 
   after_create :generate_email_code
   
-  devise :database_authenticatable, :recoverable,
-         :rememberable, :trackable#, request_keys: [:organisation_id]
+  #devise :database_authenticatable, :recoverable,
+  #       :rememberable, :trackable#, request_keys: [:organisation_id]
 
   has_many :class_catlogs
   has_many :class_students
