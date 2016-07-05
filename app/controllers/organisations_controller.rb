@@ -213,7 +213,7 @@ class OrganisationsController < ApplicationController
     sub_organisation = @organisation.sub_organisations.find_or_initialize_by({email: organisation_params[:email]})
     sub_organisation.name = "#{@organisation.name}-#{organisation_params[:name]}"
     sub_organisation.mobile = organisation_params[:mobile]
-    
+    sub_organisation.password = ORGPASSWORD
     if sub_organisation.save
       standard_ids = params[:standard_ids].split(',').map(&:to_i)
       standards = Standard.where(id: standard_ids)

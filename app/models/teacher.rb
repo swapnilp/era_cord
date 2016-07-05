@@ -17,6 +17,7 @@ class Teacher < ActiveRecord::Base
     gt = GTeacher.find_or_initialize_by(teacher_params.slice(:first_name, :last_name, :email))
     gt.mobile = teacher_params[:mobile]
     gt.address = teacher_params[:address]
+    gt.password = "asdasdasd"
     gt.save
     return gt
   end
