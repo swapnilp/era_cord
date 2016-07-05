@@ -4,7 +4,7 @@ class GTeacher < ActiveRecord::Base
   TOKEN_EXPIRE_TIME = 1.days#2.hours
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable,
+  devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable, :authentication_keys => [:email]
 
 

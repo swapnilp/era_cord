@@ -24,10 +24,10 @@ Rails.application.routes.draw do
 
   devise_for :g_teachers,
   controllers: {
-    sessions:      'g_teachers/sessions'
+    sessions:      'g_teachers/sessions',
    # passwords:     'users/passwords'
     #unlocks:       'users/unlocks',
-    #registrations: 'users/registrations',
+    registrations: 'g_teachers/registrations'
   },
   skip: [:confirmations]
 
