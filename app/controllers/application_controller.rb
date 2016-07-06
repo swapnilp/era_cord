@@ -1,5 +1,7 @@
 class ApplicationController < ActionController::Base
   include TokenAcceptor
+  include LocalSubdomain
+  
   Range.include CoreExtensions::Range
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
