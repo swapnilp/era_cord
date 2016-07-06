@@ -25,7 +25,7 @@ Rails.application.routes.draw do
   devise_for :g_teachers,
   controllers: {
     sessions:      'g_teachers/sessions',
-   # passwords:     'users/passwords'
+    passwords:     'g_teachers/passwords',
     #unlocks:       'users/unlocks',
     registrations: 'g_teachers/registrations'
   },

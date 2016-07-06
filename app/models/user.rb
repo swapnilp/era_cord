@@ -73,7 +73,7 @@ class User < ActiveRecord::Base
     conditions = warden_conditions.dup
     user = where(conditions.to_h).first
     if user
-      ResetPassword.new({email: user.email}).save
+      ResetPassword.new({email: user.email, object_type: "User"}).save
       return true
     else
       return false

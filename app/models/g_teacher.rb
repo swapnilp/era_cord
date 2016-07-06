@@ -53,4 +53,27 @@ class GTeacher < ActiveRecord::Base
     url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=update&dmobile=91#{self.mobile}&message=#{message}"
     url_arry = [url, message, self.id, self.mobile]
   end
+
+  def self.send_reset_password_instructions(warden_conditions)
+    conditions = warden_conditions.dup
+    g_teacher = where(conditions.to_h).first
+    if g_teacher
+      ResetPassword.new({email: g_teacher.email, object_type: "Teacher"}).save
+      return true
+    else
+      return false
+    end
+  end
+
+  def reset_password(new_password, new_password_confirmation)
+    self.password = new_password
+    self.password_confirmation = new_password_confirmation
+    
+    if respond_to?(:after_password_reset) && valid?
+      ActiveSupport::Deprecation.warn "after_password_reset is deprecated"
+      after_password_reset
+    end
+    save
+  end
+  
 end

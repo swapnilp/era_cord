@@ -17,7 +17,7 @@ module Users
     end
 
     def edit
-      @reset_password = ResetPassword.where(token: params[:reset_password_token]).first
+      @reset_password = ResetPassword.where(token: params[:reset_password_token], object_type: "User").first
       raise ActionController::RoutingError.new('Not Found') unless @reset_password.present?
       
       @organisations = User.where(email: @reset_password.email).map(&:organisation)
@@ -26,7 +26,7 @@ module Users
 
     def update
       #resource = resource_class.reset_password_by_token(resource_params)
-      @reset_password = ResetPassword.where(token: params[:reset_password_token]).first
+      @reset_password = ResetPassword.where(token: params[:reset_password_token], object_type: "User").first
 
       self.resource = resource_class.where(email: @reset_password.email, organisation_id: params[:organisation_id]).first
 
