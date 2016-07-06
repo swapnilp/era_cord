@@ -29,7 +29,7 @@ Rails.application.routes.draw do
     #unlocks:       'users/unlocks',
     registrations: 'g_teachers/registrations'
   },
-  skip: [:confirmations]
+  skip: [:confirmations], path: 'teachers'
 
   resources :register_organisations do
     member do 

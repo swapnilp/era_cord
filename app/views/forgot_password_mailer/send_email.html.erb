@@ -4,7 +4,7 @@
 <%- if  @reset_password.object_type == 'User' %>
 <p><%= link_to 'Change my password', "#{APP_URL}/users/password/edit?&reset_password_token=#{@reset_password.token}" %></p>
 <%- elsif  @reset_password.object_type == 'Teacher' %>
-<p><%= link_to 'Change my password', "#{APP_URL}/g_teachers/password/edit?&reset_password_token=#{@reset_password.token}" %></p>
+<p><%= link_to 'Change my password', "#{APP_URL}/teachers/password/edit?&reset_password_token=#{@reset_password.token}" %></p>
 <%- end %>
 
 <p>If you didn't request this, please ignore this email.</p>
