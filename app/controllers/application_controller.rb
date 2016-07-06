@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   include TokenAcceptor
   include LocalSubdomain
+  include UrlHelper
   
   Range.include CoreExtensions::Range
   # Prevent CSRF attacks by raising an exception.
