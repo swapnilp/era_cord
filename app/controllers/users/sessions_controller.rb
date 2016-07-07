@@ -7,7 +7,6 @@ module Users
     respond_to :json
 
     def create
-      
       unless params[:user][:organisation_id].present?
         duplicates = resource_from_credentials_check_duplicates || []
         
@@ -17,8 +16,8 @@ module Users
       end
       
       resource = resource_from_credentials
-      return invalid_login_attempt unless resource
 
+      return invalid_login_attempt unless resource
       if resource.valid_password? params[:user][:password]
         render json: resource, success: true, status: :created, serializer: UserLoginSerializer, root: false
       else

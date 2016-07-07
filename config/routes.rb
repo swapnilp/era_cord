@@ -21,19 +21,7 @@ Rails.application.routes.draw do
     #registrations: 'users/registrations',
   },
   skip: [:confirmations]
-
-  constraints :subdomain => 'teacher' do
-    devise_for :g_teachers,
-    controllers: {
-      sessions:      'g_teachers/sessions',
-      passwords:     'g_teachers/passwords',
-      #unlocks:       'users/unlocks',
-      registrations: 'g_teachers/registrations'
-    },
-    skip: [:confirmations], path: 'teachers'
-#    get '/' => 'blogs#show'
-  end
-
+  
   resources :register_organisations do
     member do 
       get :sms_confirmation

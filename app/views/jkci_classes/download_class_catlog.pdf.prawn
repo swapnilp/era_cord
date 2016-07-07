@@ -14,7 +14,7 @@ prawn_document do |pdf|
   end
   pdf.move_down(10)
   
-  pdf.table(@catlogs, :column_widths => [20, 120, 65, 50, 5, 20, 120, 65, 50, 5],  :cell_style => { :overflow => :shrink_to_fit, :min_font_size => 6, :height => 17}) do
+  pdf.table(@catlogs, :column_widths => [20, 185, 50, 5, 20, 185, 50, 5],  :cell_style => { :overflow => :shrink_to_fit, :min_font_size => 6, :height => 17}) do
     row(0).font_style = :bold
     row(0).size = 12
   end			       

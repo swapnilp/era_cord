@@ -1,22 +1,18 @@
 class GTeacher < ActiveRecord::Base
-  PASSWORD_REGEX = /\A(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z]).{8,}\z/
-  TOKEN_SECRET = Rails.application.secrets[:secret_key_base]
-  TOKEN_EXPIRE_TIME = 1.days#2.hours
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :trackable, :validatable, :authentication_keys => [:email]
-
-
   has_many :teachers
 
-  after_create :generate_email_code
+  #after_create :generate_email_code
 
-  def generate_email_code
-    e_code = (0...50).map { ('a'..'z').to_a[rand(26)] }.join
-    m_code = (0...7).map { ('a'..'z').to_a[rand(26)] }.join
-    update_attributes({email_code: e_code, mobile_code: m_code})
-    self.send_generated_code
+  def generate_email_code(org)
+    user = org.all_users.where(email: self.email).first
+    if user.present?
+      user.add_role :teacher
+    else
+      e_code = (0...50).map { ('a'..'z').to_a[rand(26)] }.join
+      m_code = (0...7).map { ('a'..'z').to_a[rand(26)] }.join
+      update_attributes({email_code: e_code, mobile_code: m_code})
+      self.send_generated_code
+    end
   end
 
   def send_generated_code
@@ -24,25 +20,6 @@ class GTeacher < ActiveRecord::Base
     Delayed::Job.enqueue TeacherRegistationSms.new(teacher_sms_message)
   end
 
-  def reset_auth_token!
-    if token_expires_at.blank? || token_expires_at < Time.now
-      update(token_expires_at: Time.now + TOKEN_EXPIRE_TIME)
-    end
-    JWT.encode token_fields, TOKEN_SECRET, 'HS256', exp: token_expires_at.to_i
-  end
-
-  def validate_auth_token(token)
-    if token_expires_at.blank? || token_expires_at < Time.now
-      update token_expires_at: nil
-      return false
-    end
-    server_token = JWT.encode token_fields, TOKEN_SECRET, 'HS256', exp: token_expires_at.to_i
-    JWT.secure_compare token, server_token
-  end
-
-  def token_fields
-    { email: email}
-  end
 
   def name
     "#{first_name} #{last_name}"
@@ -64,16 +41,4 @@ class GTeacher < ActiveRecord::Base
       return false
     end
   end
-
-  def reset_password(new_password, new_password_confirmation)
-    self.password = new_password
-    self.password_confirmation = new_password_confirmation
-    
-    if respond_to?(:after_password_reset) && valid?
-      ActiveSupport::Deprecation.warn "after_password_reset is deprecated"
-      after_password_reset
-    end
-    save
-  end
-  
 end

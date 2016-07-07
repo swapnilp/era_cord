@@ -5,6 +5,7 @@ class Teacher < ActiveRecord::Base
   has_many :subjects, through: :teacher_subjects
   has_many :daily_teaching_points
   belongs_to :g_teacher
+  belongs_to :organisation
   validates :email, uniqueness: true, presence: true
   
   default_scope { where(organisation_id: Organisation.current_id) }  
@@ -13,12 +14,13 @@ class Teacher < ActiveRecord::Base
     "#{first_name} #{last_name}"
   end
 
-  def self.get_g_teacher(teacher_params)
+  def self.get_g_teacher(teacher_params, org)
     gt = GTeacher.find_or_initialize_by(teacher_params.slice(:first_name, :last_name, :email))
     gt.mobile = teacher_params[:mobile]
     gt.address = teacher_params[:address]
-    gt.password = "asdasdasd"
+    new_record = gt.new_record?
     gt.save
+    gt.generate_email_code(org) if new_record
     return gt
   end
 

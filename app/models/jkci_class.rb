@@ -139,7 +139,7 @@ class JkciClass < ActiveRecord::Base
   def exams_table_format
     table = [["Id", "Subject", "Type", "Marks", "Date", "Absents Count", "Published date"]]
 
-    self.exams.order("exam_date desc").each do |exam|
+    self.exams.includes(:subject).order("exam_date desc").each do |exam|
       table << ["#{exam.id }", "#{exam.subject.try(:name)}", "#{exam.exam_type}", "#{exam.marks}", "#{exam.exam_date.try(:to_date)}", "#{exam.absents_count}", "#{exam.published_date.try(:to_date) || 'Not Published'}"]
     end
     table
@@ -178,7 +178,7 @@ class JkciClass < ActiveRecord::Base
   def daily_teaching_table_format
     table = [["Id", "Subject", "Chapter", "Points", "Date", "Sms Sent", "Divisions"]]
 
-    self.daily_teaching_points.order(chapter_id: :desc,date: :desc).each_with_index do |dtp, index|
+    self.daily_teaching_points.includes(:subject).order(chapter_id: :desc,date: :desc).each_with_index do |dtp, index|
       table << ["#{index}", "#{dtp.subject.try(:name)}", "#{dtp.chapter.try(:name)}", "#{dtp.points}", "#{dtp.date.try(:to_date)}", "#{dtp.is_sms_sent}", "#{dtp.sub_classes}"]
     end
     table
@@ -191,14 +191,14 @@ class JkciClass < ActiveRecord::Base
   def class_students_table_format
     table = [["Id", "Name", "Parent Mobile", "Subjects"]]
 
-    self.students.each_with_index do |student, index|
+    self.students.includes({subjects: :standard}).each_with_index do |student, index|
       table << ["#{index+ 1 }", "#{student.name}", "#{student.p_mobile}", "#{student.subjects.map(&:std_name).join('  |  ')}"]
     end
     table
   end
 
   def students_table_format(sub_class_ids)
-    table = [["Id", "Name", "Parent Mobile", "Is Present", "", "Id", "Name", "Parent Mobile", "Is Present", ""]]
+    table = [["Id", "Name", "Is Present", "", "Id", "Name", "Is Present", ""]]
     if sub_class_ids.present?
       c_students = self.sub_classes_students(sub_class_ids.split(',')).select("class_students.roll_number, students.*").order("roll_number asc")
     else
@@ -208,9 +208,9 @@ class JkciClass < ActiveRecord::Base
       table_group = []
       student_groups.each do |student|
         if student
-          table_group << ["#{student.roll_number}", "#{student.name}", "#{student.p_mobile}", "", ""] 
+          table_group << ["#{student.roll_number}", "#{student.name}", "", ""] 
         else
-          table_group << ["", "", "", "", ""] 
+          table_group << ["", "", "", ""] 
         end
       end
       table << table_group.flatten

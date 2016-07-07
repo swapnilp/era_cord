@@ -228,7 +228,7 @@ class JkciClassesController < ApplicationController
     @jkci_class = JkciClass.where(id: params[:id]).first
     raise ActionController::RoutingError.new('Not Found') unless @jkci_class
     
-    @subjects = @jkci_class.standard.subjects
+    @subjects = @jkci_class.standard.subjects.includes({chapters: :chapters_points})
     #@subject = @jkci_class.standard.subjects.where(id: params[:subject]).first
     #@chapters_table = @jkci_class.chapters_table_format(@subject)
     respond_to do |format|

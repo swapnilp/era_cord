@@ -14,7 +14,9 @@ class TeachersController < ApplicationController
   end
   
   def create
-    g_teacher = Teacher.get_g_teacher(create_params)
+    return render json: {success: false, message: "Must be root user"} unless @organisation.root?
+    
+    g_teacher = Teacher.get_g_teacher(create_params, @organisation)
     teacher = Teacher.new(create_params)
     teacher.g_teacher_id = g_teacher.id
     teacher.organisation_id = @organisation.id

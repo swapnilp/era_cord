@@ -12,7 +12,7 @@ class Ability
       can :manage, :all
       #can :roll, :admin
       #can :roll, :clark
-    elsif roles.include? 'clark'
+    elsif roles.include?('clark') || roles.include?('teacher')
       can :read, Gallery
       can :read, Event
       can :read, Album
@@ -64,8 +64,14 @@ class Ability
       can :filter_class_exams, JkciClass
       can :class_daily_teaches, JkciClass
       can :filter_daily_teach, JkciClass
-      can :download_class_catlog, JkciClass
       can :download_class_syllabus, JkciClass
+      can :download_class_catlog, JkciClass
+      if roles.include? 'download_class_report'
+        can :download_class_catlog, JkciClass
+        can :download_class_student_list, JkciClass
+        can :sub_organisation_class_report, JkciClass
+      end
+      
       can :filter_class, JkciClass
       can :get_notifications, JkciClass
       can :toggle_class_sms, JkciClass
@@ -109,7 +115,7 @@ class Ability
         can :graph_data, StudentFee
         can :print_account, StudentFee
         can :download_excel, StudentFee
-      end
+      end      
     else
       can :read, Gallery
       can :read, Event

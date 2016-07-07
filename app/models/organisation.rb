@@ -93,6 +93,10 @@ class Organisation < ActiveRecord::Base
     end
   end
 
+  def all_users
+    User.where(organisation_id: self.root.subtree.map(&:id))
+  end
+
   def default_students
     Student.where("organisation_id = ? && last_present > ?", self.id, (Time.now - self.absent_days.days))
   end
