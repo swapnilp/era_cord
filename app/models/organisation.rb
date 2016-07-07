@@ -1,12 +1,5 @@
 class Organisation < ActiveRecord::Base
-  PASSWORD_REGEX = /\A(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z]).{8,}\z/
-  TOKEN_SECRET = Rails.application.secrets[:secret_key_base]
-  TOKEN_EXPIRE_TIME = 1.days#2.hours
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable,
-         :recoverable, :rememberable, :trackable, :validatable, :authentication_keys => [:email]
-
+  
   has_ancestry
 
   belongs_to :master_organisation,   :class_name => "Organisation", :foreign_key => "parent_id"
@@ -21,9 +14,6 @@ class Organisation < ActiveRecord::Base
 
   after_create :generate_email_code
   
-  #devise :database_authenticatable, :recoverable,
-  #       :rememberable, :trackable#, request_keys: [:organisation_id]
-
   has_many :class_catlogs
   has_many :class_students
   has_many :daily_teaching_points

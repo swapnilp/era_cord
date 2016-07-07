@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160706092422) do
+ActiveRecord::Schema.define(version: 20160707163406) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -405,7 +405,7 @@ ActiveRecord::Schema.define(version: 20160706092422) do
   end
 
   add_index "organisations", ["ancestry"], name: "index_organisations_on_ancestry", using: :btree
-  add_index "organisations", ["email"], name: "index_organisations_on_email", unique: true, using: :btree
+  add_index "organisations", ["email"], name: "index_organisations_on_email", using: :btree
   add_index "organisations", ["reset_password_token"], name: "index_organisations_on_reset_password_token", unique: true, using: :btree
 
   create_table "parents_meetings", force: :cascade do |t|
