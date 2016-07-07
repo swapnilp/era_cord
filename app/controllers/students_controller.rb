@@ -133,7 +133,7 @@ class StudentsController < ApplicationController
   end
   
   def download_report
-    @student = @organisation.students.where(id: params[:id]).first
+    @student = Student.where(id: params[:id]).first
     @exam_catlogs = @student.exam_table_format
     @dtps = @student.class_catlogs.absent
     filename = "#{@student.name}.xls"
