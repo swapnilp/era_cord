@@ -194,7 +194,7 @@ class Student < ActiveRecord::Base
 
   def exam_table_format
     table = [["Index", "Exam Name", "Exam Type", "Class", "Date", "Is Present", "Marks", "Rank"]]
-    self.exam_catlogs.each_with_index do |exam_catlog, index|
+    self.exam_catlogs.includes(:jkci_class, :exam).each_with_index do |exam_catlog, index|
       table << ["#{index+1}", "#{exam_catlog.exam.name}", "#{exam_catlog.exam.exam_type}", "#{exam_catlog.jkci_class.class_name}", "#{exam_catlog.exam.exam_date.to_date}", "#{exam_catlog.is_present}", "#{exam_catlog.marks.to_i}/#{exam_catlog.exam.marks}", "#{exam_catlog.rank}"]
     end
     table
