@@ -26,7 +26,11 @@ class JkciClassesController < ApplicationController
   end
 
   def get_exam_info
-    jkci_class = @organisation.jkci_classes.includes({subjects: :standard}).where(id: params[:id]).first
+    if current_user.has_role?(:teacher)
+      jkci_class = JkciClass.includes({subjects: :standard}).where(id: params[:id]).first
+    else
+      jkci_class = @organisation.jkci_classes.includes({subjects: :standard}).where(id: params[:id]).first
+    end
     if jkci_class
       render json: {success: true, data: ClassExamDataSerializer.new(jkci_class).as_json} 
     else
@@ -47,7 +51,7 @@ class JkciClassesController < ApplicationController
     jkci_class = JkciClass.where(id: params[:id]).first
     #@notifications = @jkci_class.role_exam_notifications(current_user)
     if jkci_class
-      render json: JkciClassSerializer.new(jkci_class).as_json.merge({success: true, has_manage_class: current_user.has_role?(:manage_class), self_organisation: jkci_class.organisation_id == @organisation.id})
+      render json: JkciClassSerializer.new(jkci_class).as_json.merge({success: true, has_manage_class: (current_user.has_role?(:manage_class) && jkci_class.organisation_id == @organisation.id), self_organisation: (jkci_class.organisation_id == @organisation.id || current_user.has_role?(:teacher))})
     else
       render json: {success: false}
     end
