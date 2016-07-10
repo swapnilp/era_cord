@@ -20,7 +20,7 @@ class ExamIndexSerializer < ActiveModel::Serializer
   end
 
   def self_organisation
-    scope[:current_organisation] == object.organisation_id
+    (scope[:current_organisation] == object.organisation_id) || scope[:is_teacher]
   end
   
 end

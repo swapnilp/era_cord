@@ -32,7 +32,8 @@ class TimeTableClass < ActiveRecord::Base
                     cwday: cwday,
                     start_time: start_time,
                     end_time: end_time,
-                    slot_type: slot_type
+                    slot_type: slot_type,
+                    jkci_class_id: time_table.jkci_class_id
                   })
   end
 

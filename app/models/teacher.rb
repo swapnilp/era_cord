@@ -6,6 +6,7 @@ class Teacher < ActiveRecord::Base
   has_many :daily_teaching_points
   belongs_to :g_teacher
   belongs_to :organisation
+  has_many :standards, through: :subjects
   validates :email, uniqueness: true, presence: true
   
   default_scope { where(organisation_id: Organisation.current_id) }  
