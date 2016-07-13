@@ -377,7 +377,7 @@ class OrganisationsController < ApplicationController
     end
     filter_time = time.strftime("%H.%M").to_f
     filter_end_time = end_time.strftime("%H.%M").to_f
-    class_rooms = TimeTableClass.joins(time_table: :jkci_class).where("jkci_classes.is_current_active = ? && (time_table_classes.start_time >= ? && time_table_classes.end_time <= ?) && time_table_classes.cwday = ?", true, filter_time, filter_end_time, cwday)
+    class_rooms = TimeTableClass.joins(time_table: :jkci_class).where("jkci_classes.is_current_active = ? && (time_table_classes.end_time >= ? && time_table_classes.start_time <= ?) && time_table_classes.cwday = ?", true, filter_time, filter_end_time, cwday)
     render json: {success: true, class_rooms: class_rooms.map(&:class_rooms_json), cwday: cwday, time: time, end_time: end_time}
   end
   
