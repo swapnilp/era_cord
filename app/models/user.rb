@@ -110,7 +110,7 @@ class User < ActiveRecord::Base
   def add_teacher_roles
     ["verify_exam", "exam_conduct", "verify_exam_absenty", "add_exam_result", "verify_exam_result", "publish_exam", 
      "create_exam", "add_exam_absenty", "create_daily_teach", "add_daily_teach_absenty", "verify_daily_teach_absenty", 
-     "publish_daily_teach_absenty"].each do |u_role|
+     "publish_daily_teach_absenty", "teacher"].each do |u_role|
       self.add_role u_role.to_sym 
     end
   end
@@ -161,7 +161,8 @@ class User < ActiveRecord::Base
     options.merge({
                     id: id,
                     organisation_id: organisation_id,
-                    organisation_name: organisation.name
+                    organisation_name: organisation.name,
+                    role: role
                   })
   end
 end

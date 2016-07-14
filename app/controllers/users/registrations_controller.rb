@@ -36,7 +36,7 @@ module Users
         @organisation = Teacher.unscoped.where(g_teacher_id: @g_teacher.id).first.organisation
         mobile_code = @g_teacher.mobile_code
       else
-        mobile_code =  @organisation.mobile_code
+        mobile_code = @organisation.mobile_code
       end
       
       build_resource(sign_up_params.merge({role: params[:user][:role], organisation_id: @organisation.id}))
@@ -49,7 +49,16 @@ module Users
       
       yield resource if block_given?
       if resource.persisted?
-        resource.add_organiser_roles if resource.role == 'organisation'
+        if resource.role == 'organisation'
+          resource.add_organiser_roles 
+        elsif resource.role == 'teacher'
+          resource.add_teacher_roles
+        end
+        if @g_teacher.present?
+          @g_teacher.update_attributes({email_code: nil, mobile_code: nil})
+        else
+          @organisation.update_attributes({email_code: nil, mobile_code: nil})
+        end
         if resource.active_for_authentication?
           resource.organisation.update_attributes({last_signed_in: Time.now}) if resource.organisation.present?
           set_flash_message :notice, :signed_up if is_flashing_format?

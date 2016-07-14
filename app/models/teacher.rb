@@ -7,7 +7,9 @@ class Teacher < ActiveRecord::Base
   belongs_to :g_teacher
   belongs_to :organisation
   has_many :standards, through: :subjects
-  validates :email, uniqueness: true, presence: true
+  
+  #validates :email, uniqueness: true, presence: true
+  validates_uniqueness_of :email, :scope => :organisation_id, :case_sensitive => false, presence: true
   
   default_scope { where(organisation_id: Organisation.current_id) }  
   
@@ -21,7 +23,16 @@ class Teacher < ActiveRecord::Base
     gt.address = teacher_params[:address]
     new_record = gt.new_record?
     gt.save
-    gt.generate_email_code(org) if new_record
+    if new_record || User.where(email: teacher_params[:email]).blank?
+      gt.generate_email_code(org) 
+    else
+      t_user = org.all_users.where(email: teacher_params[:email]).first
+      if t_user.present?
+        t_user.add_role :teacher
+      else
+        
+      end
+    end
     return gt
   end
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160707163406) do
+ActiveRecord::Schema.define(version: 20160714132454) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -274,8 +274,8 @@ ActiveRecord::Schema.define(version: 20160707163406) do
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip",     limit: 255
     t.string   "last_sign_in_ip",        limit: 255
-    t.string   "mobile_code",            limit: 255,   default: ""
-    t.string   "email_code",             limit: 255,   default: ""
+    t.string   "mobile_code",            limit: 255
+    t.string   "email_code",             limit: 255
   end
 
   add_index "g_teachers", ["email"], name: "index_g_teachers_on_email", unique: true, using: :btree
@@ -639,7 +639,7 @@ ActiveRecord::Schema.define(version: 20160707163406) do
     t.integer  "g_teacher_id",    limit: 4
   end
 
-  add_index "teachers", ["email"], name: "index_teachers_on_email", unique: true, using: :btree
+  add_index "teachers", ["email"], name: "index_teachers_on_email", using: :btree
 
   create_table "temporary_organisations", force: :cascade do |t|
     t.string   "name",          limit: 255, default: "",    null: false

@@ -8,7 +8,7 @@ class Ability
     alias_action :create, :read, :update, :to => :create_update
 
 
-    if roles.include? 'admin'
+    if roles.include? 'admin' || user.role == 'organisation'
       can :manage, :all
       #can :roll, :admin
       #can :roll, :clark

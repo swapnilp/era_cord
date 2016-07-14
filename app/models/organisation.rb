@@ -61,6 +61,10 @@ class Organisation < ActiveRecord::Base
     { email: email}
   end
 
+  def all_users
+    User.where(organisation_id: self.subtree_ids)
+  end
+
   def generate_email_code
     e_code = (0...50).map { ('a'..'z').to_a[rand(26)] }.join
     m_code = (0...7).map { ('a'..'z').to_a[rand(26)] }.join
