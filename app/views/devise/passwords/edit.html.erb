@@ -21,11 +21,6 @@
 
   <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
     <%= devise_error_messages! %>
-    <%- @organisations.each do |organisation| %>
-      <label class="btn active btn-default" ng-repeat="organisation in organisations">
-	<input name="organisation_id" id="css1" value="<%= organisation.id %>" class="active" type="radio" required>&nbsp;&nbsp;<%= organisation.name %>
-      </label>
-    <%- end %>
     <%= hidden_field_tag :reset_password_token, @reset_password.token %>
   
     <div class="field">

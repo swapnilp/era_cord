@@ -4,15 +4,10 @@ class GTeacher < ActiveRecord::Base
   #after_create :generate_email_code
 
   def generate_email_code(org)
-    user = org.all_users.where(email: self.email).first
-    if user.present?
-      user.add_role :teacher
-    else
-      e_code = (0...50).map { ('a'..'z').to_a[rand(26)] }.join
-      m_code = (0...7).map { ('a'..'z').to_a[rand(26)] }.join
-      update_attributes({email_code: e_code, mobile_code: m_code})
-      self.send_generated_code
-    end
+    e_code = (0...50).map { ('a'..'z').to_a[rand(26)] }.join
+    m_code = (0...7).map { ('a'..'z').to_a[rand(26)] }.join
+    update_attributes({email_code: e_code, mobile_code: m_code})
+    self.send_generated_code
   end
 
   def send_generated_code
@@ -20,9 +15,38 @@ class GTeacher < ActiveRecord::Base
     Delayed::Job.enqueue TeacherRegistationSms.new(teacher_sms_message)
   end
 
-
   def name
     "#{first_name} #{last_name}"
+  end
+
+  def not_registered
+    list = []
+    Teacher.unscoped.includes([:organisation, {organisation: :users}]).where(email: email).each do |teacher|
+      if teacher.organisation.users.where(email: email).blank?
+        list << teacher.organisation
+      end
+    end
+    return list
+  end
+
+  def manage_registered_teacher(org)
+    user = User.where(email: self.email).first
+    if user.present?
+      Teacher.unscoped.includes([:organisation, {organisation: :users}]).where(email: self.email).each do |teacher|
+        o_user = teacher.organisation.all_users.where(email: self.email).first
+        if o_user.nil?
+          t_user = user.dup
+          t_user.organisation_id = teacher.organisation_id
+          t_user.role = 'teacher'
+          t_user.save(:validate => false)
+          t_user.add_teacher_roles 
+        else
+          o_user.add_role :teacher
+        end
+      end
+    else
+      self.generate_email_code(org)
+    end
   end
 
   def teacher_sms_message

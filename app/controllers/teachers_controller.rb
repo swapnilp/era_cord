@@ -21,6 +21,7 @@ class TeachersController < ApplicationController
     teacher.g_teacher_id = g_teacher.id
     teacher.organisation_id = @organisation.id
     if teacher.save
+      g_teacher.manage_registered_teacher(@organisation)
       render json: {success: true, teacher_id: teacher.id}
     else
       render json: {success: false, message: teacher.errors.full_messages.join(' , ')}

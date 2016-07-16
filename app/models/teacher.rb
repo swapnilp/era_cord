@@ -23,16 +23,6 @@ class Teacher < ActiveRecord::Base
     gt.address = teacher_params[:address]
     new_record = gt.new_record?
     gt.save
-    if new_record || User.where(email: teacher_params[:email]).blank?
-      gt.generate_email_code(org) 
-    else
-      t_user = org.all_users.where(email: teacher_params[:email]).first
-      if t_user.present?
-        t_user.add_role :teacher
-      else
-        
-      end
-    end
     return gt
   end
 

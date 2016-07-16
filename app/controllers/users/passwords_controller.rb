@@ -27,17 +27,22 @@ module Users
     def update
       #resource = resource_class.reset_password_by_token(resource_params)
       @reset_password = ResetPassword.where(token: params[:reset_password_token], object_type: "User").first
+      raise ActionController::RoutingError.new('Not Found') unless @reset_password.present?
+      
+      self.resource = resource_class.where(email: @reset_password.email)
+      users = resource_class.where(email: @reset_password.email)
+      users.each do |user|
+        self.resource = user
+        self.resource.reset_password(params[:user][:password], params[:user][:password_confirmation])
 
-      self.resource = resource_class.where(email: @reset_password.email, organisation_id: params[:organisation_id]).first
-
-      self.resource.reset_password(params[:user][:password], params[:user][:password_confirmation])
-      if resource.errors.empty?
+      end
+      if resource.errors.present?
+        render :edit   
+      else
         @reset_password.destroy
         redirect_to CONSOLE_URL
-      else
-        @organisations = User.where(email: @reset_password.email).map(&:organisation)
-        render :edit
       end
+
     end
 
     def resource_params

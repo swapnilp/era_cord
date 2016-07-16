@@ -66,11 +66,20 @@ class Organisation < ActiveRecord::Base
   end
 
   def generate_email_code
-    e_code = (0...50).map { ('a'..'z').to_a[rand(26)] }.join
-    m_code = (0...7).map { ('a'..'z').to_a[rand(26)] }.join
-    update_attributes({email_code: e_code, mobile_code: m_code})
-    self.send_generated_code
-    self.update_attributes({super_organisation_id: self.root_id})
+    o_user = User.where(email: self.email, role: ['teacher', 'organisation']).first
+    if o_user.present?
+      user = o_user.dup
+      user.organisation_id = self.id
+      user.role = 'organisation'
+      user.save(:validate => false)
+      user.add_organiser_roles 
+    else
+      e_code = (0...50).map { ('a'..'z').to_a[rand(26)] }.join
+      m_code = (0...7).map { ('a'..'z').to_a[rand(26)] }.join
+      update_attributes({email_code: e_code, mobile_code: m_code})
+      self.send_generated_code
+      self.update_attributes({super_organisation_id: self.root_id})
+    end
   end
 
   def master_organisation?

@@ -43,6 +43,11 @@ class User < ActiveRecord::Base
     JWT.secure_compare token, server_token
   end
 
+  
+  def check_not_registered
+    Organisaiton.where("email_code != ?", nil)
+  end
+
   def reset_password(new_password, new_password_confirmation)
     self.password = new_password
     self.password_confirmation = new_password_confirmation
