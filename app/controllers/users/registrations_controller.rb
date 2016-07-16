@@ -80,7 +80,13 @@ module Users
     
     def update
       resource = current_user
-      if update_resource(resource, account_update_params)
+      success = true
+      User.where(email: current_user.email).each do |user|
+        resource = user
+        success = update_resource(resource, account_update_params)
+        break unless success 
+      end
+      if success 
         render json: { success: true, message: 'Password changed successfully' }, status: 200
       else
         clean_up_passwords resource
