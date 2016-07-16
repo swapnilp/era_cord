@@ -18,7 +18,9 @@ class Teacher < ActiveRecord::Base
   end
 
   def self.get_g_teacher(teacher_params, org)
-    gt = GTeacher.find_or_initialize_by(teacher_params.slice(:first_name, :last_name, :email))
+    gt = GTeacher.find_or_initialize_by(teacher_params.slice(:email))
+    gt.first_name = teacher_params[:first_name]
+    gt.last_name = teacher_params[:last_name]
     gt.mobile = teacher_params[:mobile]
     gt.address = teacher_params[:address]
     new_record = gt.new_record?
