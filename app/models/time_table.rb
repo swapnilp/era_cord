@@ -19,11 +19,14 @@ class TimeTable < ActiveRecord::Base
   
   def calculate_off_class(date)
     if self.jkci_class.is_current_active
-      time_table_classes = self.time_table_classes.where(cwday: date.cwday).map(&:subject_id)
+      table_classes = self.time_table_classes.where(cwday: date.cwday)
+      table_subjects = table_classes.map(&:subject_id)
       daily_classes = self.jkci_class.daily_teaching_points.where("date >= ? && date <= ?", date.to_date, (date+1.day).to_date).map(&:subject_id)
-      (time_table_classes - daily_classes).each do |subject_id|
-        self.jkci_class.off_classes.find_or_create_by({date: date, subject_id: subject_id, cwday: date.cwday, organisation_id: self.organisation_id}).save
-        
+      (table_subjects - daily_classes).each do |subject_id|
+        teacher_id = table_classes.where(subject_id: subject_id).first.teacher_id
+        off_class = self.jkci_class.off_classes.find_or_create_by({date: date, subject_id: subject_id, cwday: date.cwday, organisation_id: self.organisation_id})
+        off_class.teacher_id = teacher_id
+        off_class.save
       end
     end
   end

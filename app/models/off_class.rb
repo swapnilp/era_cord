@@ -3,6 +3,7 @@ class OffClass < ActiveRecord::Base
   belongs_to :subject
   belongs_to :jkci_class
   belongs_to :sub_class
+  belongs_to :teacher
 
   default_scope { where(organisation_id: Organisation.current_id) }  
   
@@ -14,7 +15,9 @@ class OffClass < ActiveRecord::Base
                     color: subject.try(:color),
                     cwday: cwday,
                     date: date.to_time,
-                    jkci_class_id: jkci_class_id
+                    jkci_class_id: jkci_class_id,
+                    teacher_id: teacher_id,
+                    teacher_name: teacher.try(:name)
                   })
   end
   
