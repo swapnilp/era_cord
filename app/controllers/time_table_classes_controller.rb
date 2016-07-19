@@ -13,7 +13,7 @@ class TimeTableClassesController < ApplicationController
     time_table = TimeTable.where(id: params[:time_table_id]).first
     return render json: {success: false, message: "Invalid Time table"} unless time_table
     
-    time_table_class = time_table.time_table_classes.build( params[:time_table_class].merge({organisation_id: @organisation.id}))
+    time_table_class = time_table.time_table_classes.build(create_params.merge({organisation_id: @organisation.id}))
     if time_table_class.save
       render json: {success: true, slot: time_table_class}
     else
@@ -56,7 +56,11 @@ class TimeTableClassesController < ApplicationController
     params.require(:time_table_class).permit!
   end
 
+  def create_params
+    params.require(:time_table_class).permit(:teacher_id, :cwday, :sub_class_id, :slot_type, :subject_id, :class_room, :time_table_id, :start_time, :end_time, :durations)
+  end
+
   def update_params
-    params.require(:time_table_class).permit(:slot_id, :subject_id, :start_time, :end_time, :durations, :cwday, :sub_class_id, :class_room)
+    params.require(:time_table_class).permit(:slot_id, :subject_id, :start_time, :end_time, :durations, :cwday, :sub_class_id, :class_room, :teacher_id)
   end
 end

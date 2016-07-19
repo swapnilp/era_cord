@@ -4,8 +4,10 @@ class TimeTableClass < ActiveRecord::Base
   belongs_to :subject
   belongs_to :organisation
   belongs_to :sub_class
+  belongs_to :teacher
   
   default_scope { where(organisation_id: Organisation.current_id) }  
+  attr_accessor :teacher_name
 
   def as_json(options = {})
     options.merge({
@@ -19,7 +21,9 @@ class TimeTableClass < ActiveRecord::Base
                     slot_type: slot_type,
                     sub_class_id: sub_class_id,
                     sub_class_name: sub_class.try(:name),
-                    class_room: class_room
+                    class_room: class_room,
+                    teacher_id: teacher_id,
+                    teacher_name: teacher.try(:name),
                   })
   end
 
