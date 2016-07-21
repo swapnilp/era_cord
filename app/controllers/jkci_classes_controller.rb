@@ -268,8 +268,8 @@ class JkciClassesController < ApplicationController
     if !jkci_class.present? || !current_user.has_role?(:manage_class)
       return render json: {success: false, message: "Invalid Class"}  
     end
-    class_students = jkci_class.class_students.includes(:student).order("duplicate_field ASC")
-    render json: {success: true, class_students: class_students.map(&:verify_student_json)}
+    class_students = jkci_class.class_students.includes(:student).where(is_duplicate: true).order("duplicate_field ASC")
+    render json: {success: true, class_students: class_students.map(&:verify_student_json), total_students: jkci_class.class_students_count}
   end
 
   def recheck_duplicate_student
