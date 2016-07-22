@@ -30,6 +30,9 @@ module EraCord
     
     config.autoload_paths += %W(#{config.root}/lib)
     config.autoload_paths += %W(#{config.root}/app/workers)
+    
+    Dir[File.join(Rails.root, "lib", "core_extensions", "*.rb")].each {|l| require l }
+
     config.gem 'prawn'
     config.before_configuration do
       env_file = File.join(Rails.root, 'config', 'local_env.yml')

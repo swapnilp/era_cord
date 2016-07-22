@@ -9,6 +9,11 @@ class TimeTableClass < ActiveRecord::Base
   default_scope { where(organisation_id: Organisation.current_id) }  
   attr_accessor :teacher_name
 
+  def self.day_wise_sort
+    all.group_by(&:cwday).collect{|key , value| {Date.cwday_day(key) => value.as_json}}.reduce Hash.new, :merge
+  end
+
+  
   def as_json(options = {})
     options.merge({
                     id: id,

@@ -96,6 +96,19 @@ class SubClassesController < ApplicationController
       render json: {success: false, message: "Invalid Class"}
     end
   end
+
+  def get_time_table
+    jkci_class = JkciClass.where(id: params[:jkci_class_id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    
+    sub_class = jkci_class.sub_classes.where(id: params[:id]).first
+    if sub_class
+      timetable = sub_class.time_table_classes.includes([:sub_class, :subject, :teacher]).day_wise_sort
+      render json: {success: true, timetable: timetable}
+    else
+      render json: {success: false, message: "Invalid Class"}
+    end
+  end
   
   private
   

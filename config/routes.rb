@@ -163,6 +163,7 @@ Rails.application.routes.draw do
       member do
         get 'students'
         get 'remaining_students'
+        get 'get_time_table'
         post 'add_students'
         delete 'remove_student/:student_id' , to: "sub_classes#remove_student"
       end
