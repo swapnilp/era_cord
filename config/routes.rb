@@ -120,6 +120,7 @@ Rails.application.routes.draw do
         get :get_remaining_subjects
         get :save_subjects
         get :get_subjects
+        get :get_time_table
         get "subjects/:subject_id/remove" => "teachers#remove_subjects"
       end
     end

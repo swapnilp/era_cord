@@ -93,6 +93,17 @@ class TeachersController < ApplicationController
       render json: {success: false}
     end
   end
+
+  def get_time_table
+    teacher = Teacher.where(id: params[:id]).first
+
+    if teacher
+      timetable = teacher.time_table_classes.includes([:sub_class, :subject, :teacher]).day_wise_sort
+      render json: {success: true, timetable: timetable}
+    else
+      render json: {success: false, message: "Invalid teacher"}
+    end
+  end
   
   private
   
