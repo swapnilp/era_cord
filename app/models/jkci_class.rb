@@ -291,6 +291,7 @@ class JkciClass < ActiveRecord::Base
             student.middle_name = record['middle_name']
             student.gender = record['gender']
             student.mobile = record['mobile']
+            student.enable_sms = true
             student.parent_name = record['parent_name']
             student.standard_id = self_class.standard_id
             student.batch_id = self_class.batch_id
