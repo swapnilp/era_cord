@@ -286,7 +286,8 @@ class Student < ActiveRecord::Base
                     parent_name: parent_name, 
                     p_mobile: p_mobile, 
                     batch: batch.name,
-                    standard: standard.std_name
+                    standard: standard.std_name,
+                    enable_sms: enable_sms
                   })
   end
 
