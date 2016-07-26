@@ -109,6 +109,7 @@ Rails.application.routes.draw do
 
   get "get_unassigned_classes" => "jkci_classes#get_unassigned_classes"
   get "sub_organisation/:sub_organisation_id/class/:jkci_class_id/get_report" => "jkci_classes#sub_organisation_class_report", as: "sub_organisation_class_report"
+  get "/class/:id/sub_class_students_report" => "jkci_classes#sub_class_students_report", as: "sub_class_students_report"
   get "/class/:id/download_class_catlog" => "jkci_classes#download_class_catlog", as: "download_class_catlog"
   get "/class/:id/download_class_student_list" => "jkci_classes#download_class_student_list", as: "download_class_student_list"
   get "/class/:id/download_class_syllabus" => "jkci_classes#download_class_syllabus", as: "download_class_syllabus"

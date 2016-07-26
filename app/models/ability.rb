@@ -66,6 +66,9 @@ class Ability
       can :filter_daily_teach, JkciClass
       can :download_class_syllabus, JkciClass
       can :download_class_catlog, JkciClass
+      can :download_class_student_list, JkciClass
+      can :sub_organisation_class_report, JkciClass
+      
       if roles.include? 'download_class_report'
         can :download_class_catlog, JkciClass
         can :download_class_student_list, JkciClass

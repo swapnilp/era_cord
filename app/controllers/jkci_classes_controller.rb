@@ -218,6 +218,14 @@ class JkciClassesController < ApplicationController
     end
   end
 
+  def sub_class_students_report
+    @jkci_class = JkciClass.where(id: params[:id]).first
+    @sub_classes = @jkci_class.sub_classes
+    respond_to do |format|
+      format.pdf { render :layout => false }
+    end
+  end
+
   def download_class_catlog
     @jkci_class = JkciClass.where(id: params[:id]).first
     raise ActionController::RoutingError.new('Not Found') unless @jkci_class
@@ -243,7 +251,8 @@ class JkciClassesController < ApplicationController
   def download_class_student_list
     @jkci_class = JkciClass.where(id: params[:id]).first
     raise ActionController::RoutingError.new('Not Found') unless @jkci_class
-    @students_table_format = @jkci_class.class_students_table_format
+    @auth_user =  current_user.has_role? :organisation
+    @students_table_format = @jkci_class.class_students_table_format(@auth_user)
     
     respond_to do |format|
       format.pdf { render :layout => false }

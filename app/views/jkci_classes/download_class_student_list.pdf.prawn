@@ -14,7 +14,7 @@ prawn_document do |pdf|
   end
   pdf.move_down(10)
   
-  pdf.table(@students_table_format, :column_widths => [20, 120, 65, 310],  :cell_style => { :overflow => :shrink_to_fit, :min_font_size => 6, :height => 17}) do
+  pdf.table(@students_table_format, :column_widths => @auth_user ? [20, 120, 65, 310] : [20, 120,  375],  :cell_style => { :overflow => :shrink_to_fit, :min_font_size => 6, :height => 17}) do
     row(0).font_style = :bold
     row(0).size = 12
   end			       

@@ -188,12 +188,21 @@ class JkciClass < ActiveRecord::Base
     JkciClass.reset_counters(self.id, :class_students)
   end
   
-  def class_students_table_format
-    table = [["Id", "Name", "Parent Mobile", "Subjects"]]
-
-    self.students.includes({subjects: :standard}).each_with_index do |student, index|
-      table << ["#{index+ 1 }", "#{student.name}", "#{student.p_mobile}", "#{student.subjects.map(&:std_name).join('  |  ')}"]
+  def class_students_table_format(auth_user = true)
+    if auth_user
+      table = [["Id", "Name", "Parent Mobile", "Subjects"]]
+      
+      self.students.includes({subjects: :standard}).each_with_index do |student, index|
+        table << ["#{index+ 1 }", "#{student.name}", "#{student.p_mobile}", "#{student.subjects.map(&:std_name).join('  |  ')}"]
+      end
+    else
+      table = [["Id", "Name", "Subjects"]]
+      
+      self.students.includes({subjects: :standard}).each_with_index do |student, index|
+        table << ["#{index+ 1 }", "#{student.name}", "#{student.subjects.map(&:std_name).join('  |  ')}"]
+      end
     end
+    
     table
   end
 
