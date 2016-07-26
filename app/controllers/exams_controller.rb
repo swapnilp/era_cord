@@ -58,7 +58,7 @@ class ExamsController < ApplicationController
       exams = exams.where("jkci_classes.standard_id = ? ",  params[:standard])
     end
     
-    render json: {success: true, exams: exams.map{|exam| exam.calendar_json(@organisation.id)}}
+    render json: {success: true, exams: exams.map{|exam| exam.calendar_json(@organisation.id, current_user)}}
   end
 
   def get_descendants

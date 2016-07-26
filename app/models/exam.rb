@@ -387,8 +387,9 @@ class Exam < ActiveRecord::Base
     chapters_points: node.chapters_points.map(&:chapter_name).join(', ')}
   end
 
-  def calendar_json(org_id)
-    if org_id == self.organisation_id
+  def calendar_json(org_id, user)
+    teacher = user.teacher
+    if org_id == self.organisation_id || (user.has_role?(:teacher) && teacher && teacher.teacher_subjects.map(&:subject_id).include?(self.subject_id) && teacher.jkci_classes.map(&:id).include?(self.jkci_class_id) )
       {
         id: self.id, 
         title: "#{self.subject.try(:std_name)}",
