@@ -8,6 +8,7 @@ class Teacher < ActiveRecord::Base
   belongs_to :organisation
   has_many :standards, through: :subjects
   has_many :time_table_classes
+  has_many :jkci_classes, through: :time_table_classes
   
   #validates :email, uniqueness: true, presence: true
   validates_uniqueness_of :email, :scope => :organisation_id, :case_sensitive => false, presence: true

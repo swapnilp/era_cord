@@ -14,7 +14,12 @@ class JkciClassesController < ApplicationController
   before_action :authenticate_organisation!, only: [:sync_organisation_classes, :sync_organisation_class_students]
 
   def index
-    jkci_classes = @organisation.jkci_classes.where(standard_id: @active_standards).active.order("id desc")
+    if params[:is_teacher]
+      jkci_classes = current_user.teacher.jkci_classes.where(standard_id: @active_standards).active.uniq.order("id desc")
+    else
+      jkci_classes = @organisation.jkci_classes.where(standard_id: @active_standards).active.order("id desc")
+    end
+    
     #jkci_classes = @organisation.standards.where("organisation_standards.is_assigned_to_other = false").map(&:jkci_classes).map(&:last)
     render json: {body: ActiveModel::ArraySerializer.new(jkci_classes, each_serializer: JkciClassIndexSerializer).as_json}
   end

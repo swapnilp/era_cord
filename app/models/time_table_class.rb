@@ -5,6 +5,7 @@ class TimeTableClass < ActiveRecord::Base
   belongs_to :organisation
   belongs_to :sub_class
   belongs_to :teacher
+  has_one :jkci_class, through: :time_table
   
   default_scope { where(organisation_id: Organisation.current_id) }  
   attr_accessor :teacher_name

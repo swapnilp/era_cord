@@ -11,6 +11,7 @@ class User < ActiveRecord::Base
   attr_accessor :login
 
   has_many :students
+  belongs_to :teacher, foreign_key: :email, primary_key: :email
   
   belongs_to :organisation
   
