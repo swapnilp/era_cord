@@ -25,6 +25,7 @@ class Ability
 
       can :read, TimeTable
       can :calender_index, TimeTable
+      can :get_time_table, Teacher if roles.include? 'verify_exam'
       
       can :organisation_cources, Organisation
       can :get_class_rooms, Organisation

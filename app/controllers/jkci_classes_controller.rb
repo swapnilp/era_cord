@@ -15,13 +15,14 @@ class JkciClassesController < ApplicationController
 
   def index
     if params[:is_teacher]
-      jkci_classes = current_user.teacher.jkci_classes.where(standard_id: @active_standards).active.uniq.order("id desc")
+      teacher = current_user.teacher
+      jkci_classes = teacher.jkci_classes.where(standard_id: @active_standards).active.uniq.order("id desc")
     else
       jkci_classes = @organisation.jkci_classes.where(standard_id: @active_standards).active.order("id desc")
     end
     
     #jkci_classes = @organisation.standards.where("organisation_standards.is_assigned_to_other = false").map(&:jkci_classes).map(&:last)
-    render json: {body: ActiveModel::ArraySerializer.new(jkci_classes, each_serializer: JkciClassIndexSerializer).as_json}
+    render json: {success: true, body: ActiveModel::ArraySerializer.new(jkci_classes, each_serializer: JkciClassIndexSerializer).as_json, teacher_id: teacher.try(:id)}
   end
 
   def get_unassigned_classes
