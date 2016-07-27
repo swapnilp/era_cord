@@ -373,6 +373,7 @@ class ExamsController < ApplicationController
     exam = jkci_class.exams.where(id: params[:id]).first
     if exam && !exam.create_verification
       exam.update_attributes({is_active: false})
+      exam.descendants.update_all({is_active: false})
       exam.delete_notification if exam.root?
       back_url = exam.root? ? "/classes/#{exam.jkci_class_id}" : "/classes/#{exam.jkci_class_id}/exams/#{exam.root.id}/show" 
 
