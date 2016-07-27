@@ -14,8 +14,8 @@ class JkciClassesController < ApplicationController
   before_action :authenticate_organisation!, only: [:sync_organisation_classes, :sync_organisation_class_students]
 
   def index
+    teacher = current_user.teacher
     if params[:is_teacher]
-      teacher = current_user.teacher
       jkci_classes = teacher.jkci_classes.where(standard_id: @active_standards).active.uniq.order("id desc")
     else
       jkci_classes = @organisation.jkci_classes.where(standard_id: @active_standards).active.order("id desc")
