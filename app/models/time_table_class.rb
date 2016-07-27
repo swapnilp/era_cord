@@ -30,6 +30,7 @@ class TimeTableClass < ActiveRecord::Base
                     class_room: class_room,
                     teacher_id: teacher_id,
                     teacher_name: teacher.try(:name),
+                    class_name: jkci_class.class_name
                   })
   end
 
