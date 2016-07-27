@@ -15,7 +15,7 @@ class JkciClassesController < ApplicationController
 
   def index
     teacher = current_user.teacher
-    if params[:is_teacher]
+    if params[:is_teacher] && teacher.present?
       jkci_classes = teacher.jkci_classes.where(standard_id: @active_standards).active.uniq.order("id desc")
     else
       jkci_classes = @organisation.jkci_classes.where(standard_id: @active_standards).active.order("id desc")
