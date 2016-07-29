@@ -115,6 +115,8 @@ class Ability
       can :new, Student if roles.include?('accountant') || roles.include?('accountant_clark')
       can :create, Student if roles.include?('accountant') || roles.include?('accountant_clark')
 
+      can :read, SmsSent
+
       if roles.include? 'accountant'
         can :index, StudentFee
         can :filter_data, StudentFee
