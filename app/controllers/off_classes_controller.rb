@@ -1,8 +1,10 @@
 class OffClassesController < ApplicationController
   before_action :authenticate_user!
-  before_action :active_standards!, only: [:calender_index]
+  before_action :active_standards!, only: [:index, :calender_index]
   
   def index
+    off_classes = OffClass.includes(subject: :standard).joins(:jkci_class).where("jkci_classes.is_current_active = ? && jkci_classes.standard_id in (?)", true, @active_standards).where(organisation_id: Organisation.current_id)
+    render json: {success: true, off_classes: off_classes.as_json}
   end
   
   def calender_index

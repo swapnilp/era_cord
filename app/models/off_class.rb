@@ -20,5 +20,14 @@ class OffClass < ActiveRecord::Base
                     teacher_name: teacher.try(:name)
                   })
   end
+
+  def as_json(options = {})
+    options.merge({
+                    id: id,
+                    name: sub_class_id.present? ? "#{subject.try(:std_name)}-#{sub_class.try(:name)}" : subject.try(:std_name),
+                    date: date.to_date,
+                    teacher_name: teacher.try(:name)
+                  })
+  end
   
 end
