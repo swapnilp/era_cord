@@ -55,6 +55,13 @@ class Teacher < ActiveRecord::Base
                   })
   end
 
+  def filter_json(options={})
+    options.merge({
+                    id: self.id,
+                    name: self.name
+                  })
+  end
+
   def edit_json(options={})
     options.merge({
                     id: self.id,

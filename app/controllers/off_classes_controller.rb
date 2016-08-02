@@ -3,8 +3,12 @@ class OffClassesController < ApplicationController
   before_action :active_standards!, only: [:index, :calender_index]
   
   def index
-    off_classes = OffClass.includes(subject: :standard).joins(:jkci_class).where("jkci_classes.is_current_active = ? && jkci_classes.standard_id in (?)", true, @active_standards).where(organisation_id: Organisation.current_id)
-    render json: {success: true, off_classes: off_classes.as_json}
+    off_classes = OffClass.includes([{subject: :standard}, :teacher]).joins(:jkci_class).where("jkci_classes.is_current_active = ? && jkci_classes.standard_id in (?)", true, @active_standards).where(organisation_id: Organisation.current_id)
+    if params[:filter].present? &&  JSON.parse(params[:filter])['filterClass'].present?
+      off_classes = off_classes.where("jkci_classes.standard_id = ?",JSON.parse(params[:filter])['filterClass'])
+    end
+    off_classes = off_classes.page(params[:page])
+    render json: {success: true, off_classes: off_classes.as_json, count: off_classes.total_count}
   end
   
   def calender_index
@@ -21,6 +25,12 @@ class OffClassesController < ApplicationController
     end
     
     render json: {success: true, off_classes: off_classes.map(&:calendar_json)}
+  end
+
+  def get_filter_data
+    teachers = Teacher.select([:first_name, :last_name, :id])
+    standards = @organisation.standards.where("organisation_standards.is_active = ?", true)
+    render json: {success: true, standards: standards.as_json, teachers: teachers.map(&:filter_json)}
   end
   
 end

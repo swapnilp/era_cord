@@ -69,6 +69,7 @@ Rails.application.routes.draw do
   resources :off_classes, only: [:index] do 
     collection do 
       get 'calender_index'
+      get 'get_filter_data'
     end
   end
   
