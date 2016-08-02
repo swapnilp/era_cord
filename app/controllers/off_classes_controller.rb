@@ -7,6 +7,9 @@ class OffClassesController < ApplicationController
     if params[:filter].present? &&  JSON.parse(params[:filter])['filterClass'].present?
       off_classes = off_classes.where("jkci_classes.standard_id = ?",JSON.parse(params[:filter])['filterClass'])
     end
+    if params[:filter].present? &&  JSON.parse(params[:filter])['filterTeacher'].present?
+      off_classes = off_classes.where(teacher_id: JSON.parse(params[:filter])['filterTeacher'])
+    end
     off_classes = off_classes.page(params[:page])
     render json: {success: true, off_classes: off_classes.as_json, count: off_classes.total_count}
   end
