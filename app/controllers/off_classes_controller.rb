@@ -15,7 +15,7 @@ class OffClassesController < ApplicationController
   end
   
   def calender_index
-    off_classes = OffClass.includes(subject: :standard).joins(:jkci_class).where("jkci_classes.is_current_active = ? && jkci_classes.standard_id in (?)", true, @active_standards).where(organisation_id: Organisation.current_id)
+    off_classes = OffClass.includes([{subject: :standard}, :teacher, :sub_class]).joins(:jkci_class).where("jkci_classes.is_current_active = ? && jkci_classes.standard_id in (?)", true, @active_standards).where(organisation_id: Organisation.current_id)
     if params[:start]
       off_classes = off_classes.where("date >= ? ", Date.parse(params[:start]))
     end

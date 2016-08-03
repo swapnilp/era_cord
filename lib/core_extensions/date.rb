@@ -15,5 +15,9 @@ class Date
     when 6
       "Saturday"
     end
-    end
+  end
+
+  def database_time #(dd_date)
+    self.to_time.in_time_zone('UTC')
+  end
 end

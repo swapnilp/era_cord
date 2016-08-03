@@ -88,6 +88,7 @@ class ExamsController < ApplicationController
     jkci_class = get_jkci_class
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     exam = jkci_class.exams.build(create_params)
+    exam.sub_classes = ",#{ exam.sub_classes}," if exam.sub_classes.present?
     exam.organisation_id = @organisation.id
     if exam.save
       Notification.add_create_exam(exam.id, @organisation) if exam.root?
@@ -291,6 +292,10 @@ class ExamsController < ApplicationController
   def update
     exam = @organisation.exams.where(id: params[:id]).first
     if exam && exam.update(update_params)
+      if exam.sub_classes.present?
+        sub_classes = ",#{exam.sub_classes.split(',').delete_if(&:empty?).join(',')}," 
+        exam.update_attributes({sub_classes: sub_classes})
+      end
       render json: {success: true, id: exam.id}
     else
       render json: {success: false}
