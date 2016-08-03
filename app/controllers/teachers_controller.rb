@@ -56,7 +56,7 @@ class TeachersController < ApplicationController
   end
 
   def get_subjects
-    teacher = Teacher.where(id: params[:id]).first
+    teacher = Teacher.includes({subjects: :standard}).where(id: params[:id]).first
     if teacher
       render json: {success: true, subjects: teacher.teacher_subjects.as_json}
     else
