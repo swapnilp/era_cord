@@ -23,6 +23,14 @@ class ClassStudent < ActiveRecord::Base
     self.update_attributes({sub_class: ",#{sub_classes.uniq.join(',')},"})
   end
 
+  def sub_classes(classes)
+    { 
+      name: student.name,
+      mobile: student.p_mobile,
+      sub_classes: classes.where(id: self.sub_class.to_s.split(',').delete_if(&:empty?).map(&:to_i)).map(&:name).join(", ")
+    }
+  end
+  
   def subject_json(options= {})
     options.merge({
                     id: id,

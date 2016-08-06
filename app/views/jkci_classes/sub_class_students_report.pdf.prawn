@@ -9,15 +9,10 @@ prawn_document do |pdf|
     pdf.text "Students count -  #{@jkci_class.students.count}", align: :left
   end
   pdf.move_down(10)
-  
-  @sub_classes.each do |sub_class|
-    pdf.formatted_text [ 
-      { text: "#{sub_class.name}", :size => 12 }
-      ], align: :left
-      if sub_class.students.count > 0
-      	 pdf.table(sub_class.students.collect{ |p| [p.name]}, :cell_style => { :overflow => :shrink_to_fit, :min_font_size => 6, :height => 17}) do
-    	 end
-	 pdf.move_down(20)
-       end	
-  end      
+	
+    pdf.table([["Student Name", "Mobile", "Divisions"]] + @students.map {|student| [student[:name], student[:mobile], student[:sub_classes]]}, :column_widths => [140, 60, 300], :cell_style => { :overflow => :shrink_to_fit, :min_font_size => 6, :height => 17,}) do
+    row(0).font_style = :bold
+    row(0).size = 12
+    pdf.move_down(20)
+  end	
 end

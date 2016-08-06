@@ -225,8 +225,8 @@ class JkciClassesController < ApplicationController
   end
 
   def sub_class_students_report
-    @jkci_class = JkciClass.where(id: params[:id]).first
-    @sub_classes = @jkci_class.sub_classes
+    @jkci_class = JkciClass.includes([:students, {sub_classes: :jkci_class}]).where(id: params[:id]).first
+    @students = @jkci_class.class_students.map{|cs| cs.sub_classes(@jkci_class.sub_classes)}
     respond_to do |format|
       format.pdf { render :layout => false }
     end

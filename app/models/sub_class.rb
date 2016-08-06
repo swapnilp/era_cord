@@ -56,4 +56,11 @@ class SubClass < ActiveRecord::Base
                   })
     
   end
+
+  def student_json(options= {})
+    options.merge({
+                    id: self.id,
+                    name: class_name
+                  })
+  end
 end
