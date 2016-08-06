@@ -283,6 +283,7 @@ class ExamsController < ApplicationController
       exam_sub_classes = sub_classes.as_json({selected: exam.sub_classes.to_s.split(',').map(&:to_i)})
       render json: {success: true, exam: exam, 
         sub_classes: exam_sub_classes, 
+        class_name: jkci_class.class_name,
         subjects: subjects.as_json({selected: [exam.subject_id]})}
     else
       render json: {success: false}
