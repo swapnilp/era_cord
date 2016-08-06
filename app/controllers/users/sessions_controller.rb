@@ -7,6 +7,7 @@ module Users
     respond_to :json
 
     def create
+      return invalid_login_attempt unless params[:user].present?
       unless params[:user][:organisation_id].present?
         duplicates = resource_from_credentials_check_duplicates || []
         
@@ -14,7 +15,6 @@ module Users
           return render json: {success: false, email: params[:user][:email], organisations: duplicates.map(&:organisation_json)}
         end
       end
-      
       resource = resource_from_credentials
 
       return invalid_login_attempt unless resource
