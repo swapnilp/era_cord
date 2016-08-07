@@ -1,8 +1,8 @@
 module Users
   class SessionsController < Devise::SessionsController
-    skip_before_filter :authenticate_with_token!, only: [:new, :create, :destroy]
-    skip_before_filter :verify_authenticity_token, only: [:new, :create, :destroy]
-    skip_before_filter :require_no_authentication, :only => [ :new, :create, :cancel ]
+    skip_before_filter :authenticate_with_token!, only: [:new, :create, :mobile_login,:mpin_login, :get_organisations, :destroy]
+    skip_before_filter :verify_authenticity_token, only: [:new, :create, :mobile_login, :mpin_login, :get_organisations, :destroy]
+    skip_before_filter :require_no_authentication, :only => [ :new, :create, :mobile_login, :mpin_login, :get_organisations, :cancel]
 
     respond_to :json
 
@@ -20,6 +20,37 @@ module Users
       return invalid_login_attempt unless resource
       if resource.valid_password? params[:user][:password]
         render json: resource, success: true, status: :created, serializer: UserLoginSerializer, root: false
+      else
+        invalid_login_attempt
+      end
+    end
+
+    def mobile_login
+      return invalid_login_attempt unless params[:user].present?
+      resource = resource_from_credentials
+
+      return invalid_login_attempt unless resource
+      if resource.valid_password? params[:user][:password]
+        render json: resource, success: true, status: :created, serializer: UserMobileLoginSerializer, root: false
+      else
+        invalid_login_attempt
+      end
+    end
+
+    def get_organisations
+      return invalid_login_attempt unless params[:user].present?
+      duplicates = resource_from_mobile_credentials_check_duplicates || []
+      return render json: {success: true, email: params[:user][:email], organisations: duplicates.map(&:organisation_json), multiple_organisations: duplicates.count > 1}
+    end
+    
+    def mpin_login
+      return invalid_login_attempt unless params[:user].present?
+      resource = resource_from_mobile_credentials
+
+      return invalid_login_attempt unless resource
+      
+      if resource.mpin == params[:user][:mpin].to_i && resource.has_role?(:teacher)
+        render json: resource, success: true, status: :created, serializer: UserMobileLoginSerializer, root: false
       else
         invalid_login_attempt
       end
@@ -51,6 +82,11 @@ module Users
       resource_class.check_duplicate(data, params[:user][:password])      
     end
 
+    def resource_from_mobile_credentials_check_duplicates
+      data = { email: params[:user][:email], device_id: params[:user][:device_id] }
+      resource_class.get_organisations(data)
+    end
+
     def resource_from_credentials
       data = { email: params[:user][:email] }
       if params[:user][:organisation_id].present?
@@ -66,6 +102,23 @@ module Users
       end
       return unless res
       return res if res.valid_password? params[:user][:password]
+    end
+
+    def resource_from_mobile_credentials
+      data = { email: params[:user][:email], device_id: params[:user][:device_id] }
+      if params[:user][:organisation_id].present?
+        data = data.merge({organisation_id: params[:user][:organisation_id]})
+      end
+
+      res = resource_class.find_for_database_authentication(data)
+      if res.count > 1
+        res = res.select{|u| u.valid_password? params[:user][:password]}.first
+      else
+        res = res[0]
+      end
+
+      return unless res
+      return res if res.mpin == params[:user][:mpin].to_i
     end
   end
 end

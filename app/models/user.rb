@@ -75,6 +75,12 @@ class User < ActiveRecord::Base
     return users
   end
 
+  def self.get_organisations(warden_conditions)
+    conditions = warden_conditions.dup
+    users = where(conditions.to_h)
+    return users
+  end
+
   def self.send_reset_password_instructions(warden_conditions)
     conditions = warden_conditions.dup
     user = where(conditions.to_h).first

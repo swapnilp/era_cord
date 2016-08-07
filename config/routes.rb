@@ -3,16 +3,23 @@ Rails.application.routes.draw do
   # See how all your routes lay out with "rake routes".
 
   # You can have the root of your site routed with "
+  devise_scope :user do
+    post '/users/mobile_sign_in', to: "users/sessions#mobile_login"
+    post '/users/mpin_sign_in', to: "users/sessions#mpin_login"
+    get '/users/get_organisations', to: "users/sessions#get_organisations"
+    post '/users/mobile_sign_up', to: "users/registrations#create_mpin"
+  end
+  
   devise_for :users,
   controllers: {
     invitations:   'users/invitations',
     sessions:      'users/sessions',
     passwords:     'users/passwords',
     unlocks:       'users/unlocks',
-    registrations: 'users/registrations',
-  },
-  skip: [:confirmations]
+    registrations: 'users/registrations'
+  },skip: [:confirmations] 
 
+  
   devise_for :organisations,
   controllers: {
     sessions:      'organisations/sessions'

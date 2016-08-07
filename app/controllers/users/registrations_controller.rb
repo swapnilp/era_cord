@@ -76,8 +76,18 @@ module Users
         respond_with resource
       end
     end
-    
-    
+
+    def create_mpin
+      resource = current_user
+      if params[:user].present? && params[:user][:device_id] && params[:user][:mpin]
+        User.where(email: resource.email).update_all({device_id: params[:user][:device_id], mpin: params[:user][:mpin]})
+        duplicates = resource_class.get_organisations({device_id: resource.device_id, email: resource.email}) || []
+        render json: { success: true, message: 'mPin update successfully', organisations: duplicates.map(&:organisation_json), multiple_organisations: duplicates.count > 1 }, status: 200
+      else
+        render json: { success: false, message: 'mPin not generated' }, status: 200
+      end
+    end
+
     def update
       resource = current_user
       success = true
@@ -100,8 +110,9 @@ module Users
   def configure_permitted_parameters
     #devise_parameter_sanitizer.for(:sign_up).push(:email, :role, :password, :password_confirmation)
   end
-
+  
   def account_update_params
     params.require(:user).permit(:first_name, :last_name, :email, :password, :password_confirmation, :current_password)
   end
+  
 end
