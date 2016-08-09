@@ -277,7 +277,7 @@ Rails.application.routes.draw do
         member do
           get 'get_dtp_info'
         end
-        resources :daily_teachs, except: [:update, :edit, :index] do
+        resources :daily_teachs, except: [:update, :edit] do
           member do
             get 'get_catlogs'
             get 'class_absent_verification'
