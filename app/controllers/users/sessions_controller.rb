@@ -84,7 +84,7 @@ module Users
 
     def resource_from_mobile_credentials_check_duplicates
       data = { email: params[:user][:email], device_id: params[:user][:device_id] }
-      resource_class.get_organisations(data)
+      resource_class.get_teachers_organisations(data)
     end
 
     def resource_from_credentials

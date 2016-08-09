@@ -270,6 +270,28 @@ Rails.application.routes.draw do
   delete "/organisations/clarks/:user_id" => "organisations#delete_clark"
   delete "/organisations/sub_organisations/:sub_organisation_id" => "organisations#pull_back_sub_organisations"
 
+
+  namespace :api do
+    namespace :v1, :defaults => {:format => :json} do
+      resources :jkci_classes, only: [:index] do
+        member do
+          get 'get_dtp_info'
+        end
+        resources :daily_teachs, except: [:update, :edit, :index] do
+          member do
+            get 'get_catlogs'
+            get 'class_absent_verification'
+            post 'fill_catlog'
+            post 'add_absent_student'
+            post 'remove_absent_student'
+            post 'update'
+            post 'publish_absenty'
+          end
+        end
+      end
+    end
+  end
+
   #get 'index' => "home#index"
   root 'home#index'
   

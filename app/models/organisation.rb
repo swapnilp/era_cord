@@ -1,7 +1,13 @@
 class Organisation < ActiveRecord::Base
+  PASSWORD_REGEX = /\A(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z]).{8,}\z/
+  TOKEN_SECRET = Rails.application.secrets[:secret_key_base]
+  TOKEN_EXPIRE_TIME = 1.days#2.hours
   
   has_ancestry
 
+  devise :database_authenticatable, :registerable, :recoverable,
+          :rememberable, :trackable, :authentication_keys => [:email]#, request_keys: [:organisation_id]
+  
   belongs_to :master_organisation,   :class_name => "Organisation", :foreign_key => "parent_id"
   has_many   :sub_organisations,    :class_name => "Organisation", :foreign_key => "parent_id"#, :dependent => :destroy
 
@@ -66,6 +72,7 @@ class Organisation < ActiveRecord::Base
   end
 
   def generate_email_code
+    update_attributes({password: "eracord123"})
     o_user = User.where(email: self.email, role: ['teacher', 'organisation']).first
     if o_user.present?
       user = o_user.dup

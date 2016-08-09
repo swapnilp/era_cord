@@ -53,12 +53,23 @@ class TimeTableClass < ActiveRecord::Base
                     id: id,
                     sub_class: sub_class.try(:name),
                     subject: subject.std_name,
-                    class_room: class_room,
                     cwday: cwday,
                     start_time: start_time,
                     end_time: end_time,
                     class_room: class_room,
                     color: subject.try(:color),
+                  })
+  end
+
+  def teacher_json(options ={})
+    options.merge({
+                    id: id,
+                    class_name: "#{sub_class.try(:class_name) || jkci_class.class_name}",
+                    subject: subject.name,
+                    start_time: start_time,
+                    end_time: end_time,
+                    class_room: class_room,
+                    color: subject.try(:color)
                   })
   end
 end

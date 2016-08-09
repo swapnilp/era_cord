@@ -75,9 +75,9 @@ class User < ActiveRecord::Base
     return users
   end
 
-  def self.get_organisations(warden_conditions)
+  def self.get_teachers_organisations(warden_conditions)
     conditions = warden_conditions.dup
-    users = where(conditions.to_h)
+    users = where(conditions.to_h).select{|u| u.has_role?(:teacher)}
     return users
   end
 
