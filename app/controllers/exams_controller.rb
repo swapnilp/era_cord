@@ -104,6 +104,7 @@ class ExamsController < ApplicationController
     exam = @organisation.exams.where(id: params[:id]).first
     document = exam.documents.build
     document.document = params[:file]
+    document.organisation_id = @organisation.id
     if document.save
       render json: {success: true}
     else

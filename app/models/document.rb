@@ -28,6 +28,8 @@ class Document < ActiveRecord::Base
   #after_create :transliterate_file_name
 
   validates_attachment_size :document, :less_than=>15.megabyte, message: "Oops! the file you have selected is too large. You can only upload a file less than 5 MB"
+  validates :document, presence: true
+  
 
 
 

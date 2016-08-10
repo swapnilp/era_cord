@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160810081536) do
+ActiveRecord::Schema.define(version: 20160810155344) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -313,6 +313,18 @@ ActiveRecord::Schema.define(version: 20160810081536) do
     t.integer  "class_students_count", limit: 4,   default: 0
     t.integer  "notifications_count",  limit: 4,   default: 0
     t.float    "fee",                  limit: 24
+  end
+
+  create_table "logos", force: :cascade do |t|
+    t.string   "image_file_name",    limit: 255
+    t.string   "image_content_type", limit: 255
+    t.integer  "image_file_size",    limit: 4
+    t.float    "height",             limit: 24
+    t.float    "width",              limit: 24
+    t.datetime "image_updated_at"
+    t.integer  "organisation_id",    limit: 4
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
   end
 
   create_table "meetings_students", force: :cascade do |t|

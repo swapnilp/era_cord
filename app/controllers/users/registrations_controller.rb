@@ -81,7 +81,7 @@ module Users
       resource = current_user
       if params[:user].present? && params[:user][:device_id] && params[:user][:mpin]
         User.where(email: resource.email).update_all({device_id: params[:user][:device_id], mpin: params[:user][:mpin]})
-        duplicates = resource_class.get_organisations({device_id: resource.device_id, email: resource.email}) || []
+        duplicates = User.where(device_id: resource.device_id, email: resource.email) || []
         render json: { success: true, message: 'mPin update successfully', organisations: duplicates.map(&:organisation_json), multiple_organisations: duplicates.count > 1 }, status: 200
       else
         render json: { success: false, message: 'mPin not generated' }, status: 200
