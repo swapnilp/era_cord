@@ -23,8 +23,8 @@ class JkciClass < ActiveRecord::Base
   has_many :off_classes
   has_many :student_fees
   has_many :parents_meetings
-  
   has_many :chapters, through: :subject
+  has_many :attendances, through: :class_students
 
   validates :class_name, presence: true
   validates :batch_id, presence: true
@@ -145,7 +145,6 @@ class JkciClass < ActiveRecord::Base
     table
   end
 
-
   def upgrade_batch(student_list, organisation, standard_id)
     next_batch = self.batch.next
     next_standard = organisation.standards.where(id: standard_id).first
@@ -168,7 +167,6 @@ class JkciClass < ActiveRecord::Base
         old_class_students.update_all({jkci_class_id: new_next_class.id, roll_number: nil, organisation_id: next_old_class.organisation_id, sub_class: nil, batch_id: new_next_class.batch_id, collected_fee: 0})
         new_next_class.students.map{|c_student| c_student.add_students_subjects(nil, next_old_class.organisation)}
       end
-      
       new_next_class.calculate_students_count
       self.calculate_students_count
     end
@@ -177,7 +175,6 @@ class JkciClass < ActiveRecord::Base
   
   def daily_teaching_table_format
     table = [["Id", "Subject", "Chapter", "Points", "Date", "Sms Sent", "Divisions"]]
-
     self.daily_teaching_points.includes(:subject).order(chapter_id: :desc,date: :desc).each_with_index do |dtp, index|
       table << ["#{index}", "#{dtp.subject.try(:name)}", "#{dtp.chapter.try(:name)}", "#{dtp.points}", "#{dtp.date.try(:to_date)}", "#{dtp.is_sms_sent}", "#{dtp.sub_classes}"]
     end
@@ -247,7 +244,6 @@ class JkciClass < ActiveRecord::Base
       ids = students.select(:id, :first_name,:last_name).where(first_name: student.first_name, last_name: student.last_name).map(&:id)
       class_students.where(student_id: ids, is_duplicate: false).update_all({is_duplicate: true, duplicate_field: "Name"})
     end
-    
     students.select(:p_mobile).group(:p_mobile).having("count(*) > 1").each do |student|
       ids = students.select(:id, :p_mobile).where(p_mobile: student.p_mobile).map(&:id)
       class_students.where(student_id: ids, is_duplicate: false).each do |class_student|
