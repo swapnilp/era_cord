@@ -11,7 +11,7 @@ class TimeTableClass < ActiveRecord::Base
   attr_accessor :teacher_name
 
   def self.day_wise_sort
-    all.group_by(&:cwday).collect{|key , value| {Date.cwday_day(key) => value.as_json}}.reduce Hash.new, :merge
+    all.group_by(&:cwday).collect{|key , value| {Date.cwday_day(key) => value.map(&:teacher_time_table_json)}}.reduce Hash.new, :merge
   end
 
   
@@ -54,8 +54,8 @@ class TimeTableClass < ActiveRecord::Base
                     sub_class: sub_class.try(:name),
                     subject: subject.std_name,
                     cwday: cwday,
-                    start_time: start_time,
-                    end_time: end_time,
+                    start_time: ('%.2f' % start_time.to_f).gsub(".", ":"),
+                    end_time: ('%.2f' % end_time.to_f).gsub(".", ":"),
                     class_room: class_room,
                     color: subject.try(:color),
                   })
@@ -72,4 +72,19 @@ class TimeTableClass < ActiveRecord::Base
                     color: subject.try(:color)
                   })
   end
+
+  def teacher_time_table_json(options = {})
+    options.merge({
+                    id: id,
+                    name: "#{jkci_class.class_name}  " + (sub_class_id.present? ? "#{subject.try(:name)}-#{sub_class.try(:name)}" : subject.try(:name)),
+                    cwday: cwday,
+                    start_time: ('%.2f' % start_time.to_f).gsub(".", ":"),
+                    end_time: ('%.2f' % end_time.to_f).gsub(".", ":"),
+                    sub_class_name: sub_class.try(:name),
+                    class_room: class_room,
+                    teacher_name: teacher.try(:name),
+                    class_name: jkci_class.class_name
+                  })
+  end
+  
 end
