@@ -8,13 +8,13 @@ class Logo < ActiveRecord::Base
     :whiny => true,
     :storage => :s3,
     :path => "#{SERVER_TYPE}/image/:id/:style/:filename",
-    :url => "http://s3-ap-southeast-1.amazonaws.com/jkciPhoto/#{SERVER_TYPE}/image/:id/:style/:filename",
+    :url => "http://s3-ap-southeast-1.amazonaws.com/jkciphoto/#{SERVER_TYPE}/image/:id/:style/:filename",
     :s3_credentials => File.join(Rails.root,'config', 's3.yml'),
     :s3_premissions => 'public',
     :s3_protocol => 'http',
     :bucket => 'jkciphoto',
-    :styles => { :medium => "400x400>", :hunt_img => "x400",
-      :thumb => "212x" }
+    :styles => { :medium => "400x400>",
+      :thumb => "200x" }
 
   #after_create :transliterate_file_name
 
@@ -65,11 +65,7 @@ class Logo < ActiveRecord::Base
   end
 
   def image_url(type= 'original')
-    image.url(type.to_sym)
-  end
-
-  def flickers_images
-    {image_url('thumb') =>  gallery_path(album_id)}
+    "https://s3-ap-southeast-1.amazonaws.com/jkciphoto/#{image.path(type.to_sym)}"
   end
 
 

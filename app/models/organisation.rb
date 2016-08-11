@@ -43,6 +43,7 @@ class Organisation < ActiveRecord::Base
   has_many :time_tables
   has_many :time_table_classes
   has_many :off_classes
+  has_many :logos
     
 
   cattr_accessor :current_id

@@ -267,6 +267,7 @@ Rails.application.routes.draw do
   post "/organisations/users/:user_id/update_roles" => "organisations#update_clark_roles"
   post "/organisations/users/create_organisation_clark" => "organisations#create_organisation_clark"
   post "/organisations/sub_organisation/launch_organisation" => "organisations#launch_sub_organisation"
+  post "/organisations/upload_logo" => "organisations#upload_logo"
   delete "/organisations/clarks/:user_id" => "organisations#delete_clark"
   delete "/organisations/sub_organisations/:sub_organisation_id" => "organisations#pull_back_sub_organisations"
 

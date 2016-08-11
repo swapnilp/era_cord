@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160810155344) do
+ActiveRecord::Schema.define(version: 20160810170214) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -410,6 +410,7 @@ ActiveRecord::Schema.define(version: 20160810155344) do
     t.string   "uid",                     limit: 255
     t.text     "tokens",                  limit: 65535
     t.datetime "token_expires_at"
+    t.string   "logo_url",                limit: 255
   end
 
   add_index "organisations", ["ancestry"], name: "index_organisations_on_ancestry", using: :btree
