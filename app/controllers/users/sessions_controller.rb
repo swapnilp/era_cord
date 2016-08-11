@@ -40,7 +40,11 @@ module Users
     def get_organisations
       return invalid_login_attempt unless params[:user].present?
       duplicates = resource_from_mobile_credentials_check_duplicates || []
-      return render json: {success: true, email: params[:user][:email], organisations: duplicates.map(&:organisation_json), multiple_organisations: duplicates.count > 1}
+      if duplicates.count > 0
+        return render json: {success: true, email: params[:user][:email], organisations: duplicates.map(&:organisation_json), multiple_organisations: duplicates.count > 1}
+      else
+        return render json: {success: false, message: "Email not registered"}
+      end
     end
     
     def mpin_login
