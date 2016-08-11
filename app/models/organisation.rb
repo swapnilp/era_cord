@@ -545,7 +545,8 @@ class Organisation < ActiveRecord::Base
                     pan_number: pan_number,
                     tan_number: tan_number,
                     service_tax: service_tax,
-                    enable_service_tax: enable_service_tax
+                    enable_service_tax: enable_service_tax,
+                    logo_url: logo_url
                   })
     
   end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160810170214) do
+ActiveRecord::Schema.define(version: 20160811114027) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -593,6 +593,7 @@ ActiveRecord::Schema.define(version: 20160810170214) do
     t.integer  "standard_id",       limit: 4
     t.datetime "last_present"
     t.string   "parent_occupation", limit: 255
+    t.string   "adhar_card",        limit: 255
   end
 
   create_table "sub_classes", force: :cascade do |t|
