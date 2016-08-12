@@ -234,6 +234,8 @@ Rails.application.routes.draw do
       get 'get_points'
     end
   end
+
+  resources :hostels
   
   resources :contacts#, only: [:create]
   get '/organisation_profile' => "organisations#show"
