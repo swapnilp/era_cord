@@ -3,7 +3,4 @@ class Attendance < ActiveRecord::Base
 
   belongs_to :student
   scope :todays_attendances, -> { where(date: Date.today) }
-  
-  
-  
 end
