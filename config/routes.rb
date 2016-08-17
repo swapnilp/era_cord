@@ -235,7 +235,9 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :hostels
+  resources :hostels do
+    resources :hostel_rooms, only: [:index, :edit, :create, :update]
+  end
   
   resources :contacts#, only: [:create]
   get '/organisation_profile' => "organisations#show"
@@ -261,6 +263,8 @@ Rails.application.routes.draw do
   get "/organisations/get_standards" => "organisations#get_organisation_standards"
   get "/organisations/courses/:course_id/get_fee" => "organisations#get_standard_fee"
   get "/organisations/classes/:class_id/get_fee" => "organisations#get_class_fee"
+  get "/organisation/get_last_attendances" => "organisations#get_last_attendances"
+  post "/organisation/add_attendances" => "organisations#add_attendances"
   post "/organisations/courses/:course_id/update_fee" => "organisations#update_standard_fee"
   post "/organisations/classes/:class_id/update_fee" => "organisations#update_class_fee"
   post "/organisations/switch_organisation_standard" => "organisations#switch_organisation_standard"

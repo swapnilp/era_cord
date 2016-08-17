@@ -1,11 +1,17 @@
 class OrganisationsController < ApplicationController
-  load_and_authorize_resource param_method: :my_sanitizer, except: [:new_user]
+  load_and_authorize_resource param_method: :my_sanitizer, except: [:new_user, :get_last_attendances, :add_attendances]
   #before_action :authenticate_user!, only: [:manage_organisation, :manage_roles, :update_roles, :manage_courses
   #                                          :add_cources, :add_remaining_cources, :new_user,:disable_users, :enable_users 
   #                                          :remaining_cources, :add_remaining_cources, :delete_users, 
   #                                          :edit_password, :update_password, :launch_sub_organisation]
-  before_action :authenticate_user!, except: [:new, :create, :regenerate_organisation_code]
+  before_action :authenticate_user!, except: [:new, :create, :regenerate_organisation_code, :get_last_attendances, :add_attendances]
+  skip_before_filter :authenticate_with_token!, only: [:get_last_attendances, :add_attendances]
+  
+  before_filter :authenticate_org_with_token!, only: [:get_last_attendances, :add_attendances]
+  before_action :authenticate_organisation!, only: [:get_last_attendances, :add_attendances]
+
   before_action :active_standards!, only: [:organisation_classes]
+
 
   def show
     if current_user.has_role? :organisation
@@ -391,6 +397,14 @@ class OrganisationsController < ApplicationController
     else
       render json: {success: false, message: document.errors.full_messages.join(' , ')}
     end
+  end
+
+  def get_last_attendances
+    render json: {success: true, date: nil, student_id: nil}
+  end
+  
+  def add_attendances
+    render json: {success: true}
   end
 
 
