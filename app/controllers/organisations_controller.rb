@@ -400,7 +400,8 @@ class OrganisationsController < ApplicationController
   end
 
   def get_last_attendances
-    render json: {success: true, date: nil, student_id: nil}
+    attendance = Attendance.last
+    render json: {success: true, date: attendance.try(:date).to_s, student_id:  attendance.try(:student_id).to_i}
   end
   
   def add_attendances

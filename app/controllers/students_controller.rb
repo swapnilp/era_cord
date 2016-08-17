@@ -69,7 +69,7 @@ class StudentsController < ApplicationController
   end
   
   def show
-    student = Student.includes({subjects: :standard}, :class_students, :removed_class_students).where(id: params[:id]).first
+    student = Student.includes({subjects: :standard}, :class_students, :removed_class_students, :hostel).where(id: params[:id]).first
     if student
       roles = current_user.roles.map(&:name)
       render json: {success: true, body: StudentShowSerializer.new(student).as_json, has_show_pay_info: roles.include?('accountant'), has_pay_fee: (['accountant','accountant_clark'] & roles).size > 0, classes: student.jkci_classes.map(&:student_filter_json), remaining_fee: student.total_remaining_fees.sum }
@@ -209,95 +209,22 @@ class StudentsController < ApplicationController
     students = Student.select([:id, :first_name, :last_name, :standard_id, :middle_name]).joins({class_students: :jkci_class}).where("jkci_classes.is_current_active = ?", true)
     render json: {success: true, students: students.map(&:sync_json)}
   end
-
-  ##################
-
-  def filter_students_data
-    authorize! :roll, :clark
+  
+  def allocate_hostel
     student = @organisation.students.where(id: params[:id]).first
-    includes_tables = params[:data_type] == 'exam' ? [:exam] : [:jkci_class, :daily_teaching_point]
-    catlogs = student.send("#{params[:data_type].singularize}_catlogs".to_sym).includes(includes_tables).order('id desc').page(params[:page])
-    respond_to do |format|
-      format.html
-      format.json {render json: {success: true, html: render_to_string(:partial => "students_#{params[:data_type]}.html.erb", :layout => false, locals: {catlogs: catlogs}), pagination_html: render_to_string(partial: 'filter_pagination.html.erb', layout: false, locals: {catlogs: catlogs,  params: {data_type: params[:data_type]}}), css_holder: ".#{params[:data_type]}Table tbody"}}
-    end
-  end
-  
-  
-
-
-  def destroy
-  end
-
-  
-  
-  def enable_sms
-    student = @organisation.students.select([:id, :enable_sms, :organisation_id, :p_mobile, :initl, :last_name]).where(id: params[:id]).first
-    if student.present?
-      student.activate_sms 
+    if student && student.update_attributes(update_hostel_params)
       render json: {success: true}
     else
       render json: {success: false}
     end
   end
 
-  
-  def disable_student_sms
-    student = @organisation.students.select([:id, :enable_sms, :organisation_id, :p_mobile, :initl, :last_name]).where(id: params[:id]).first
-    if student
-      student.deactivate_sms if student
-      redirect_to student_path(student), flash: {success: true, notice: "sms is deactivated successfully"} 
-    else
-      redirect_to students_path, flash: {success: false, notice: "Something went wrong"} 
-    end
-  end
-
-  def filter_students
-    students = @organisation.students.select([:id, :first_name, :last_name, :std, :group, :mobile, :p_mobile, :enable_sms, :batch_id, :gender, :is_disabled, :standard_id])
-    if params[:batch_id].present?
-      students = students.where(batch_id: params[:batch_id])
-    end
-    if params[:standard].present?
-      students = students.where(standard_id: params[:standard])
-    end
-
-    if params[:filter].present?
-      students = students.where("first_name like ? OR last_name like ? OR mobile like ? OR p_mobile like ?", "%#{params[:filter]}%", "%#{params[:filter]}%", "%#{params[:filter]}%", "%#{params[:filter]}%")
-    end
-
-    if params[:gender].present?
-      students = students.where(gender: params[:gender])
-    end
-    
-    students = students.order("id desc").page(params[:page])
-    pagination_html = render_to_string(partial: 'pagination.html.erb', layout: false, locals: {students: students})
-
-    render json: {success: true, html: render_to_string(:partial => "student.html.erb", :layout => false, locals: {students: students}), pagination_html:  pagination_html, css_holder: ".studentsTable tbody"}
-  end
-
-  def select_user
-    users = User.where(role: 'parent')
-    render json: {success: true, html: render_to_string(:partial => "user.html.erb", :layout => false, locals: {users: users})}
-  end
-  
-  def disable_student
+  def deallocate_hostel
     student = @organisation.students.where(id: params[:id]).first
-    if student
-      student.update_attributes({is_disabled: true, enable_sms: false})
-      student.jkci_classes.clear
-      redirect_to student_path(student)
+    if student && student.update_attributes({hostel_id: nil})
+      render json: {success: true}
     else
-      redirect_to students_path
-    end
-  end
-  
-  def enable_student
-    student = @organisation.students.where(id: params[:id]).first
-    if student
-      student.update_attributes({is_disabled: false})
-      redirect_to student_path(student)
-    else
-      redirect_to students_path
+      render json: {success: false}
     end
   end
 
@@ -318,6 +245,10 @@ class StudentsController < ApplicationController
 
   def update_params
     params.require(:student).permit(:first_name, :last_name, :email, :mobile, :parent_name, :p_mobile, :p_email, :address, :rank, :middle_name, :batch_id, :gender, :initl, :standard_id, :parent_occupation)
+  end
+
+  def update_hostel_params
+    params.require(:student).permit(:hostel_id)
   end
 
 end

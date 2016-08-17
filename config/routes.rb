@@ -89,6 +89,8 @@ Rails.application.routes.draw do
       post 'paid_student_fee'
       post 'update'
       post 'toggle_sms'
+      post 'allocate_hostel'
+      delete 'deallocate_hostel'
     end
     collection do 
       get 'get_filter_values'

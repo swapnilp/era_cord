@@ -19,6 +19,8 @@ class Student < ActiveRecord::Base
   belongs_to :batch
   belongs_to :user
   belongs_to :standard
+  belongs_to :hostel, :counter_cache => true
+  belongs_to :hostel_room, :counter_cache => true
   
   default_scope { where(organisation_id: Organisation.current_id) }  
   scope :enable_students, -> { where(is_disabled: false) }

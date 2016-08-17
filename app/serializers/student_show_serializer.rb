@@ -1,5 +1,5 @@
 class StudentShowSerializer < ActiveModel::Serializer
-  attributes :id, :name, :batch, :standard, :parent_name, :p_mobile, :mobile, :class_names, :roll_number, :enable_sms, :remaining_fee, :subjects
+  attributes :id, :name, :batch, :standard, :parent_name, :p_mobile, :mobile, :class_names, :roll_number, :enable_sms, :remaining_fee, :subjects, :hostel_id, :hostel
   
   def name
     object.name
@@ -27,6 +27,10 @@ class StudentShowSerializer < ActiveModel::Serializer
 
   def roll_number
     object.try(:roll_number)
+  end
+
+  def hostel
+    object.hostel.try(:name)
   end
 
 end

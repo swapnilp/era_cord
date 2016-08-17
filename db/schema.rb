@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160816090253) do
+ActiveRecord::Schema.define(version: 20160817091116) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -297,8 +297,9 @@ ActiveRecord::Schema.define(version: 20160816090253) do
     t.string   "name",            limit: 255
     t.integer  "beds",            limit: 4
     t.integer  "extra_charges",   limit: 4
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
+    t.integer  "students_count",  limit: 4,   default: 0
   end
 
   create_table "hostels", force: :cascade do |t|
@@ -312,8 +313,9 @@ ActiveRecord::Schema.define(version: 20160816090253) do
     t.integer  "student_occupancy", limit: 4
     t.boolean  "is_service_tax",    limit: 1
     t.float    "service_tax",       limit: 24
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
+    t.datetime "created_at",                                null: false
+    t.datetime "updated_at",                                null: false
+    t.integer  "students_count",    limit: 4,   default: 0
   end
 
   create_table "jkci_classes", force: :cascade do |t|
@@ -619,6 +621,8 @@ ActiveRecord::Schema.define(version: 20160816090253) do
     t.datetime "last_present"
     t.string   "parent_occupation", limit: 255
     t.string   "adhar_card",        limit: 255
+    t.integer  "hostel_id",         limit: 4
+    t.integer  "hostel_room_id",    limit: 4
   end
 
   create_table "sub_classes", force: :cascade do |t|
