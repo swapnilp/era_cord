@@ -11,7 +11,8 @@ class HostelRoom < ActiveRecord::Base
                     organisation_id: self.organisation_id,
                     name: name,
                     beds: beds,
-                    extra_charges: extra_charges
+                    extra_charges: extra_charges,
+                    students_count: students_count
                   })
   end
 end

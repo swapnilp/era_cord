@@ -5,8 +5,10 @@ class HostelRoomsController < ApplicationController
   load_and_authorize_resource param_method: :my_sanitizer
   
   def index
-    rooms = HostelRoom.where(hostel_id: params[:hostel_id]).all
-    render json: {success: true, rooms: rooms.as_json}
+    hostel = Hostel.where(id: params[:hostel_id]).first
+    return render json: {success: false, message: "Invalid Hostel"} unless hostel.present?
+    rooms = hostel.hostel_rooms
+    render json: {success: true, rooms: rooms.as_json, unallocated_students: hostel.students.unoccupied_students.count}
   end
 
   def edit
@@ -38,6 +40,19 @@ class HostelRoomsController < ApplicationController
     room = hostel.hostel_rooms.where(id: params[:id]).first
     
     if room.update_attributes(update_params)
+      render json: {success: true}
+    else
+      render json: {success: false, mssage: ""}
+    end
+  end
+
+  def allocate_students
+    hostel = Hostel.where(id: params[:hostel_id]).first
+    return render json: {success: false, message: "Invalid Hostel"} unless hostel.present?
+    room = hostel.hostel_rooms.where(id: params[:id]).first
+    if room && params[:student_ids].present?
+      students = hostel.students.where(id: params[:student_ids].split(',').map(&:to_i))
+      room.students << students
       render json: {success: true}
     else
       render json: {success: false, mssage: ""}

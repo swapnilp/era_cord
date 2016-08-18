@@ -86,6 +86,7 @@ Rails.application.routes.draw do
       get 'get_graph_data'
       get 'get_fee_info'
       get 'get_payments_info'
+      get 'get_hostel_info'
       post 'paid_student_fee'
       post 'update'
       post 'toggle_sms'
@@ -238,7 +239,15 @@ Rails.application.routes.draw do
   end
 
   resources :hostels do
-    resources :hostel_rooms, only: [:index, :edit, :create, :update]
+    member do 
+      get "get_unallocated_students"
+    end
+    
+    resources :hostel_rooms, only: [:index, :edit, :create, :update] do
+      member do
+        get "allocate_students"
+      end
+    end
   end
   
   resources :contacts#, only: [:create]

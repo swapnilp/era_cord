@@ -25,6 +25,8 @@ class Student < ActiveRecord::Base
   default_scope { where(organisation_id: Organisation.current_id) }  
   scope :enable_students, -> { where(is_disabled: false) }
   
+  scope :unoccupied_students, -> { where(hostel_room_id: nil) }
+  
   scope :default_students, -> (days) { where("last_present is not ? && last_present < ?", nil, Time.now - days.days) }
   
   validates :standard_id, presence: true
@@ -42,7 +44,7 @@ class Student < ActiveRecord::Base
   end
 
   def name
-    "#{first_name} #{last_name}"
+    "#{first_name} #{middle_name} #{last_name}"
   end
 
   def short_name
@@ -311,6 +313,15 @@ class Student < ActiveRecord::Base
                   })
   end
 
+  def hostel_json(options = {})
+    options.merge({
+                    id: id,
+                    name: name, 
+                    standard_id: standard_id,
+                    hostel_id: hostel_id,
+                    hostel_room_id: hostel_room_id
+                  })
+  end
   
   def self.to_csv(options = {})
     CSV.generate(options) do |csv|
