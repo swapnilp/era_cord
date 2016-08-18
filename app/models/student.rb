@@ -319,7 +319,8 @@ class Student < ActiveRecord::Base
                     name: name, 
                     standard_id: standard_id,
                     hostel_id: hostel_id,
-                    hostel_room_id: hostel_room_id
+                    hostel_room_id: hostel_room_id,
+                    mobile: mobile
                   })
   end
   
