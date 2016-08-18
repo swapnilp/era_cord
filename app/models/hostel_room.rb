@@ -12,7 +12,8 @@ class HostelRoom < ActiveRecord::Base
                     name: name,
                     beds: beds,
                     extra_charges: extra_charges,
-                    students_count: students_count
+                    students_count: students_count,
+                    students: students.map(&:hostel_json)
                   })
   end
 end
