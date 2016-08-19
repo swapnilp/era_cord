@@ -1,6 +1,6 @@
 class HostelRoom < ActiveRecord::Base
   belongs_to :organisation
-  belongs_to :hostel_rooms
+  belongs_to :hostel
   has_many :students
   default_scope { where(organisation_id: Organisation.current_id) }
   
@@ -14,7 +14,6 @@ class HostelRoom < ActiveRecord::Base
                     extra_charges: extra_charges,
                     students_count: students_count,
                     students: students.map(&:hostel_json)
-                    
                   })
   end
 
@@ -22,8 +21,7 @@ class HostelRoom < ActiveRecord::Base
     options.merge({
                     id: id,
                     name: name,
-                    extra_charges: extra_charges,
-                    students_count: students_count
+                    extra_charges: extra_charges
                   })
   end
 end

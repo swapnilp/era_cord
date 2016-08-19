@@ -12,7 +12,7 @@ class StudentsController < ApplicationController
   before_action :authenticate_organisation!, only: [:sync_organisation_students]
   
   def index
-    students = Student.includes(:standard, :jkci_classes, :batch, :removed_class_students).select([:id, :first_name, :last_name, :middle_name, :standard_id, :group, :mobile, :p_mobile, :enable_sms, :gender, :is_disabled, :batch_id, :parent_name]).order("id desc")
+    students = Student.includes(:standard, :jkci_classes, :batch, :removed_class_students).select([:id, :first_name, :last_name, :middle_name, :standard_id, :group, :mobile, :p_mobile, :enable_sms, :gender, :is_disabled, :batch_id, :parent_name, :hostel_id]).order("id desc")
     if params[:search]
       query = "%#{params[:search]}%"
       students = students.where("CONCAT_WS(' ', first_name, last_name) LIKE ? || CONCAT_WS(' ', last_name, first_name) LIKE ? || p_mobile like ?", query, query, query)

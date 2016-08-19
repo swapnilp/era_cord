@@ -7,7 +7,7 @@ class HostelRoomsController < ApplicationController
   def index
     hostel = Hostel.where(id: params[:hostel_id]).first
     return render json: {success: false, message: "Invalid Hostel"} unless hostel.present?
-    rooms = hostel.hostel_rooms
+    rooms = hostel.hostel_rooms.includes(:students)
     render json: {success: true, rooms: rooms.as_json, unallocated_students: hostel.students.unoccupied_students.count}
   end
 
