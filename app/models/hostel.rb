@@ -5,6 +5,11 @@ class Hostel < ActiveRecord::Base
   
   default_scope { where(organisation_id: Organisation.current_id) }    
 
+
+  def possible_other_room(room_id)
+    hostel_rooms.where("id != ? && beds > students_count", room_id)
+  end
+  
   def as_json(options = {})
     options.merge({
                     id: id,

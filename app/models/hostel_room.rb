@@ -14,6 +14,16 @@ class HostelRoom < ActiveRecord::Base
                     extra_charges: extra_charges,
                     students_count: students_count,
                     students: students.map(&:hostel_json)
+                    
+                  })
+  end
+
+  def change_room_json(options = {})
+    options.merge({
+                    id: id,
+                    name: name,
+                    extra_charges: extra_charges,
+                    students_count: students_count
                   })
   end
 end
