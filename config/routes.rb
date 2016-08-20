@@ -295,18 +295,17 @@ Rails.application.routes.draw do
         member do
           get 'get_dtp_info'
         end
-        resources :daily_teachs, except: [:update, :edit] do
-          member do
-            get 'get_catlogs'
-            get 'class_absent_verification'
-            post 'fill_catlog'
-            post 'add_absent_student'
-            post 'remove_absent_student'
-            post 'update'
-            post 'publish_absenty'
-          end
-        end
       end
+      
+      resources :time_table_classes, only: [:index] do
+        member do
+          get 'get_chapters'
+          get "chapters/:chapter_id/get_points" => "time_table_classes#get_chapters_point"
+        end
+        resources :daily_teachs, only: [:create]
+      end
+      
+      resources :daily_teachs, only: [:index]
     end
   end
 

@@ -12,11 +12,10 @@ class Api::V1::DailyTeachsController < ApplicationController
   end
 
   def create
-    raise ActionController::RoutingError.new('Not Found') unless current_user.has_role? :create_daily_teach 
-    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    time_table_class = TimeTableClass.where(id: params[:time_table_class_id]).first
+    return render json: {success: false, message: "Invalid time table"} unless time_table_class
     
-    return render json: {success: false, message: "Invalid Class"} unless jkci_class
-    daily_teaching_point = jkci_class.daily_teaching_points.build(create_params.merge({organisation_id: @organisation.id}))
+    daily_teaching_point = time_table_class.jkci_class.daily_teaching_points.build(create_params.merge({organisation_id: @organisation.id}))
     
     if daily_teaching_point.save
       #daily_teaching_point.create_catlog
