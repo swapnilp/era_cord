@@ -15,7 +15,8 @@ class Api::V1::DailyTeachsController < ApplicationController
     time_table_class = TimeTableClass.where(id: params[:time_table_class_id]).first
     return render json: {success: false, message: "Invalid time table"} unless time_table_class
     
-    daily_teaching_point = time_table_class.jkci_class.daily_teaching_points.build(create_params.merge({organisation_id: @organisation.id, subject_id: time_table_class.subject_id}))
+    daily_teaching_point = time_table_class.jkci_class.daily_teaching_points.build(create_params.merge({organisation_id: @organisation.id, subject_id: time_table_class.subject_id,
+sub_classes: time_table_class.sub_class_id}))
     
     if daily_teaching_point.save
       #daily_teaching_point.create_catlog
@@ -141,7 +142,7 @@ class Api::V1::DailyTeachsController < ApplicationController
   end
 
   def create_params
-    params.require(:daily_teaching_point).permit(:chapter_id, :date, :sub_classes, :chapters_point_id)
+    params.require(:daily_teaching_point).permit(:chapter_id, :date, :chapters_point_id)
   end
 
   def update_params
