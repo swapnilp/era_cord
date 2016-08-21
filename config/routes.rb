@@ -303,9 +303,14 @@ Rails.application.routes.draw do
           get "chapters/:chapter_id/get_points" => "time_table_classes#get_chapters_point"
         end
         resources :daily_teachs, only: [:create]
+          
       end
       
-      resources :daily_teachs, only: [:index]
+      resources :daily_teachs, only: [:index, :show] do
+        member do
+          get 'get_catlogs'
+        end
+      end
     end
   end
 

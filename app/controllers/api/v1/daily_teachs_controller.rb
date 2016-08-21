@@ -15,8 +15,11 @@ class Api::V1::DailyTeachsController < ApplicationController
     time_table_class = TimeTableClass.where(id: params[:time_table_class_id]).first
     return render json: {success: false, message: "Invalid time table"} unless time_table_class
     
+    teacher = current_user.teacher
+    return render json: {success: false, message: "Invalid teacher"} unless teacher
+    
     daily_teaching_point = time_table_class.jkci_class.daily_teaching_points.build(create_params.merge({organisation_id: @organisation.id, subject_id: time_table_class.subject_id,
-sub_classes: time_table_class.sub_class_id}))
+sub_classes: time_table_class.sub_class_id, teacher_id: teacher.id}))
     
     if daily_teaching_point.save
       #daily_teaching_point.create_catlog
@@ -27,20 +30,22 @@ sub_classes: time_table_class.sub_class_id}))
   end
 
   def show
-    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
-    return render json: {success: false, message: "Invalid Class"} unless jkci_class
-    daily_teaching_point = jkci_class.daily_teaching_points.where(id: params[:id]).first
+    teacher = current_user.teacher
+    return render json: {success: false, message: "Invalid teacher"} unless teacher
+    
+    daily_teaching_point = teacher.daily_teaching_points.where(id: params[:id]).first
     if daily_teaching_point
-      render json: {success: true, daily_teaching_point: daily_teaching_point}
+      render json: {success: true, daily_teaching_point: daily_teaching_point.as_json}
     else
       render json: {success: false}
     end
   end
 
   def get_catlogs
-    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
-    return render json: {success: false, message: "Invalid Class"} unless jkci_class
-    daily_teaching_point = jkci_class.daily_teaching_points.where(id: params[:id]).first
+    teacher = current_user.teacher
+    return render json: {success: false, message: "Invalid teacher"} unless teacher
+    
+    daily_teaching_point = teacher.daily_teaching_points.where(id: params[:id]).first
     if daily_teaching_point
       catlogs = daily_teaching_point.students.map{|student| student.catlog_json([daily_teaching_point.class_catlogs.map(&:student_id)])}
       render json: {success: true, class_catlogs: catlogs}
