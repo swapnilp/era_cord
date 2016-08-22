@@ -312,6 +312,8 @@ Rails.application.routes.draw do
           get 'get_catlogs'
         end
       end
+      
+      resources :students, only: [:index]
     end
   end
 
