@@ -38,10 +38,10 @@ module Users
     end
 
     def get_organisations
-      return invalid_login_attempt unless params[:user].present? && params[:user][:email].present? && params[:user][:device_id].present?
+      return invalid_login_attempt unless params[:email].present? && params[:device_id].present?
       duplicates = resource_from_mobile_credentials_check_duplicates || []
       if duplicates.count > 0
-        return render json: {success: true, email: params[:user][:email], organisations: duplicates.map(&:organisation_json), multiple_organisations: duplicates.count > 1}
+        return render json: {success: true, email: params[:email], organisations: duplicates.map(&:organisation_json), multiple_organisations: duplicates.count > 1}
       else
         return render json: {success: false, message: "Email not registered"}
       end
@@ -87,7 +87,7 @@ module Users
     end
 
     def resource_from_mobile_credentials_check_duplicates
-      data = { email: params[:user][:email], device_id: params[:user][:device_id] }
+      data = { email: params[:email], device_id: params[:device_id] }
       resource_class.get_teachers_organisations(data)
     end
 
