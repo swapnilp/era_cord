@@ -237,6 +237,16 @@ class StudentsController < ApplicationController
     end
   end
 
+  def get_absentee
+    student = @organisation.students.where(id: params[:id]).first
+    if student
+      class_catlogs = student.class_catlogs.where("is_present = false and date > ?", Date.today - 1.months).order("date desc")
+      render json: {success: true, absentee: class_catlogs.map(&:student_info_json)}
+    else
+      render json: {success: false}
+    end
+  end
+
   private
   
   def my_sanitizer

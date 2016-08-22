@@ -87,6 +87,7 @@ Rails.application.routes.draw do
       get 'get_fee_info'
       get 'get_payments_info'
       get 'get_hostel_info'
+      get 'get_absentee'
       post 'paid_student_fee'
       post 'update'
       post 'toggle_sms'

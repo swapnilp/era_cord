@@ -38,6 +38,16 @@ class ClassCatlog < ActiveRecord::Base
                     student_id: student_id
                   })
   end
+
+  def student_info_json(options = {})
+    options.merge({
+                    id: id,
+                    date: date.present? ? date.strftime("%b %d-%Y") : "",
+                    sms_sent: sms_sent,
+                    class_name: jkci_class.class_name
+                  })
+  end
+  
   
 end
   
