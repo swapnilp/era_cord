@@ -2,6 +2,7 @@ class Hostel < ActiveRecord::Base
   belongs_to :organisation
   has_many :hostel_rooms
   has_many :students
+  has_many :hostel_transactions
   
   default_scope { where(organisation_id: Organisation.current_id) }    
 

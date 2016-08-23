@@ -45,6 +45,7 @@ class Organisation < ActiveRecord::Base
   has_many :off_classes
   has_many :logos
   has_many :hostels
+  has_many :hostel_transactions
     
 
   cattr_accessor :current_id
