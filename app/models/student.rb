@@ -44,6 +44,14 @@ class Student < ActiveRecord::Base
     Exam.where("jkci_class_id in (?)  or ?", self.jkci_classes.map(&:id), exam_query)
   end
 
+  def add_advances(amount)
+    self.update_attributes({advances: self.advances + amount})
+  end
+
+  def remove_amount_from_advances(amount)
+    self.update_attributes({advances: self.advances - amount})
+  end
+
   def name
     "#{first_name} #{middle_name} #{last_name}"
   end
@@ -321,7 +329,8 @@ class Student < ActiveRecord::Base
                     standard_id: standard_id,
                     hostel_id: hostel_id,
                     hostel_room_id: hostel_room_id,
-                    mobile: mobile
+                    mobile: mobile,
+                    dues: advances
                   })
   end
   

@@ -182,6 +182,9 @@ class StudentsController < ApplicationController
           class_student = student_fee.class_student || student_fee.removed_class_student
           class_student.update_attributes({collected_fee: amount, other_fee: other_amount})
         end
+        unless student_fee.is_fee 
+          student.add_advances(student_fee.amount)
+        end
         render json: {success: true, message: "Fee is Paid", student_id: student_fee.student_id, receipt_id: student_fee.id }
       else
         render json: {success: false, message: "Something went wrong"}

@@ -109,7 +109,8 @@ class StudentFee < ActiveRecord::Base
                     cheque_number: cheque_number,
                     cheque_issue_date: cheque_issue_date,
                     book_number: book_number,
-                    receipt_number: receipt_number
+                    receipt_number: receipt_number,
+                    is_fee: is_fee ? 'Fee' : 'Advance' 
                   })
   end
 

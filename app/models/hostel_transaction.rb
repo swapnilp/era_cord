@@ -1,6 +1,7 @@
 class HostelTransaction < ActiveRecord::Base
   belongs_to :organisation
   belongs_to :hostel
+  belongs_to :hostel_room
   belongs_to :student
   has_many :hostel_transactions
   
