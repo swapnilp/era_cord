@@ -11,18 +11,33 @@ class Hostel < ActiveRecord::Base
     hostel_rooms.where("id != ? && beds > students_count", room_id)
   end
 
-  def collect_fee
+  def calculate_fee
+    calc_months = ((Date.today.to_time - self.start_date.to_time)/1.month.second).to_i if self.start_date.present? && self.months.present?
+    if calc_months.present?
+      fees_months = calc_months % self.months
+      fees_months = self.months if fees_months.zero?
+      collect_fee(fees_months)
+    else
+      collect_fee(1)
+    end
+  end
+
+  def collect_fee(fee_months)
     students.each do |student|
-      hostel_transaction = hostel_transactions.find_or_initialize_by({date: Date.today.beginning_of_month, student_id: student.id})
-      hostel_transaction.hostel_room_id =  student.hostel_room_id
-      hostel_transaction.hostel_id = student.hostel_id
-      room_fee = self.average_fee + hostel_transaction.hostel_room.extra_charges
-      hostel_transaction.amount = room_fee
-      if student.advances <= room_fee
-        hostel_transaction.is_dues = true
-      end
-      if hostel_transaction.new_record? && hostel_transaction.save
-        student.remove_amount_from_advances(room_fee)
+      fee_date = Date.today.beginning_of_month
+      (1..fee_months).to_a.each do |index|
+        hostel_transaction = hostel_transactions.find_or_initialize_by({date: fee_date, student_id: student.id})
+        hostel_transaction.hostel_room_id =  student.hostel_room_id
+        hostel_transaction.hostel_id = student.hostel_id
+        room_fee = self.average_fee + hostel_transaction.hostel_room.extra_charges
+        hostel_transaction.amount = room_fee
+        if student.advances <= room_fee
+          hostel_transaction.is_dues = true
+        end
+        if hostel_transaction.new_record? && hostel_transaction.save
+          student.remove_amount_from_advances(room_fee)
+        end
+        fee_date = fee_date.next_month.beginning_of_month
       end
     end
   end
@@ -40,7 +55,8 @@ class Hostel < ActiveRecord::Base
                     student_occupancy: student_occupancy,
                     is_service_tax: is_service_tax,
                     service_tax: service_tax,
-                    occupied_students: students_count
+                    occupied_students: students_count,
+                    months: months
                   })
   end
 end
