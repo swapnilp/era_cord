@@ -196,10 +196,10 @@ class StudentsController < ApplicationController
 
   def get_payments_info 
     if current_user && (FULL_ACCOUNT_HANDLE_ROLES && current_user.roles.map(&:name)).size >0
-      student = Student.where(id: params[:id]).first
+      student = Student.includes({hostel_transactions: [:hostel, :hostel_room]}).where(id: params[:id]).first
       if student.present?
         total_amount = student.student_fees.map(&:amount).sum + student.student_fees.map(&:service_tax).sum
-        render json: {success: true, jkci_classes: student.class_students.map(&:fee_info_json), name: student.name, p_mobile: student.p_mobile, mobile: student.mobile, batch: student.batch.name, payments: student.student_fees.as_json, total_fee: total_amount, id: student.id, remaining_fee: student.total_remaining_fees.sum}
+        render json: {success: true, jkci_classes: student.class_students.map(&:fee_info_json), name: student.name, p_mobile: student.p_mobile, mobile: student.mobile, batch: student.batch.name, payments: student.student_fees.as_json, total_fee: total_amount, id: student.id, remaining_fee: student.total_remaining_fees.sum, advances: student.advances, hostel_transations: student.hostel_transactions.map(&:student_payment_info_json)}
       else
         render json: {success: false, message: "Student not present"}
       end

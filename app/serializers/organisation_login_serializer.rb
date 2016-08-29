@@ -1,5 +1,5 @@
 class OrganisationLoginSerializer < ActiveModel::Serializer
-  attributes :id, :email, :token, :success, :name
+  attributes :id, :email, :token, :success, :name, :org_ids
 
   def email
     object.email
@@ -12,6 +12,10 @@ class OrganisationLoginSerializer < ActiveModel::Serializer
 
   def name
     object.name
+  end
+
+  def org_ids
+    root.subtree_ids.join(',')
   end
 
   def success
