@@ -15,7 +15,7 @@ class OrganisationLoginSerializer < ActiveModel::Serializer
   end
 
   def org_ids
-    root.subtree_ids.join(',')
+    object.root.subtree_ids.join(',')
   end
 
   def success
