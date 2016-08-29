@@ -318,7 +318,8 @@ class Student < ActiveRecord::Base
                     first_name: first_name, 
                     last_name: last_name, 
                     standard_id: standard_id,
-                    middle_name: middle_name
+                    middle_name: middle_name,
+                    organisation_id: organisation_id
                   })
   end
 
