@@ -334,6 +334,14 @@ class Student < ActiveRecord::Base
                     dues: advances
                   })
   end
+
+  def clearance_json(options = {})
+    options.merge({
+                    id: id, 
+                    name: name,
+                    class_name: jkci_classes.active.last.try(:class_name)
+                  })
+  end
   
   def self.to_csv(options = {})
     CSV.generate(options) do |csv|

@@ -210,6 +210,7 @@ class StudentsController < ApplicationController
 
   def sync_organisation_students
     students = Student.select([:id, :first_name, :last_name, :standard_id, :middle_name, :organisation_id]).joins({class_students: :jkci_class}).where("jkci_classes.is_current_active = ?", true)
+    students = students.page(params[:page])
     render json: {success: true, students: students.map(&:sync_json)}
   end
 
@@ -245,6 +246,15 @@ class StudentsController < ApplicationController
     if student
       class_catlogs = student.class_catlogs.where("is_present = false and date > ?", Date.today - 1.months).order("date desc")
       render json: {success: true, absentee: class_catlogs.map(&:student_info_json)}
+    else
+      render json: {success: false}
+    end
+  end
+
+  def get_clearance
+    student = Student.includes({class_students: :jkci_class}).where(id: params[:id]).first
+    if student && student.advances > 0 && student.total_remaining_fees.sum === 0
+      render json: {success: true, student: student.clearance_json, remaining_fee: student.total_remaining_fees.sum }
     else
       render json: {success: false}
     end
