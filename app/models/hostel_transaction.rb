@@ -13,7 +13,7 @@ class HostelTransaction < ActiveRecord::Base
                     hostel: hostel.name,
                     hostel_room: hostel_room.name,
                     amount: amount,
-                    date: date.to_date,
+                    date: date.strftime("%B-%Y"),
                     is_dues: is_dues
                   })
   end
