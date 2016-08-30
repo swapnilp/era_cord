@@ -209,7 +209,7 @@ class StudentsController < ApplicationController
   end
 
   def sync_organisation_students
-    students = Student.select([:id, :first_name, :last_name, :standard_id, :middle_name]).joins({class_students: :jkci_class}).where("jkci_classes.is_current_active = ?", true)
+    students = Student.select([:id, :first_name, :last_name, :standard_id, :middle_name, :organisation_id]).joins({class_students: :jkci_class}).where("jkci_classes.is_current_active = ?", true)
     render json: {success: true, students: students.map(&:sync_json)}
   end
 
