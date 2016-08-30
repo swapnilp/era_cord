@@ -109,8 +109,8 @@ class JkciClassesController < ApplicationController
     jkci_class = JkciClass.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     students = jkci_class.students.includes(:standard, :batch, :jkci_classes, :removed_class_students).select("class_students.roll_number, students.*")
-    if params[:search]
-      query = "%#{params[:search]}%"
+    if params[:filter].present? &&  JSON.parse(params[:filter])['name'].present?
+      query = "%#{JSON.parse(params[:filter])['name']}%"
       students = students.where("CONCAT_WS(' ', first_name, last_name) LIKE ? || CONCAT_WS(' ', last_name, first_name) LIKE ? || p_mobile like ?", query, query, query)
     end
     unless params[:withoutPage]

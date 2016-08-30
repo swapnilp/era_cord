@@ -13,12 +13,19 @@ class StudentsController < ApplicationController
   
   def index
     students = Student.includes(:standard, :jkci_classes, :batch, :removed_class_students).select([:id, :first_name, :last_name, :middle_name, :standard_id, :group, :mobile, :p_mobile, :enable_sms, :gender, :is_disabled, :batch_id, :parent_name, :hostel_id]).order("id desc")
-    if params[:search]
-      query = "%#{params[:search]}%"
+    if params[:filter].present? &&  JSON.parse(params[:filter])['name'].present?
+      query = "%#{JSON.parse(params[:filter])['name']}%"
       students = students.where("CONCAT_WS(' ', first_name, last_name) LIKE ? || CONCAT_WS(' ', last_name, first_name) LIKE ? || p_mobile like ?", query, query, query)
     end
-    if params[:class_id]
-      students = students.joins(:class_students).where("class_students.jkci_class_id = ?", params[:class_id])
+    if params[:filter].present? &&  JSON.parse(params[:filter])['class'].present?
+      students = students.joins(:class_students).where("class_students.jkci_class_id = ?", JSON.parse(params[:filter])['class'])
+    end
+    if params[:filter].present? &&  JSON.parse(params[:filter])['hostel'].present?
+      if JSON.parse(params[:filter])['hostel'] == 'Non Hostelied'
+        students = students.where(hostel_id: nil)
+      else
+        students = students.where("hostel_id is not ?", nil)
+      end
     end
     students = students.page(params[:page])
     roles = current_user.roles.map(&:name)
