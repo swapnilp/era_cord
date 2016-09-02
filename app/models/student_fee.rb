@@ -57,6 +57,7 @@ class StudentFee < ActiveRecord::Base
   def self.index_fee_json(index_arr)
     {
       name: index_arr.first.student.name, 
+      advances: index_arr.first.student.advances,
       parent_name: "#{index_arr.first.student.middle_name} #{index_arr.first.student.last_name}", 
       parent_occupation: index_arr.first.student.parent_occupation,
       p_mobile: index_arr.first.student.mobile,
