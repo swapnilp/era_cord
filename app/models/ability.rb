@@ -88,6 +88,7 @@ class Ability
       
       can :read, DailyTeachingPoint
       can :get_catlogs, DailyTeachingPoint
+      can :save_catlogs, DailyTeachingPoint
       can :get_dtp_info, JkciClass if roles.include? 'create_daily_teach'
       can :create, DailyTeachingPoint if roles.include? 'create_daily_teach'
       can :edit, DailyTeachingPoint if roles.include? 'create_daily_teach'

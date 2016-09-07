@@ -311,6 +311,7 @@ Rails.application.routes.draw do
       resources :daily_teachs, only: [:index, :show] do
         member do
           get 'get_catlogs'
+          post 'save_catlogs'
         end
       end
       
