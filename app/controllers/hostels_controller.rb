@@ -6,7 +6,10 @@ class HostelsController < ApplicationController
   
   def index
     hostels = Hostel.all
-    render json: {success: true, hostels: hostels.as_json}
+    if params[:student_id].present?
+      student = Student.where(id: params[:student_id]).first
+    end
+    render json: {success: true, hostels: hostels.as_json, student_hostel: student.try(:hostel_id)}
   end
 
   def create
