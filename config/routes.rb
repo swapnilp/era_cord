@@ -320,6 +320,7 @@ Rails.application.routes.draw do
   end
 
   #get 'index' => "home#index"
+  get 'mobile_page' => "home#mobile"
   root 'home#index'
   
   # Example of regular route:

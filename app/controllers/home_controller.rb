@@ -1,8 +1,11 @@
 class HomeController < ApplicationController
   layout "application"
-  skip_before_filter :authenticate_with_token!, only: [:index]
+  skip_before_filter :authenticate_with_token!, only: [:index, :mobile]
 
   def index
+  end
+
+  def mobile
   end
 
   def new_organisation
