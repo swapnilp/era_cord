@@ -55,7 +55,15 @@ sub_classes: time_table_class.sub_class_id, teacher_id: teacher.id}))
   end
   
   def save_catlogs
-     render json: {success: true}
+    teacher = current_user.teacher
+    return render json: {success: false, message: "Invalid teacher"} unless teacher
+    
+    daily_teaching_point = teacher.daily_teaching_points.where(id: params[:id]).first
+    if daily_teaching_point
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
   end
 
   private
