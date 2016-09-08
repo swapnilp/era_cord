@@ -365,13 +365,13 @@ class OrganisationsController < ApplicationController
   
   def get_class_rooms
     if params[:filter] && JSON.parse(params[:filter])["class_time"]
-      time = JSON.parse(params[:filter])["class_time"].to_time
+      time = JSON.parse(params[:filter])["class_time"].to_time.in_time_zone
     else
-      time = Time.now
+      time = Time.current
     end
 
     if params[:filter] && JSON.parse(params[:filter])["end_time"]
-      end_time = JSON.parse(params[:filter])["end_time"].to_time
+      end_time = JSON.parse(params[:filter])["end_time"].to_time.in_time_zone
     else
       end_time = time + 2.hours
     end
