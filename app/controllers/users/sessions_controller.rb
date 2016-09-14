@@ -38,6 +38,7 @@ module Users
     end
 
     def get_organisations
+      Rails.logger.debug "@@@@@@@@@@@"
       return invalid_login_attempt unless params[:email].present? && params[:device_id].present?
       duplicates = resource_from_mobile_credentials_check_duplicates || []
       if duplicates.count > 0
@@ -115,11 +116,8 @@ module Users
       end
 
       res = resource_class.find_for_database_authentication(data)
-      if res.count > 1
-        res = res.select{|u| u.valid_password? params[:user][:password]}.first
-      else
-        res = res[0]
-      end
+      
+      res = res[0]
 
       return unless res
       return res if res.mpin == params[:user][:mpin].to_i

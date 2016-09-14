@@ -17,7 +17,7 @@ class HostelRoomsController < ApplicationController
     room = hostel.hostel_rooms.where(id: params[:id]).first
     
     if room.present?
-      render json: {success: true, room: room.as_json}
+      render json: {success: true, room: room.as_json, students_count: room.students_count}
     else
       render json: {success: false, message: "Invalid Hostel Room"}
     end
