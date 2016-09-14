@@ -116,8 +116,13 @@ module Users
       end
 
       res = resource_class.find_for_database_authentication(data)
-      
-      res = res[0]
+      if res.count > 1
+        res = res.first
+      else
+        res = res[0]
+      end
+      Rails.logger.info "asdasdasdasd"
+      Rails.logger.info res
 
       return unless res
       return res if res.mpin == params[:user][:mpin].to_i
