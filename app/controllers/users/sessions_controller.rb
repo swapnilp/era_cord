@@ -121,9 +121,6 @@ module Users
       else
         res = res[0]
       end
-      Rails.logger.info "asdasdasdasd"
-      Rails.logger.info res
-
       return unless res
       return res if res.mpin == params[:user][:mpin].to_i
     end
