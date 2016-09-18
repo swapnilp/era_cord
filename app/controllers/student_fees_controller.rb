@@ -5,26 +5,38 @@ class StudentFeesController < ApplicationController
   
   def index
     if current_user && (FULL_ACCOUNT_HANDLE_ROLES && current_user.roles.map(&:name)).size >0 && @organisation.root?
-      fees = StudentFee.includes(:jkci_class, :student, :payment_reason, {class_student: {jkci_class: :removed_class_students}}).order("id desc")
+      fees = StudentFee.includes(:jkci_class, :student, :payment_reason).order("id desc")
       student_fees = filter_student_fees(fees)
       total_amount = student_fees.map(&:amount).sum
       total_tax = student_fees.map(&:service_tax).sum
       expected_fees = expected_filter
-      total_students = student_fees.map(&:student_id).uniq.count
-      #student_fees = student_fees.page(params[:page])
-      #student_fees = Kaminari.paginate_array(student_fees.group_by{ |s| [s.student_id, s.jkci_class_id] }.values).page(2).per(2)
+      #total_students = student_fees.map(&:student_id).uniq.count
+      ##student_fees = student_fees.page(params[:page])
+      ##student_fees = Kaminari.paginate_array(student_fees.group_by{ |s| [s.student_id, s.jkci_class_id] }.values).page(2).per(2)
       fees_group = student_fees.group_by{ |s| [s.student_id, s.jkci_class_id] }
-      student_fees_index = fees_group.values.collect {|fee_g| StudentFee.index_fee_json(fee_g)}
-      if params[:filter].present? &&  JSON.parse(params[:filter])['is_remaining'] == 'Remaining'
-        student_ids = student_fees_index.collect {|student| student[:student_id]}
-        remaining_students = StudentFee.remaining_students(student_ids, params[:filter])
-        student_fees_index = student_fees_index + remaining_students
-      end
+      student_fees_index = fees_group.collect {|key, value| value.last.index_fee_json}.flatten
+      
+      #student_fees_index = fees_group.values.collect {|fee_g| StudentFee.index_fee_json(fee_g)}
+      #if params[:filter].present? &&  JSON.parse(params[:filter])['is_remaining'] == 'Remaining'
+      student_ids = student_fees_index.collect {|student| student[:student_id]}
+      remaining_students = StudentFee.remaining_students(student_ids, params[:filter])
+      student_fees_index = student_fees_index + remaining_students
+      #end
       student_fees_index = Kaminari.paginate_array(student_fees_index).page(params[:page]).per(10)
-      #student_fees_index = Kaminari.paginate_array(fees_group.values).map {|a| StudentFee.index_fee_json(a) }
+      ##student_fees_index = Kaminari.paginate_array(fees_group.values).map {|a| StudentFee.index_fee_json(a) }
+      #render json: {success: true, payments: student_fees_index, total_amount: total_amount, count: student_fees_index.total_count, expected_fees: expected_fees, total_students: student_fees_index.total_count, total_tax: total_tax.round(2)}
       render json: {success: true, payments: student_fees_index, total_amount: total_amount, count: student_fees_index.total_count, expected_fees: expected_fees, total_students: student_fees_index.total_count, total_tax: total_tax.round(2)}
     else
       render json: {success: false, message: "Unauthorized !!!! You Must be Root Organisation."}
+    end
+  end
+
+  def get_transactions
+    student_fees = StudentFee.where(student_id: params[:student_id], jkci_class_id: params[:jkci_class_id])
+    if student_fees.present?
+      render json: {success: true, transactions: student_fees.map(&:index_json)}
+    else
+      render json: {success: false}
     end
   end
 

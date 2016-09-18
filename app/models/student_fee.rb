@@ -54,21 +54,22 @@ class StudentFee < ActiveRecord::Base
     }
   end
 
-  def self.index_fee_json(index_arr)
-    {
-      name: index_arr.first.student.name, 
-      advances: index_arr.first.student.advances,
-      parent_name: "#{index_arr.first.student.middle_name} #{index_arr.first.student.last_name}", 
-      parent_occupation: index_arr.first.student.parent_occupation,
-      p_mobile: index_arr.first.student.mobile,
-      jkci_class: index_arr.first.jkci_class.try(:class_name),
-      student_id: index_arr.first.student_id,
-      collected_fee: index_arr.select{|s_fee| s_fee.is_fee == true}.map(&:amount).sum,
-      other_fee: index_arr.select{|s_fee| s_fee.is_fee == false}.map(&:amount).sum,
-      remaining_fee: index_arr.first.remaining_fee,
-      :transactions => index_arr.map(&:index_json),
-      total_transactions: index_arr.count
-    }
+  def index_fee_json(options = {})
+    options.merge({
+                    id: id,
+                    name: student.name, 
+                    advances: student.advances,
+                    parent_name: "#{student.middle_name} #{student.last_name}", 
+                    parent_occupation: student.parent_occupation,
+                    p_mobile: student.mobile,
+                    jkci_class: jkci_class.try(:class_name),
+                    jkci_class_id: jkci_class_id,
+                    student_id: student_id,
+                    collected_fee: self.class_student.try(:collected_fee),
+                    remaining_fee: remaining_fee
+                    #:transactions => index_arr.map(&:index_json),
+                    #total_transactions: index_arr.count
+                  })
   end
 
   def self.print_fee_json(index_arr)

@@ -117,9 +117,11 @@ Rails.application.routes.draw do
       get "graph_data"
       get 'print_account'
       get "download_excel"
+      get "/:jkci_class_id/get_transactions/:student_id" => "student_fees#get_transactions"
     end
   end
-
+  
+  
   get "get_unassigned_classes" => "jkci_classes#get_unassigned_classes"
   get "sub_organisation/:sub_organisation_id/class/:jkci_class_id/get_report" => "jkci_classes#sub_organisation_class_report", as: "sub_organisation_class_report"
   get "/class/:id/sub_class_students_report" => "jkci_classes#sub_class_students_report", as: "sub_class_students_report"
