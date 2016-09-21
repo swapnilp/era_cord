@@ -36,7 +36,8 @@ class RemovedClassStudent < ActiveRecord::Base
                     student_id: student_id,
                     collected_fee: collected_fee,
                     remaining_fee: jkci_class.try(:fee) || 0 - collected_fee,
-                    total_transactions: 0
+                    total_transactions: 0,
+                    hostel_id: student.hostel_id
                   })
   end
   

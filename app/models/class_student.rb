@@ -82,7 +82,8 @@ class ClassStudent < ActiveRecord::Base
                     student_id: student_id,
                     collected_fee: 0,
                     remaining_fee: jkci_class.try(:fee) || 0,
-                    total_transactions: 0
+                    total_transactions: 0,
+                    hostel_id: student.hostel_id
                   })
   end
 

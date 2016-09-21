@@ -261,7 +261,7 @@ class StudentsController < ApplicationController
 
   def get_clearance
     student = Student.includes({class_students: :jkci_class}).where(id: params[:id]).first
-    if student && student.advances > 0 && student.total_remaining_fees.sum === 0
+    if student && student.advances >= 0 && student.total_remaining_fees.sum === 0
       render json: {success: true, student: student.clearance_json, remaining_fee: student.total_remaining_fees.sum }
     else
       render json: {success: false}

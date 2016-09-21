@@ -6,7 +6,7 @@ class StudentFeesController < ApplicationController
   def index
     if current_user && (FULL_ACCOUNT_HANDLE_ROLES && current_user.roles.map(&:name)).size >0 && @organisation.root?
       fees = StudentFee.includes(:jkci_class, :student, :payment_reason).order("id desc")
-      student_fees = filter_student_fees(fees)
+      student_fees, filter_student_ids = filter_student_fees(fees)
       total_amount = student_fees.map(&:amount).sum
       total_tax = student_fees.map(&:service_tax).sum
       expected_fees = expected_filter
@@ -19,7 +19,7 @@ class StudentFeesController < ApplicationController
       #student_fees_index = fees_group.values.collect {|fee_g| StudentFee.index_fee_json(fee_g)}
       #if params[:filter].present? &&  JSON.parse(params[:filter])['is_remaining'] == 'Remaining'
       student_ids = student_fees_index.collect {|student| student[:student_id]}
-      remaining_students = StudentFee.remaining_students(student_ids, params[:filter])
+      remaining_students = StudentFee.remaining_students(student_ids, params[:filter], filter_student_ids)
       student_fees_index = student_fees_index + remaining_students
       #end
       student_fees_index = Kaminari.paginate_array(student_fees_index).page(params[:page]).per(10)
@@ -53,7 +53,7 @@ class StudentFeesController < ApplicationController
   def graph_data
     if current_user && (FULL_ACCOUNT_HANDLE_ROLES && current_user.roles.map(&:name)).size >0 && @organisation.root?
       fees = StudentFee.all
-      student_fees = filter_student_fees(fees)
+      student_fees, filter_student_ids = filter_student_fees(fees)
       if params[:filter].present?  
         acc_type= JSON.parse(params[:filter])['selectedAccountType'] || 'Both'
         acc_span = JSON.parse(params[:filter])['selectedAccountSpan'] || 'month'
@@ -82,27 +82,27 @@ class StudentFeesController < ApplicationController
 
   def print_account
     fees = StudentFee.includes(:jkci_class, :student, {class_student: :jkci_class}).order("id desc")
-    student_fees = filter_student_fees(fees)
+    student_fees, filter_student_ids = filter_student_fees(fees)
     fees_groups = student_fees.group_by{ |s| [s.student_id, s.jkci_class_id] }
     account_json = fees_groups.values.collect {|fee_group| StudentFee.print_fee_json(fee_group)}
-    if params[:filter].present? &&  JSON.parse(params[:filter])['is_remaining'] == 'Remaining'
+    #if params[:filter].present? &&  JSON.parse(params[:filter])['is_remaining'] == 'Remaining'
       student_ids = account_json.collect {|student| student[:student_id]}
-      remaining_students = StudentFee.remaining_students(student_ids, params[:filter])
+      remaining_students = StudentFee.remaining_students(student_ids, params[:filter], filter_student_ids)
       account_json = account_json+ remaining_students
-    end
+    #end
     render json: {success: true, data:  account_json}
   end
 
   def download_excel
     fees = StudentFee.includes(:jkci_class, :student, {class_student: :jkci_class}).order("id desc")
-    student_fees = filter_student_fees(fees)
+    student_fees, filter_student_ids = filter_student_fees(fees)
     fees_groups = student_fees.group_by{ |s| [s.student_id, s.jkci_class_id] }
     @accounts = fees_groups.values.collect {|fee_group| StudentFee.print_fee_json(fee_group)}
-    if params[:filter].present? &&  JSON.parse(params[:filter])['is_remaining'] == 'Remaining'
+    #if params[:filter].present? &&  JSON.parse(params[:filter])['is_remaining'] == 'Remaining'
       student_ids = @accounts.collect {|student| student[:student_id]}
-      remaining_students = StudentFee.remaining_students(student_ids, params[:filter])
+      remaining_students = StudentFee.remaining_students(student_ids, params[:filter], filter_student_ids)
       @accounts = @accounts + remaining_students
-    end
+    #end
     respond_to do |format|
       format.xlsx{
         response.headers['Content-Disposition'] = "attachment; filename='accounts_#{Date.today.strftime("%v")}.xlsx'"
@@ -113,12 +113,13 @@ class StudentFeesController < ApplicationController
   protected
 
   def filter_student_fees(student_fees)
+    filter_student_ids = []
     if params[:filter].present? &&  JSON.parse(params[:filter])['batch'].present?
-      student_fees = student_fees.where(batch_id: JSON.parse(params[:filter])['batch'])
       batch_id = JSON.parse(params[:filter])['batch']
+      student_fees = student_fees.where(batch_id: batch_id)
     else
-      student_fees = student_fees.where(batch_id: Batch.active.last.id)
       batch_id = Batch.active.last.id
+      student_fees = student_fees.where(batch_id: batch_id)
     end
     
     if params[:filter].present? &&  JSON.parse(params[:filter])['standard'].present?
@@ -132,13 +133,14 @@ class StudentFeesController < ApplicationController
     end
     if params[:filter].present? &&  JSON.parse(params[:filter])['name'].present?
       query = "%#{JSON.parse(params[:filter])['name']}%"
-      student_ids = Student.where("CONCAT_WS(' ', first_name, last_name) LIKE ? || CONCAT_WS(' ', last_name, first_name) LIKE ? || p_mobile like ?", query, query, query).map(&:id)
-      student_fees = student_fees.where(student_id: student_ids)
+      student_ids = Student.where("CONCAT_WS(' ', first_name, last_name) LIKE ? || CONCAT_WS(' ', last_name, first_name) LIKE ? || p_mobile like ? || CONCAT_WS(' ', first_name, middle_name, last_name) LIKE ?", query, query, query, query).map(&:id)
+      student_fees = student_fees.where("student_id in (?)", student_ids)
+      filter_student_ids = student_ids
     end
-    if params[:filter].present? &&  JSON.parse(params[:filter])['is_remaining'] == 'Remaining'
-      student_fees = student_fees.select{|sf| sf.remaining_fee > 0}
-    end
-    return student_fees
+    #if params[:filter].present? &&  JSON.parse(params[:filter])['is_remaining'] == 'Remaining'
+    #  student_fees = student_fees.select{|sf| sf.remaining_fee > 0}
+    #end
+    return student_fees, filter_student_ids
   end
 
   def expected_filter
