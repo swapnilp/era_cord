@@ -94,6 +94,16 @@ class TeachersController < ApplicationController
     end
   end
 
+  def destroy
+    teacher = Teacher.where(id: params[:id]).first
+    if teacher.present?
+      
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+  end
+
   def get_time_table
     teacher = Teacher.where(id: params[:id]).first
 

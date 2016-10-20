@@ -137,6 +137,10 @@ class StudentFeesController < ApplicationController
       student_fees = student_fees.where("student_id in (?)", student_ids)
       filter_student_ids = student_ids
     end
+
+    if params[:filter].present? && JSON.parse(params[:filter])['remaining'].present?
+      student_fees = student_fees.select {|student_fee| student_fee.remaining_fee > 0 }
+    end
     #if params[:filter].present? &&  JSON.parse(params[:filter])['is_remaining'] == 'Remaining'
     #  student_fees = student_fees.select{|sf| sf.remaining_fee > 0}
     #end
