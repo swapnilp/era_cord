@@ -40,8 +40,8 @@ class SubClassesController < ApplicationController
     sub_class = jkci_class.sub_classes.where(id: params[:id]).first
     if sub_class
       students = sub_class.students.includes(:batch, :standard)
-      if params[:search]
-        query = "%#{params[:search]}%"
+      if params[:search].present? &&  JSON.parse(params[:search])['name'].present?
+        query = "%#{JSON.parse(params[:search])['name']}%"
         students = students.where("CONCAT_WS(' ', first_name, last_name) LIKE ? || CONCAT_WS(' ', last_name, first_name) LIKE ? || p_mobile like ?", query, query, query)
       end
       students = students.page(params[:page])
@@ -90,6 +90,7 @@ class SubClassesController < ApplicationController
       sub_class.students.select([:id, :organisation_id]).each do |student|
         jkci_class.remove_sub_class_students(student.id, params[:id])
       end
+      sub_class.time_table_classes.destroy_all
       sub_class.destroy
       render json: {success: true}
     else

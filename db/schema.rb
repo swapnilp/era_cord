@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160826051306) do
+ActiveRecord::Schema.define(version: 20161020115703) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -268,10 +268,11 @@ ActiveRecord::Schema.define(version: 20160826051306) do
     t.string   "last_name",   limit: 255
     t.string   "mobile",      limit: 255
     t.string   "address",     limit: 255
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
     t.string   "mobile_code", limit: 255
     t.string   "email_code",  limit: 255
+    t.text     "photo",       limit: 65535
   end
 
   add_index "g_teachers", ["email"], name: "index_g_teachers_on_email", unique: true, using: :btree
@@ -692,6 +693,7 @@ ActiveRecord::Schema.define(version: 20160826051306) do
     t.integer  "organisation_id", limit: 4
     t.boolean  "is_full_time",    limit: 1,     default: true
     t.integer  "g_teacher_id",    limit: 4
+    t.text     "photo",           limit: 65535
   end
 
   add_index "teachers", ["email"], name: "index_teachers_on_email", using: :btree
