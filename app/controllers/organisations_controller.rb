@@ -141,7 +141,7 @@ class OrganisationsController < ApplicationController
     if user
       roles = user.roles.map(&:name)
       user_roles = CLARK_ROLES.map{|role| {role => roles.include?(role)}}.reduce Hash.new, :merge
-      render json: {success: true, data: user_roles}
+      render json: {success: true, roles: roles, clarks_roles: CLARK_ROLES}
     else
       render json: {success: false}
     end
