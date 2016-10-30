@@ -141,7 +141,7 @@ class OrganisationsController < ApplicationController
     if user
       roles = user.roles.map(&:name)
       user_roles = CLARK_ROLES.map{|role| {role => roles.include?(role)}}.reduce Hash.new, :merge
-      render json: {success: true, roles: roles, clarks_roles: CLARK_ROLES}
+      render json: {success: true, roles: roles, clarks_roles: @organisation.root? ? ADMIN_CLARK_ROLES : CLARK_ROLES}
     else
       render json: {success: false}
     end
@@ -149,7 +149,7 @@ class OrganisationsController < ApplicationController
   
   def update_clark_roles
     user = @organisation.users.clarks.where(id: params[:user_id]).first
-    user.manage_clark_roles(params[:roles])
+    user.manage_clark_roles(params[:roles],  @organisation.root?)
     render json: {success: true}
   end
 

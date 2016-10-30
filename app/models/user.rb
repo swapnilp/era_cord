@@ -127,11 +127,15 @@ class User < ActiveRecord::Base
     end
   end
 
-  def manage_clark_roles(new_roles)
+  def manage_clark_roles(new_roles, is_root = false)
     self.roles = []
     new_roles = new_roles.split(',')
     new_roles.each do |u_role| 
-      self.add_role u_role.to_sym if CLARK_ROLES.include?(u_role) 
+      if is_root
+        self.add_role u_role.to_sym if ADMIN_CLARK_ROLES.include?(u_role) 
+      else
+        self.add_role u_role.to_sym if CLARK_ROLES.include?(u_role) 
+      end
     end
     self.add_role :clark
     self.update(token_expires_at: nil)
