@@ -98,7 +98,7 @@ class DailyTeachingPoint < ActiveRecord::Base
   end
 
   def remove_absent(absent_student)
-    class_catlogs.where("student_id not in (?)", [0] << absent_student).destroy_all
+    class_catlogs.where("student_id in (?)", [0] << absent_student).destroy_all
     self.update_attributes({verify_absenty: false})
   end
 

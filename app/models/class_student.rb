@@ -95,6 +95,14 @@ class ClassStudent < ActiveRecord::Base
                   })
   end
 
+  def sub_class_remaining_json(absent_list = [] , options={})
+    options.merge({
+                    id: student_id,
+                    name: student.name,
+                    p_mobile: student.p_mobile
+                  })
+  end
+
   def sync_json(options = {})
     options.merge({
                     id: id,
