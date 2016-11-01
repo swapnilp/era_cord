@@ -26,6 +26,8 @@ class HostelRoomsController < ApplicationController
   def create
     hostel = Hostel.where(id: params[:hostel_id]).first
     return render json: {success: false, message: "Invalid Hostel"} unless hostel.present?
+    return render json: {success: false, message: "Room limits are full"} if hostel.hostel_rooms.count >= hostel.rooms
+    
     hostel_room = hostel.hostel_rooms.build(create_params.merge({organisation_id: @organisation.id}))
     if hostel_room.save
       render json: {success: true}
