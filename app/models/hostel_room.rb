@@ -5,6 +5,10 @@ class HostelRoom < ActiveRecord::Base
   has_many :hostel_transactions
   
   default_scope { where(organisation_id: Organisation.current_id) }
+
+  def remaining_beds
+    return beds - students_count
+  end
   
 
   def as_json(options = {})

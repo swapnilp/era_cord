@@ -48,14 +48,16 @@ class HostelRoomsController < ApplicationController
 
   def allocate_students
     hostel = Hostel.where(id: params[:hostel_id]).first
-    return render json: {success: false, message: "Invalid Hostel"} unless hostel.present?
     room = hostel.hostel_rooms.where(id: params[:id]).first
-    if room && params[:student_ids].present?
-      students = hostel.students.where(id: params[:student_ids].split(',').map(&:to_i))
+    return render json: {success: false, message: "Invalid Hostel or Room"} unless hostel.present? || room.present?
+
+    student_ids = (params[:student_ids] || "").split(',').map(&:to_i)
+    if room && (student_ids.count > 0) && (room.remaining_beds >= student_ids.count)
+      students = hostel.students.where(id: student_ids)
       room.students << students
       render json: {success: true}
     else
-      render json: {success: false, mssage: ""}
+      render json: {success: false, mssage: "Invalid Students"}
     end
   end
   

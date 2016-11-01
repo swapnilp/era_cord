@@ -42,9 +42,11 @@ class HostelsController < ApplicationController
 
   def get_unallocated_students
     hostel = Hostel.where(id: params[:id]).first
-    return render json: {success: false, message: "Invalid Hostel"} unless hostel.present?
+    hostel_room = hostel.hostel_rooms.where(id: params[:room_id]).first
+    return render json: {success: false, message: "Invalid Hostel"} unless hostel.present? && hostel_room.present?
+    
     students = hostel.students.where(hostel_room_id: nil)
-    render json: {success: true, students: students.map(&:hostel_json)}
+    render json: {success: true, students: students.map(&:hostel_json), remaining_count: hostel_room.remaining_beds}
   end
   
   private
