@@ -650,6 +650,11 @@ ul.nostyle i {
 
 #our-team .team-member .team-img {
   margin: 0;
+  text-align: -webkit-center;  
+}
+
+#our-team .team-member .team-img img{
+  height: 180px;
 }
 
 #our-team .team-member .team-info {
