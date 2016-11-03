@@ -29,6 +29,15 @@ class HostelsController < ApplicationController
       render json: {success: false}
     end
   end
+  
+  def edit
+    hostel = Hostel.where(id: params[:id]).first
+    if hostel.present?
+      render json: {success: true, hostel: hostel.as_json}
+    else
+      render json: {success: false}
+    end
+  end
 
   def update
     hostel = Hostel.where(id: params[:id]).first

@@ -210,6 +210,12 @@ class Organisation < ActiveRecord::Base
     std_names.join(", ").html_safe
   end
 
+
+  def send_added_intimation
+    #OrganisationMailer.intimate_user(organisation).deliver
+    Delayed::Job.enqueue OrganisationIntimationQueue.new(self)
+  end
+  
   def send_generated_code
     #org = Organisation.where(email: self.email).first
     if self.last_sent && ((self.last_sent + 5.hours) > Time.now)

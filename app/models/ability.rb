@@ -124,7 +124,16 @@ class Ability
         can :graph_data, StudentFee
         can :print_account, StudentFee
         can :download_excel, StudentFee
-      end      
+      end
+      if roles.include? 'manage_hostel'
+        can :index, Hostel
+        can :show, Hostel
+        can :get_unallocated_students, Hostel
+        can :index, HostelRoom
+        can :allocate_students, HostelRoom
+        can :edit, HostelRoom
+        can :update, HostelRoom
+      end
     else
       can :read, Gallery
       can :read, Event
