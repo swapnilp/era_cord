@@ -5,6 +5,8 @@ class HostelRoomsController < ApplicationController
   load_and_authorize_resource param_method: :my_sanitizer
   
   def index
+    return render json: {success: false, message: "Must be root user"} unless @organisation.root?
+    
     hostel = Hostel.where(id: params[:hostel_id]).first
     return render json: {success: false, message: "Invalid Hostel"} unless hostel.present?
     rooms = hostel.hostel_rooms.includes(:students)
@@ -12,6 +14,8 @@ class HostelRoomsController < ApplicationController
   end
 
   def edit
+    return render json: {success: false, message: "Must be root user"} unless @organisation.root?
+    
     hostel = Hostel.where(id: params[:hostel_id]).first
     return render json: {success: false, message: "Invalid Hostel"} unless hostel.present?
     room = hostel.hostel_rooms.where(id: params[:id]).first
@@ -24,6 +28,8 @@ class HostelRoomsController < ApplicationController
   end
 
   def create
+    return render json: {success: false, message: "Must be root user"} unless @organisation.root?
+    
     hostel = Hostel.where(id: params[:hostel_id]).first
     return render json: {success: false, message: "Invalid Hostel"} unless hostel.present?
     return render json: {success: false, message: "Room limits are full"} if hostel.hostel_rooms.count >= hostel.rooms
@@ -37,6 +43,8 @@ class HostelRoomsController < ApplicationController
   end
 
   def update
+    return render json: {success: false, message: "Must be root user"} unless @organisation.root?
+    
     hostel = Hostel.where(id: params[:hostel_id]).first
     return render json: {success: false, message: "Invalid Hostel"} unless hostel.present?
     room = hostel.hostel_rooms.where(id: params[:id]).first
@@ -49,6 +57,8 @@ class HostelRoomsController < ApplicationController
   end
 
   def allocate_students
+    return render json: {success: false, message: "Must be root user"} unless @organisation.root?
+    
     hostel = Hostel.where(id: params[:hostel_id]).first
     room = hostel.hostel_rooms.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Hostel or Room"} unless hostel.present? || room.present?

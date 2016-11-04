@@ -5,6 +5,8 @@ class TeachersController < ApplicationController
   load_and_authorize_resource param_method: :my_sanitizer
   
   def index
+    return render json: {success: false, message: "Must be root user"} unless @organisation.root?
+    
     teachers = Teacher.all
     render json: {success: true, teachers: teachers.as_json}
   end
@@ -38,6 +40,7 @@ class TeachersController < ApplicationController
   end
 
   def edit
+    return render json: {success: false, message: "Must be root user"} unless @organisation.root?
     teacher = Teacher.where(id: params[:id]).first
     if teacher
       render json: {success: true, teacher: teacher.edit_json}
@@ -47,6 +50,7 @@ class TeachersController < ApplicationController
   end
 
   def update
+    return render json: {success: false, message: "Must be root user"} unless @organisation.root?
     teacher = Teacher.where(id: params[:id]).first
     if teacher && teacher.update_attributes(update_params)
       render json: {success: true, teacher_id: teacher.id}
@@ -75,6 +79,8 @@ class TeachersController < ApplicationController
   end
 
   def save_subjects
+    return render json: {success: false, message: "Must be root user"} unless @organisation.root?
+    
     teacher = Teacher.where(id: params[:id]).first
     if teacher
       teacher.save_subjects(@organisation.root, params[:subjects].split(','))
@@ -85,6 +91,8 @@ class TeachersController < ApplicationController
   end
 
   def remove_subjects
+    return render json: {success: false, message: "Must be root user"} unless @organisation.root?
+    
     teacher = Teacher.where(id: params[:id]).first
     if teacher
       teacher.remove_subject(params[:subject_id])
@@ -95,6 +103,8 @@ class TeachersController < ApplicationController
   end
 
   def destroy
+    return render json: {success: false, message: "Must be root user"} unless @organisation.root?
+    
     teacher = Teacher.where(id: params[:id]).first
     if teacher.present?
       
