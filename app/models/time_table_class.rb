@@ -34,7 +34,7 @@ class TimeTableClass < ActiveRecord::Base
                   })
   end
 
-  def calender_json(options = {})
+  def calender_json(options = {}, my_standards)
     options.merge({
                     id: id,
                     subject_id: subject_id,
@@ -44,7 +44,8 @@ class TimeTableClass < ActiveRecord::Base
                     start_time: start_time,
                     end_time: end_time,
                     slot_type: slot_type,
-                    jkci_class_id: time_table.jkci_class_id
+                    jkci_class_id: time_table.jkci_class_id,
+                    my_class: my_standards.include?(subject.standard_id)
                   })
   end
 
@@ -57,7 +58,7 @@ class TimeTableClass < ActiveRecord::Base
                     start_time: ('%.2f' % start_time.to_f).gsub(".", ":"),
                     end_time: ('%.2f' % end_time.to_f).gsub(".", ":"),
                     class_room: class_room,
-                    color: subject.try(:color),
+                    color: subject.try(:color)
                   })
   end
 

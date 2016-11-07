@@ -19,6 +19,7 @@ module Users
 
       return invalid_login_attempt unless resource
       if resource.valid_password? params[:user][:password]
+        resource.set_last_sign_in_at
         render json: resource, success: true, status: :created, serializer: UserLoginSerializer, root: false
       else
         invalid_login_attempt

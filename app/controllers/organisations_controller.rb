@@ -132,8 +132,8 @@ class OrganisationsController < ApplicationController
   end
 
   def get_clarks
-    clarks = @organisation.users.clarks.select([:id, :email, :organisation_id, :is_enable])
-    render json: {data: clarks}, each_serializer: OrganisationClarksSerializer
+    clarks = @organisation.users.clarks.select([:id, :email, :organisation_id, :is_enable, :last_sign_in_at])
+    render json: {data: clarks.map(&:clark_json)}
   end
 
   def get_clark_roles
@@ -164,33 +164,31 @@ class OrganisationsController < ApplicationController
   end
 
   def create_organisation_clark
-    user = @organisation.users.clarks.build(user_params)
-    if user.save
-      user.add_role :clark
-      user.add_clark_roles
+    is_save, new_user = User.create_clark(user_params, @organisation)
+    if is_save
       render json: {success: true}
     else
-      render json: {success: false, message: user.errors.full_messages.join(' , ')}
+      render json: {success: false, message: new_user.errors.full_messages.join(' , ')}
     end
   end
 
-  def get_user_email
-    user = @organisation.users.clarks.where(id: params[:user_id]).first
-    if user
-      render json: {success: true, email: user.email}
-    else
-      render json: {success: false}
-    end
-  end
-
-  def update_clark_password
-    user = @organisation.users.clarks.where(id: params[:user_id], email: params[:email]).first
-    if user && user.update_attributes(update_password_params)
-      render json: {success: true}
-    else
-      render json: {success: false}
-    end
-  end
+  #def get_user_email
+  #  user = @organisation.users.clarks.where(id: params[:user_id]).first
+  #  if user
+  #    render json: {success: true, email: user.email}
+  #  else
+  #    render json: {success: false}
+  #  end
+  #end
+  #
+  #def update_clark_password
+  #  user = @organisation.users.clarks.where(id: params[:user_id], email: params[:email]).first
+  #  if user && user.update_attributes(update_password_params)
+  #    render json: {success: true}
+  #  else
+  #    render json: {success: false}
+  #  end
+  #end
 
   def delete_clark
     user = @organisation.users.clarks.where(id: params[:user_id]).first
@@ -421,7 +419,7 @@ class OrganisationsController < ApplicationController
   end
 
   def user_params
-    params.require(:clark).permit(:email, :password, :password_confirmation, :salt, :encrypted_password)
+    params.require(:clark).permit(:email, :mobile)
   end
 
   def logo_upload_params

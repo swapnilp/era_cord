@@ -18,12 +18,12 @@ class User < ActiveRecord::Base
   validates :organisation_id, :presence => true#, :email => true, scope: :organisation_id
 
   
-  validates_uniqueness_of :email, :scope => :organisation_id, :case_sensitive => false, :allow_blank => true#, :if => true
+  validates_uniqueness_of :email, :scope => [:organisation_id, :role], :case_sensitive => false, :allow_blank => true#, :if => true
   validates_presence_of :email
   validates_format_of :email, :with => Devise.email_regexp, :allow_blank => true, :if => :email_changed?
-  validates_presence_of :password, :on=>:create
-  validates_confirmation_of :password #,  #:on=>[:create, :update]
-  validates_length_of :password, :within => Devise.password_length, :allow_blank => true
+  validates_presence_of :password, :on=>:create , :if => proc{ |u| !u.encrypted_password.present? }
+  validates_confirmation_of :password, :if => proc{ |u| !u.encrypted_password.present? }#,  #:on=>[:create, :update]
+  validates_length_of :password, :within => Devise.password_length, :allow_blank => true, :if => proc{ |u| !u.encrypted_password.present? }
 
   scope :clarks, -> {where(role: 'clark')}
 
@@ -96,6 +96,10 @@ class User < ActiveRecord::Base
     self.organisation.update_attributes({last_signed_in: Time.now}) if self.organisation.present?
   end 
 
+  def set_last_sign_in_at
+    User.where(email: self.email, last_sign_in_at: nil).update_all({last_sign_in_at: Time.now})
+  end
+
   def active_for_authentication?
     super && is_enable
   end
@@ -140,6 +144,36 @@ class User < ActiveRecord::Base
     self.add_role :clark
     self.update(token_expires_at: nil)
   end
+
+  def self.create_clark(user_params, organisation)
+    check_user = User.where(email: user_params[:email]).first
+    if check_user.present?
+      new_user = check_user.dup
+      new_user.role = 'clark'
+      new_user.add_clark_roles
+      new_user.organisation_id = organisation.id
+      if new_user.save
+        Delayed::Job.enqueue ClarkIntimationMail.new(new_user) 
+        is_save = true
+      else
+        is_save = false
+      end
+    else
+      new_user = organisation.users.clarks.build(user_params)
+      new_user.password = CLARK_DEFAULT_PASSWORD
+      new_user.role = 'clark'
+      if new_user.save
+        is_save = true
+        new_user.add_role :clark
+        new_user.add_clark_roles
+        #reset password link send
+        p '@@@@@@@@@@@@ reset password link send'
+      else
+        is_save = false
+      end
+    end
+    return is_save, new_user
+  end
   
   def admin?
     return role == 'admin'
@@ -179,6 +213,16 @@ class User < ActiveRecord::Base
                     organisation_id: organisation_id,
                     organisation_name: organisation.name,
                     role: role
+                  })
+  end
+
+  def clark_json(options = {})
+    options.merge({
+                    id: id,
+                    organisation_id: organisation_id,
+                    email: email,
+                    is_enable: is_enable, 
+                    is_active: last_sign_in_at.nil?
                   })
   end
 end

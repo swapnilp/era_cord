@@ -12,7 +12,7 @@ class Ability
       can :manage, :all
       #can :roll, :admin
       #can :roll, :clark
-    elsif roles.include?('clark') || roles.include?('teacher')
+    elsif roles.include?('clark') || roles.include?('teacher') || user.role == 'clark'
       can :read, Gallery
       can :read, Event
       can :read, Album

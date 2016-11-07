@@ -12,13 +12,14 @@ class TimeTablesController < ApplicationController
 
   def calender_index
     time_table_classes = TimeTableClass.includes({subject: :standard}, :sub_class, :teacher, :time_table).joins(time_table: :jkci_class).where("jkci_classes.is_current_active = ? and time_table_classes.organisation_id in (?) && jkci_classes.standard_id in (?)", true, Organisation.current_id, @active_standards)
-
+    
+    my_standards = OrganisationStandard.where(organisation_id: @organisation.id, is_assigned_to_other: false).map(&:standard_id).uniq
     if params[:standard]
       jkci_class  = JkciClass.select([:id, :standard_id, :organisation_id, :is_current_active]).where(standard_id: params[:standard], is_current_active: true).first
       time_table_classes = time_table_classes.where("jkci_classes.id = ?",  jkci_class.id)
     end
     
-    render json: {success: true, time_table_classes: time_table_classes.map(&:calender_json)}
+    render json: {success: true, time_table_classes: time_table_classes.collect{ |time_table_class| time_table_class.calender_json({}, my_standards)}}
   end
 
   def create
