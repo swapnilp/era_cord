@@ -45,7 +45,7 @@ class TimeTableClass < ActiveRecord::Base
                     end_time: end_time,
                     slot_type: slot_type,
                     jkci_class_id: time_table.jkci_class_id,
-                    my_class: my_standards.include?(subject.standard_id)
+                    my_class: my_standards.include?(subject.try(:standard_id) || 0)
                   })
   end
 
