@@ -266,7 +266,7 @@ class Exam < ActiveRecord::Base
     self.exam_catlogs.includes([:student]).only_absents.each_with_index do |exam_catlog, index|
       if exam_catlog.student.enable_sms && !exam_catlog.absent_sms_sent.present?
         message = "#{exam_catlog.student.short_name} marked absent on #{self.exam_date.strftime("%d %b %y")} exam.Plz contact us. #{organisation.short_name || 'eraCord'}!!"
-        url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=JKSaiu&dmobile=#{exam_catlog.student.sms_mobile}&message=#{message}"
+        url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=eracod&dmobile=#{exam_catlog.student.sms_mobile}&message=#{message}"
         if exam_catlog.student.sms_mobile.present? && exam_catlog.absent_sms_sent != true
           url_arry << [url, message, exam_catlog.id, self.organisation_id, exam_catlog.student.sms_mobile]
           #exam_catlog.update_attributes({absent_sms_sent: true})
@@ -282,7 +282,7 @@ class Exam < ActiveRecord::Base
       if exam_catlog.student.enable_sms
         message = "#{exam_catlog.student.short_name} got #{exam_catlog.marks.to_i}/#{self.marks} in cx-#{self.id}-#{self.subject.name} exam held on #{self.exam_date.strftime("%B-%d")}. #{organisation.short_name || 'eraCord'}"
         message = message.truncate(159)
-        url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=JKSAIU&dmobile=#{exam_catlog.student.sms_mobile}&message=#{message}"
+        url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=eracod&dmobile=#{exam_catlog.student.sms_mobile}&message=#{message}"
         url_arry << [url, message, exam_catlog.id, self.organisation_id, exam_catlog.student_id, exam_catlog.student.sms_mobile]
       end
     end
@@ -360,7 +360,7 @@ class Exam < ActiveRecord::Base
     url_arry = []
     self.grouped_exams_sms.each do |report|
       message = report[0]
-      url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=JKSAIU&dmobile=#{report[1]}&message=#{message}"
+      url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=eracod&dmobile=#{report[1]}&message=#{message}"
       student_id = report[2]
       url_arry << [url, message, self.id, self.organisation_id, student_id, report[1]]
     end

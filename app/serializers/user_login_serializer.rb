@@ -1,5 +1,5 @@
 class UserLoginSerializer < ActiveModel::Serializer
-  attributes :id, :email, :roles, :token, :organisation_id, :success, :is_manage_organiser, :name, :is_root, :logo_url
+  attributes :id, :email, :roles, :token, :organisation_id, :success, :is_manage_organiser, :name, :is_root, :logo_url, :verify_mobile, :mobile
 
   def email
     object.email

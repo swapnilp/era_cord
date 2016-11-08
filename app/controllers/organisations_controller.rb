@@ -406,6 +406,24 @@ class OrganisationsController < ApplicationController
     render json: {success: true}
   end
 
+  def verify_user_mobile
+    if user_token_params[:mobile_token] == current_user.mobile_token
+      current_user.update_attributes({verify_mobile: true, mobile_token: nil})
+      render json: {success: true}
+    else
+      render json: {success: false, message: "Token is not valid. Please try again"}
+    end
+  end
+
+  def resend_mobile_token
+    if current_user.mobile.present?
+      current_user.send_otp_token
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+  end
+
 
   private
   
@@ -432,5 +450,9 @@ class OrganisationsController < ApplicationController
 
   def update_organisation_params
     params.require(:organisation).permit(:name, :email, :mobile, :password, :short_name, :account_sms, :pan_number, :tan_number, :service_tax, :enable_service_tax)
+  end
+  
+  def user_token_params
+    params.require(:user).permit(:mobile_token)
   end
 end

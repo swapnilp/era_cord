@@ -20,7 +20,7 @@ class ParentsMeeting < ActiveRecord::Base
       self.meetings_students.includes([:student]).each_with_index do |meeting_student, index|
         message = "Dear Parent, kindly attend the Parent-Teacher Meeting scheduled on #{self.date.strftime("%d %b %Y @%I:%M%p")} - #{org.name}.#{org.short_name || 'eraCord'}"
         message = message.truncate(159)
-        url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=JKSAIU&dmobile=#{meeting_student.student.sms_mobile}&message=#{message}"
+        url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=eracod&dmobile=#{meeting_student.student.sms_mobile}&message=#{message}"
         url_arry << [url, message, meeting_student.id, self.organisation_id, meeting_student.student_id, meeting_student.student.sms_mobile]
       end
     end

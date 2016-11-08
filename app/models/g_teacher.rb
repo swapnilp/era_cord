@@ -38,6 +38,10 @@ class GTeacher < ActiveRecord::Base
           t_user = user.dup
           t_user.organisation_id = teacher.organisation_id
           t_user.role = 'teacher'
+          t_user.mobile = teacher.mobile
+          if (user.mobile == teacher.mobile && user.verify_mobile)
+            t_user.verify_mobile = true
+          end
           t_user.save(:validate => false)
           t_user.add_teacher_roles 
         else
@@ -51,7 +55,7 @@ class GTeacher < ActiveRecord::Base
 
   def teacher_sms_message
     message = "One time password is #{self.mobile_code}  for #{self.name} registation on EraCord. Please do not share OTP to any one for securiety reason."
-    url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=update&dmobile=91#{self.mobile}&message=#{message}"
+    url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=eracod&dmobile=91#{self.mobile}&message=#{message}"
     url_arry = [url, message, self.id, self.mobile]
   end
 

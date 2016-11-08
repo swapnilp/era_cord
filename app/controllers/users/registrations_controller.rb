@@ -42,6 +42,7 @@ module Users
       build_resource(sign_up_params.merge({role: params[:user][:role], organisation_id: @organisation.id}))
 
       if mobile_code == params[:mobile_code]
+        resource.verify_mobile = true
         resource.save
       else
         resource.errors.add(:mobile_code, "is invalid. Please regenerate code") 

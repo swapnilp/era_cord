@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161020115703) do
+ActiveRecord::Schema.define(version: 20161107145009) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -762,6 +762,8 @@ ActiveRecord::Schema.define(version: 20161020115703) do
     t.string   "mobile",                 limit: 255
     t.string   "device_id",              limit: 255
     t.integer  "mpin",                   limit: 4
+    t.boolean  "verify_mobile",          limit: 1,     default: false
+    t.string   "mobile_token",           limit: 255
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree

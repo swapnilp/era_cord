@@ -216,7 +216,7 @@ class Student < ActiveRecord::Base
   def activate_sms_message
     url_arry = []
     message = "#{self.short_name}'s notification updates has been activaed. JKSai!!"
-    url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=update&dmobile=91#{self.p_mobile}&message=#{message}"
+    url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=eracod&dmobile=91#{self.p_mobile}&message=#{message}"
     if self.sms_mobile.present?
       url_arry = [url, message, self.id, self.organisation_id, self.p_mobile]
     end
@@ -226,7 +226,7 @@ class Student < ActiveRecord::Base
   def deactivate_sms_message
     url_arry = []
     message = "#{self.short_name}'s notification updates has been deactivaed.Please contact us JKSai!!"
-    url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=update&dmobile=91#{self.p_mobile}&message=#{message}"
+    url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=eracod&dmobile=91#{self.p_mobile}&message=#{message}"
     if self.sms_mobile.present?
       url_arry = [url, message, self.id, self.organisation_id, self.p_mobile]
     end

@@ -151,6 +151,11 @@ class User < ActiveRecord::Base
       new_user = check_user.dup
       new_user.role = 'clark'
       new_user.add_clark_roles
+      unless (check_user.mobile == user_params[:mobile] && check_user.verify_mobile)
+        new_user.mobile = user_params[:mobile]
+        new_user.verify_mobile = false
+        new_user.mobile_token = nil
+      end
       new_user.organisation_id = organisation.id
       if new_user.save
         Delayed::Job.enqueue ClarkIntimationMail.new(new_user) 
@@ -173,6 +178,22 @@ class User < ActiveRecord::Base
       end
     end
     return is_save, new_user
+  end
+
+  def generate_mobile_token
+    charset = %w{ 2 3 4 6 7 9 0 1}
+    token_str = (0...6).map{ charset.to_a[rand(charset.size)] }.join
+    self.update_attributes({mobile_token: token_str}) if self.mobile_token.blank?
+  end
+
+  def send_otp_token
+    if self.mobile.present?
+      self.generate_mobile_token
+      message = "One time password is #{self.mobile_token} for #{self.email} registation on EraCord. Please do not share OTP to any one for securiety reason."
+      url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=eracod&dmobile=91#{self.mobile}&message=#{message}"
+      url_arry = [url, message, self.id, self.id, self.mobile]
+      Delayed::Job.enqueue UserOtpSms.new(url_arry)
+    end
   end
   
   def admin?

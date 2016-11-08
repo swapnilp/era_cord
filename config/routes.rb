@@ -283,6 +283,8 @@ Rails.application.routes.draw do
   post "/organisations/courses/:course_id/update_fee" => "organisations#update_standard_fee"
   post "/organisations/classes/:class_id/update_fee" => "organisations#update_class_fee"
   post "/organisations/switch_organisation_standard" => "organisations#switch_organisation_standard"
+  post "/organisations/resend_mobile_token" => "organisations#resend_mobile_token"
+  post "/organisations/verify_user_mobile" => "organisations#verify_user_mobile"
   post '/organisations/remove_standard_from_organisation' => "organisations#remove_standard_from_organisation"
   #post "/organisations/users/:user_id/update_clark_password" => "organisations#update_clark_password"
   post "/organisations/users/:user_id/update_roles" => "organisations#update_clark_roles"

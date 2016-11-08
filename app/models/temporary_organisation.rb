@@ -22,7 +22,7 @@ class TemporaryOrganisation < ActiveRecord::Base
 
   def organisation_sms_confirmation(user)
     message = "Use confirmation code #{self.user_sms_code} for #{self.name} registation on EraCord. Please do not share OTP to any one for securiety reason."
-    url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=update&dmobile=91#{user.mobile}&message=#{message}"
+    url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=eracod&dmobile=91#{user.mobile}&message=#{message}"
     url_arry = [url, message, self.id, self.id, user.mobile]
   end
 
