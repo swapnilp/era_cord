@@ -272,6 +272,7 @@ Rails.application.routes.draw do
   get '/organisations/get_sub_organisations' => "organisations#sub_organisations_list"
   get '/organisations/add_standards' => "organisations#add_standards"
   get '/organisations/get_clarks' => "organisations#get_clarks"
+  get '/organisations/clarks/:clark_id/edit' => "organisations#edit_clarks"
   get '/organisations/users/:user_id/get_roles' => "organisations#get_clark_roles"
   get "/organisations/users/:user_id/toggleEnable" => "organisations#toggle_enable_users"
   #get "/organisations/users/:user_id/get_email" => "organisations#get_user_email"

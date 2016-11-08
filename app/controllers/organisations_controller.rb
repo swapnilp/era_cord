@@ -132,9 +132,19 @@ class OrganisationsController < ApplicationController
   end
 
   def get_clarks
-    clarks = @organisation.users.clarks.select([:id, :email, :organisation_id, :is_enable, :last_sign_in_at])
+    clarks = @organisation.users.clarks.select([:id, :email, :organisation_id, :is_enable, :last_sign_in_at, :mobile])
     render json: {data: clarks.map(&:clark_json)}
   end
+  
+  def edit_clarks
+    clark = @organisation.users.clarks.select([:id, :email, :organisation_id, :is_enable, :mobile]).where(id: params[:clark_id]).first
+    if clark.present?
+      render json: {success: true, data: clark.clark_json}
+    else
+      render json: {success: false}
+    end
+  end
+  
 
   def get_clark_roles
     user = @organisation.users.clarks.where(id: params[:user_id]).first
