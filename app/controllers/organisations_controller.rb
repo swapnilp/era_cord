@@ -164,6 +164,9 @@ class OrganisationsController < ApplicationController
   end
 
   def create_organisation_clark
+    if user_params[:email] == @organisation.email
+      return render json: {success: false, message: "You can not create organiser as clark. Please Use different email"}
+    end
     is_save, new_user = User.create_clark(user_params, @organisation)
     if is_save
       render json: {success: true}
