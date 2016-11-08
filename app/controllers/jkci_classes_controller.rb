@@ -271,7 +271,7 @@ class JkciClassesController < ApplicationController
 
     time_table = jkci_class.time_tables.where(sub_class_id: nil).first
     if time_table
-      render json: {success: true, time_table: time_table.as_json, subjects: jkci_class.subjects.as_json, slots: time_table.time_table_classes.as_json, subjects: jkci_class.subjects.as_json, sub_classes: jkci_class.sub_classes.as_json}
+      render json: {success: true, time_table: time_table.as_json, subjects: jkci_class.subjects.as_json, slots: time_table.time_table_classes.as_json, sub_classes: jkci_class.sub_classes.as_json}
     else
       render json: {success: false}
     end
