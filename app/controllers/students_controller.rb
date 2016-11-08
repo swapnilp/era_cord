@@ -197,7 +197,7 @@ class StudentsController < ApplicationController
         render json: {success: false, message: "Something went wrong"}
       end
     else
-       render json: {success: false, valid_password: true, message: "Not Authorised", valid_password: true}
+       render json: {success: false, valid_password: true, message: "Not Authorised"}
     end
   end
 
