@@ -13,6 +13,8 @@ class Ability
       #can :roll, :admin
       #can :roll, :clark
     elsif roles.include?('clark') || roles.include?('teacher') || user.role == 'clark'
+      can :verify_user_mobile, Organisation
+      can :resend_mobile_token, Organisation
       can :read, Gallery
       can :read, Event
       can :read, Album

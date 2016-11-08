@@ -412,6 +412,7 @@ class OrganisationsController < ApplicationController
   def verify_user_mobile
     if user_token_params[:mobile_token] == current_user.mobile_token
       current_user.update_attributes({verify_mobile: true, mobile_token: nil})
+      User.where(email: current_user.email, mobile: current_user.mobile).update_all({verify_mobile: true, mobile_token: nil})
       render json: {success: true}
     else
       render json: {success: false, message: "Token is not valid. Please try again"}
