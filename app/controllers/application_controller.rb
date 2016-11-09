@@ -20,7 +20,7 @@ class ApplicationController < ActionController::Base
   
   def authenticate_user!(options={})
     super(options)
-    @organisation ||= current_user.organisation
+    @organisation = current_user.organisation
     Organisation.current_id = @organisation.present? ? @organisation.root.subtree.map(&:id) : nil
     #@organisation.update_attributes({last_signed_in: Time.now}) if @organisation.present?
   end

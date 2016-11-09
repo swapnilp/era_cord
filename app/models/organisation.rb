@@ -240,12 +240,18 @@ class Organisation < ActiveRecord::Base
     if old_organisation_standard.present?
       old_org_id = old_organisation_standard.assigned_organisation_id || old_organisation_standard.organisation_id
       old_org = self.root.subtree.where(id: old_org_id).first if old_organisation_standard
-      return false if old_org.id == new_org_id
       new_org = self.subtree.where(id: new_org_id).first
       std = self.standards.where(id: standard_id).first
       return false unless old_org.present?
       return false unless new_org.present?
       return false unless std.present?
+      if old_org.id == new_org_id
+        new_org_standard = OrganisationStandard.find_or_initialize_by({standard_id: std.id, organisation_id: new_org.id})
+        new_org_standard.is_assigned_to_other =  false
+        new_org_standard.assigned_organisation_id =  nil
+        new_org_standard.save
+        return true
+      end
     else
       return false
     end
@@ -343,7 +349,7 @@ class Organisation < ActiveRecord::Base
       OrganisationStandard.unscoped.where(standard_id: old_org_standards_ids, organisation_id: self.id).update_all({is_assigned_to_other: false, assigned_organisation_id: nil})
       
       
-      OrganisationStandard.unscoped.where(standard_id: old_org_standards_ids, organisation_id: self.subtree_ids).each do |org_standard|
+      OrganisationStandard.unscoped.where(standard_id: old_org_standards_ids, organisation_id: self.descendant_ids).each do |org_standard|
         org_standard.destroy unless org_standard.organisation.root?
       end
       
