@@ -1,12 +1,12 @@
-class ClarkMailer < ActionMailer::Base
+class ClerkMailer < ActionMailer::Base
   default from: "admin@eracord.com"
   
-  def registation_clark(user)
-    @user = user
+  def registation_clerk(user_clerk)
+    @user = user_clerk
     mail(to: @user.email, subject: 'Welcome to EraCord- Create eraCord account')
   end
 
-  def intimate_clark(user)
+  def intimate_clerk(user)
     @user = user
     mail(to: @user.email, subject: 'Welcome to EraCord- Intimate eraCord account')
   end

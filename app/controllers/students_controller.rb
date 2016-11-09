@@ -29,7 +29,7 @@ class StudentsController < ApplicationController
     end
     students = students.page(params[:page])
     roles = current_user.roles.map(&:name)
-    render json: {success: true, body: ActiveModel::ArraySerializer.new(students, each_serializer: StudentSerializer).as_json, count: students.total_count, has_show_pay_info: roles.include?('accountant'), has_pay_fee: (['accountant','accountant_clark'] & roles).size > 0}
+    render json: {success: true, body: ActiveModel::ArraySerializer.new(students, each_serializer: StudentSerializer).as_json, count: students.total_count, has_show_pay_info: roles.include?('accountant'), has_pay_fee: (['accountant','accountant_clerk'] & roles).size > 0}
   end
 
   def new
@@ -79,7 +79,7 @@ class StudentsController < ApplicationController
     student = Student.includes({subjects: :standard}, :class_students, :removed_class_students, :hostel).where(id: params[:id]).first
     if student
       roles = current_user.roles.map(&:name)
-      render json: {success: true, body: StudentShowSerializer.new(student).as_json, has_show_pay_info: roles.include?('accountant'), has_pay_fee: (['accountant','accountant_clark'] & roles).size > 0, classes: student.jkci_classes.map(&:student_filter_json), remaining_fee: student.total_remaining_fees.sum }
+      render json: {success: true, body: StudentShowSerializer.new(student).as_json, has_show_pay_info: roles.include?('accountant'), has_pay_fee: (['accountant','accountant_clerk'] & roles).size > 0, classes: student.jkci_classes.map(&:student_filter_json), remaining_fee: student.total_remaining_fees.sum }
     else
        render json: {success: false}
     end

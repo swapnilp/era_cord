@@ -131,40 +131,48 @@ class OrganisationsController < ApplicationController
     end
   end
 
-  def get_clarks
-    clarks = @organisation.users.clarks.select([:id, :email, :organisation_id, :is_enable, :last_sign_in_at, :mobile])
-    render json: {data: clarks.map(&:clark_json)}
+  def get_clerks
+    clerks = @organisation.users.clerks.select([:id, :email, :organisation_id, :is_enable, :last_sign_in_at, :mobile])
+    render json: {data: clerks.map(&:clerk_json)}
   end
   
-  def edit_clarks
-    clark = @organisation.users.clarks.select([:id, :email, :organisation_id, :is_enable, :mobile]).where(id: params[:clark_id]).first
-    if clark.present?
-      render json: {success: true, data: clark.clark_json}
+  def edit_clerks
+    clerk = @organisation.users.clerks.select([:id, :email, :organisation_id, :is_enable, :mobile]).where(id: params[:clerk_id]).first
+    if clerk.present?
+      render json: {success: true, data: clerk.edit_clerk_json}
     else
       render json: {success: false}
     end
   end
-  
 
-  def get_clark_roles
-    user = @organisation.users.clarks.where(id: params[:user_id]).first
+  def update_clerks
+    clerk = @organisation.users.clerks.where(id: params[:clerk_id]).first
+    if clerk.present? && clerk.update_attributes(update_clerks_params)
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+  end
+
+  def get_clerk_roles
+    user = @organisation.users.clerks.where(id: params[:user_id]).first
     if user
       roles = user.roles.map(&:name)
-      user_roles = CLARK_ROLES.map{|role| {role => roles.include?(role)}}.reduce Hash.new, :merge
-      render json: {success: true, roles: roles, clarks_roles: @organisation.root? ? ADMIN_CLARK_ROLES : CLARK_ROLES}
+      user_roles = CLERK_ROLES.map{|role| {role => roles.include?(role)}}.reduce Hash.new, :merge
+      render json: {success: true, roles: roles, clerks_roles: @organisation.root? ? ADMIN_CLERK_ROLES : CLERK_ROLES}
     else
       render json: {success: false}
     end
   end
   
-  def update_clark_roles
-    user = @organisation.users.clarks.where(id: params[:user_id]).first
-    user.manage_clark_roles(params[:roles],  @organisation.root?)
+  def update_clerk_roles
+    user = @organisation.users.clerks.where(id: params[:user_id]).first
+    user.manage_clerk_roles(params[:roles],  @organisation.root?)
     render json: {success: true}
   end
 
   def toggle_enable_users
-    user = @organisation.users.clarks.where(id: params[:user_id]).first
+    user = @organisation.users.clerks.where(id: params[:user_id]).first
     if user
       user.update_attributes({is_enable: params[:enabled]})
       render json: {success: true}
@@ -173,11 +181,11 @@ class OrganisationsController < ApplicationController
     end
   end
 
-  def create_organisation_clark
+  def create_organisation_clerk
     if @organisation.path.map(&:email).include?(user_params[:email])
-      return render json: {success: false, message: "You can not create organiser as clark. Please Use different email"}
+      return render json: {success: false, message: "You can not create organiser as clerk. Please Use different email"}
     end
-    is_save, new_user = User.create_clark(user_params, @organisation)
+    is_save, new_user = User.create_clerk(user_params, @organisation)
     if is_save
       render json: {success: true}
     else
@@ -186,7 +194,7 @@ class OrganisationsController < ApplicationController
   end
 
   #def get_user_email
-  #  user = @organisation.users.clarks.where(id: params[:user_id]).first
+  #  user = @organisation.users.clerks.where(id: params[:user_id]).first
   #  if user
   #    render json: {success: true, email: user.email}
   #  else
@@ -194,8 +202,8 @@ class OrganisationsController < ApplicationController
   #  end
   #end
   #
-  #def update_clark_password
-  #  user = @organisation.users.clarks.where(id: params[:user_id], email: params[:email]).first
+  #def update_clerk_password
+  #  user = @organisation.users.clerks.where(id: params[:user_id], email: params[:email]).first
   #  if user && user.update_attributes(update_password_params)
   #    render json: {success: true}
   #  else
@@ -203,8 +211,8 @@ class OrganisationsController < ApplicationController
   #  end
   #end
 
-  def delete_clark
-    user = @organisation.users.clarks.where(id: params[:user_id]).first
+  def delete_clerk
+    user = @organisation.users.clerks.where(id: params[:user_id]).first
     if user
       user.roles = []
       user.destroy
@@ -451,7 +459,7 @@ class OrganisationsController < ApplicationController
   end
 
   def user_params
-    params.require(:clark).permit(:email, :mobile)
+    params.require(:clerk).permit(:email, :mobile)
   end
 
   def logo_upload_params
@@ -459,7 +467,11 @@ class OrganisationsController < ApplicationController
   end
 
   def update_password_params
-    params.require(:clark).permit(:password, :password_confirmation, :salt, :encrypted_password)
+    params.require(:clerk).permit(:password, :password_confirmation, :salt, :encrypted_password)
+  end
+
+  def update_clerks_params
+    params.require(:clerk).permit(:mobile)
   end
 
   def update_organisation_params

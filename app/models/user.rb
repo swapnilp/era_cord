@@ -25,7 +25,7 @@ class User < ActiveRecord::Base
   validates_confirmation_of :password, :if => proc{ |u| !u.encrypted_password.present? }#,  #:on=>[:create, :update]
   validates_length_of :password, :within => Devise.password_length, :allow_blank => true, :if => proc{ |u| !u.encrypted_password.present? }
 
-  scope :clarks, -> {where(role: 'clark')}
+  scope :clerks, -> {where(role: 'clerk')}
 
   def reset_auth_token!
     if token_expires_at.blank? || token_expires_at < Time.now
@@ -105,7 +105,7 @@ class User < ActiveRecord::Base
   end
 
   def add_organiser_roles
-    u_roles = ["admin", "clark", "verify_exam", "exam_conduct", "verify_exam_absenty", "add_exam_result", "verify_exam_result", "publish_exam", "create_exam", "add_exam_absenty", "create_daily_teach", "add_daily_teach_absenty", "verify_daily_teach_absenty", "publish_daily_teach_absenty", "manage_class_sms", "organisation", "add_student", "manage_student_subject", "manage_class_student", "manage_roll_number", "manage_class", "manage_organiser", "toggle_student_sms", "download_class_report"]
+    u_roles = ["admin", "clerk", "verify_exam", "exam_conduct", "verify_exam_absenty", "add_exam_result", "verify_exam_result", "publish_exam", "create_exam", "add_exam_absenty", "create_daily_teach", "add_daily_teach_absenty", "verify_daily_teach_absenty", "publish_daily_teach_absenty", "manage_class_sms", "organisation", "add_student", "manage_student_subject", "manage_class_student", "manage_roll_number", "manage_class", "manage_organiser", "toggle_student_sms", "download_class_report"]
     if organisation.root?
       u_roles << 'accountant'
     end
@@ -114,7 +114,7 @@ class User < ActiveRecord::Base
     end
   end
   
-  def add_clark_roles
+  def add_clerk_roles
     ["create_exam", "verify_exam", "exam_conduct", "add_exam_absenty", 
      "add_exam_result", "publish_exam", "create_daily_teach", "add_daily_teach_absenty", 
      "verify_daily_teach_absenty"].each do |u_role|
@@ -131,26 +131,26 @@ class User < ActiveRecord::Base
     end
   end
 
-  def manage_clark_roles(new_roles, is_root = false)
+  def manage_clerk_roles(new_roles, is_root = false)
     self.roles = []
     new_roles = new_roles.split(',')
     new_roles.each do |u_role| 
       if is_root
-        self.add_role u_role.to_sym if ADMIN_CLARK_ROLES.include?(u_role) 
+        self.add_role u_role.to_sym if ADMIN_CLERK_ROLES.include?(u_role) 
       else
-        self.add_role u_role.to_sym if CLARK_ROLES.include?(u_role) 
+        self.add_role u_role.to_sym if CLERK_ROLES.include?(u_role) 
       end
     end
-    self.add_role :clark
+    self.add_role :clerk
     self.update(token_expires_at: nil)
   end
 
-  def self.create_clark(user_params, organisation)
+  def self.create_clerk(user_params, organisation)
     check_user = User.where(email: user_params[:email]).first
     if check_user.present?
       new_user = check_user.dup
-      new_user.role = 'clark'
-      new_user.add_clark_roles
+      new_user.role = 'clerk'
+      new_user.add_clerk_roles
       unless (check_user.mobile == user_params[:mobile] && check_user.verify_mobile)
         new_user.mobile = user_params[:mobile]
         new_user.verify_mobile = false
@@ -158,21 +158,15 @@ class User < ActiveRecord::Base
       end
       new_user.organisation_id = organisation.id
       if new_user.save
-        Delayed::Job.enqueue ClarkIntimationMail.new(new_user) 
+        Delayed::Job.enqueue ClerkIntimationMail.new(new_user) 
         is_save = true
       else
         is_save = false
       end
     else
-      new_user = organisation.users.clarks.build(user_params)
-      new_user.password = CLARK_DEFAULT_PASSWORD
-      new_user.role = 'clark'
+      new_user = organisation.user_clerks.build(user_params)
       if new_user.save
         is_save = true
-        new_user.add_role :clark
-        new_user.add_clark_roles
-        #reset password link send
-        p '@@@@@@@@@@@@ reset password link send'
       else
         is_save = false
       end
@@ -208,8 +202,8 @@ class User < ActiveRecord::Base
     return role == 'staff'
   end
 
-  def clark?
-    return role == 'clark'
+  def clerk?
+    return role == 'clerk'
   end
 
   def parent?
@@ -237,13 +231,25 @@ class User < ActiveRecord::Base
                   })
   end
 
-  def clark_json(options = {})
+  def clerk_json(options = {})
     options.merge({
                     id: id,
                     organisation_id: organisation_id,
                     email: email,
                     is_enable: is_enable, 
-                    is_active: last_sign_in_at.nil?
+                    is_active: last_sign_in_at.nil?,
+                    mobile: mobile
                   })
   end
+
+  def edit_clerk_json(options = {})
+    options.merge({
+                    id: id,
+                    organisation_id: organisation_id,
+                    email: email,
+                    is_enable: is_enable, 
+                    mobile: mobile
+                  })
+  end
+  
 end

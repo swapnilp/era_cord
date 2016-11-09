@@ -11,8 +11,8 @@ class Ability
     if roles.include? 'admin' || user.role == 'organisation'
       can :manage, :all
       #can :roll, :admin
-      #can :roll, :clark
-    elsif roles.include?('clark') || roles.include?('teacher') || user.role == 'clark'
+      #can :roll, :clerk
+    elsif roles.include?('clerk') || roles.include?('teacher') || user.role == 'clerk'
       can :verify_user_mobile, Organisation
       can :resend_mobile_token, Organisation
       can :read, Gallery
@@ -21,7 +21,7 @@ class Ability
       can :read, BatchResult
       can :read, Result
       
-      can :roll, :clark
+      can :roll, :clerk
       can :read, Subject
       can :read, SubClass
 
@@ -110,13 +110,13 @@ class Ability
       can :download_report, Student
       can :get_graph_data, Student
       can :get_filter_values, Student
-      can :get_fee_info, Student if roles.include?('accountant')  || roles.include?('accountant_clark')
-      can :paid_student_fee, Student if roles.include?('accountant')  || roles.include?('accountant_clark')
+      can :get_fee_info, Student if roles.include?('accountant')  || roles.include?('accountant_clerk')
+      can :paid_student_fee, Student if roles.include?('accountant')  || roles.include?('accountant_clerk')
       can :get_payments_info, Student if roles.include? 'accountant' 
       can :manage, Contact
-      can :print_receipt, StudentFee if roles.include?('accountant') || roles.include?('accountant_clark')
-      can :new, Student if roles.include?('accountant') || roles.include?('accountant_clark')
-      can :create, Student if roles.include?('accountant') || roles.include?('accountant_clark')
+      can :print_receipt, StudentFee if roles.include?('accountant') || roles.include?('accountant_clerk')
+      can :new, Student if roles.include?('accountant') || roles.include?('accountant_clerk')
+      can :create, Student if roles.include?('accountant') || roles.include?('accountant_clerk')
 
       can :read, SmsSent
 

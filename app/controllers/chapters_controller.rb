@@ -57,7 +57,7 @@ class ChaptersController < ApplicationController
   end
 
   def check_role
-    raise ActionController::RoutingError.new('Not Found') unless (current_user.has_role?(:admin_clark) ||  current_user.has_role?(:super_admin))
+    raise ActionController::RoutingError.new('Not Found') unless (current_user.has_role?(:admin_clerk) ||  current_user.has_role?(:super_admin))
   end
   
 end

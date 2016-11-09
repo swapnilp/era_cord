@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161107145009) do
+ActiveRecord::Schema.define(version: 20161109082357) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -735,6 +735,16 @@ ActiveRecord::Schema.define(version: 20161107145009) do
     t.integer  "sub_class_id",    limit: 4
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
+  end
+
+  create_table "user_clerks", force: :cascade do |t|
+    t.string   "email",           limit: 255,   null: false
+    t.integer  "organisation_id", limit: 4
+    t.text     "email_token",     limit: 65535
+    t.text     "mobile_token",    limit: 65535
+    t.text     "mobile",          limit: 65535, null: false
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
   end
 
   create_table "users", force: :cascade do |t|

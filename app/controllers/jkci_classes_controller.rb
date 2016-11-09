@@ -117,7 +117,7 @@ class JkciClassesController < ApplicationController
       students = students.page(params[:page])
     end
     roles = current_user.roles.map(&:name)
-    render json: {success: true, students: ActiveModel::ArraySerializer.new(students, each_serializer: StudentSerializer).as_json, count: students.try(:total_count), has_show_pay_info: roles.include?('accountant'), has_pay_fee: (['accountant','accountant_clark'] & roles).size > 0}
+    render json: {success: true, students: ActiveModel::ArraySerializer.new(students, each_serializer: StudentSerializer).as_json, count: students.try(:total_count), has_show_pay_info: roles.include?('accountant'), has_pay_fee: (['accountant','accountant_clerk'] & roles).size > 0}
   end
 
   def remove_student_from_class
