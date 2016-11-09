@@ -48,6 +48,8 @@ class Ability
       can :remove_absunt_student, Exam if roles.include? 'add_exam_absenty'
       can :add_absunt_student, Exam if roles.include? 'add_exam_absenty'
       can :ignore_student, Exam if roles.include? 'add_exam_absenty'
+      can :remove_ignored_student, Exam if roles.include? 'add_exam_absenty'
+      can :add_ignored_student, Exam if roles.include? 'add_exam_absenty'
       can :remove_ignore_student, Exam if roles.include? 'add_exam_absenty'
       can :verify_exam_absenty, Exam if roles.include? 'verify_exam_absenty'
       can :add_exam_results, Exam if roles.include? 'add_exam_result'
