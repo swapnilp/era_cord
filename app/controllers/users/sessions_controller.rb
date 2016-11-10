@@ -39,7 +39,6 @@ module Users
     end
 
     def get_organisations
-      Rails.logger.debug "@@@@@@@@@@@"
       return invalid_login_attempt unless params[:email].present? && params[:device_id].present?
       duplicates = resource_from_mobile_credentials_check_duplicates || []
       if duplicates.count > 0
