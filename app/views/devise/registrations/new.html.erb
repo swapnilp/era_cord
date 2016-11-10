@@ -34,6 +34,9 @@
 	<%- elsif @g_teacher.present? && @g_teacher.email_code == params[:email_token] %>
 	  <%= f.hidden_field :role, value: 'teacher' %>
 	  <%= f.hidden_field :mobile, value: @g_teacher.mobile %>
+	<%- elsif @user_clerk.present? && @user_clerk.email_token == params[:email_token] %>
+	  <%= f.hidden_field :role, value: 'clerk' %>
+	  <%= f.hidden_field :mobile, value: @user_clerk.mobile %>
 	<%- end %>
 	<%= f.hidden_field :email %>
 	<%= hidden_field_tag :email_token, params[:email_token] %>

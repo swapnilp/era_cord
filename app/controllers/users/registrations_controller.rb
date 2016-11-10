@@ -9,15 +9,18 @@ module Users
       if params[:email_token].present?
         @organisation = Organisation.where(email_code: params[:email_token]).first
         @g_teacher = GTeacher.where(email_code: params[:email_token]).first
-        raise ActionController::RoutingError.new('Not Found') unless @organisation.present? || @g_teacher.present?
+        @user_clerk = UserClerk.where(email_token: params[:email_token]).first
+        raise ActionController::RoutingError.new('Not Found') unless @organisation.present? || @g_teacher.present? || @user_clerk.present?
       else
         raise ActionController::RoutingError.new('Not Found') unless @organisation.present?
       end
       
       if @organisation.present?
         build_resource({email: @organisation.try(:email)}) 
-      else
+      elsif @g_teacher
         build_resource({email: @g_teacher.try(:email)}) 
+      else 
+        build_resource({email: @user_clerk.try(:email)}) 
       end
       
       #set_minimum_password_length
@@ -28,15 +31,19 @@ module Users
     def create
       @organisation = Organisation.where(email_code: params[:email_token]).first
       @g_teacher = GTeacher.where(email_code: params[:email_token]).first
-      raise ActionController::RoutingError.new('Not Found') unless @organisation.present? || @g_teacher.present?
+      @user_clerk = UserClerk.where(email_token: params[:email_token]).first
+      raise ActionController::RoutingError.new('Not Found') unless @organisation.present? || @g_teacher.present? || @user_clerk.present?
       #super
       # add custom create logic here
       
-      if @organisation.nil? 
+      if @g_teacher.present?
         @organisation = Teacher.unscoped.where(g_teacher_id: @g_teacher.id).first.organisation
         mobile_code = @g_teacher.mobile_code
-      else
+      elsif @organisation.present?
         mobile_code = @organisation.mobile_code
+      elsif @user_clerk.present?
+        mobile_code = @user_clerk.mobile_token
+        @organisation = @user_clerk.organisation
       end
       
       build_resource(sign_up_params.merge({role: params[:user][:role], organisation_id: @organisation.id}))
@@ -44,6 +51,10 @@ module Users
       if mobile_code == params[:mobile_code]
         resource.verify_mobile = true
         resource.save
+        if @user_clerk.present?
+          resource.add_clerk_roles
+          @user_clerk.destroy 
+        end
       else
         resource.errors.add(:mobile_code, "is invalid. Please regenerate code") 
       end

@@ -10,6 +10,5 @@ class ClerkMailer < ActionMailer::Base
     @user = user
     mail(to: @user.email, subject: 'Welcome to EraCord- Intimate eraCord account')
   end
-  
 end
 

@@ -133,7 +133,8 @@ class OrganisationsController < ApplicationController
 
   def get_clerks
     clerks = @organisation.users.clerks.select([:id, :email, :organisation_id, :is_enable, :last_sign_in_at, :mobile])
-    render json: {data: clerks.map(&:clerk_json)}
+    user_clerks = @organisation.user_clerks.select([:id, :email, :organisation_id, :mobile])
+    render json: {data: clerks.map(&:clerk_json), user_clerks: user_clerks.map(&:clerk_json)}
   end
   
   def edit_clerks

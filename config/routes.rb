@@ -140,6 +140,11 @@ Rails.application.routes.draw do
         get "subjects/:subject_id/remove" => "teachers#remove_subjects"
       end
     end
+    resources :user_clerks, only: [:edit, :update, :destroy] do
+      member do
+        get :resend_invitation
+      end
+    end
   end
   
   resources :jkci_classes do
