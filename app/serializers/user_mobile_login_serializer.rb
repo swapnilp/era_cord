@@ -1,5 +1,5 @@
 class UserMobileLoginSerializer < ActiveModel::Serializer
-  attributes :id, :email, :token, :success, :name
+  attributes :id, :email, :token, :success, :name, :logo_url
 
   def email
     object.email

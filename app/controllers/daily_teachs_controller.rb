@@ -30,7 +30,7 @@ class DailyTeachsController < ApplicationController
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     daily_teaching_point = jkci_class.daily_teaching_points.where(id: params[:id]).first
     if daily_teaching_point
-      render json: {success: true, daily_teaching_point: daily_teaching_point}
+      render json: {success: true, daily_teaching_point: daily_teaching_point.show_json}
     else
       render json: {success: false}
     end

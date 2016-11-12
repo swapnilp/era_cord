@@ -159,6 +159,18 @@ class DailyTeachingPoint < ActiveRecord::Base
     end
   end
 
+  def show_json(options = {})
+    options.merge({
+                    id: id,
+                    date: date.strftime("%d %B %Y"),
+                    subject_id: subject_id,
+                    chapter_id: chapter_id,
+                    chapters_point_id: chapters_point_id.split(',').map(&:to_i),
+                    jkci_class: jkci_class.class_name,
+                    subject: subject.std_name
+                  })
+  end
+
   def edit_json(options= {})
     options.merge({
                     id: id,
