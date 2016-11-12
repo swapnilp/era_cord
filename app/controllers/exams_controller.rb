@@ -414,7 +414,7 @@ class ExamsController < ApplicationController
   
   def my_sanitizer
     #params.permit!
-    params.require(:exam).permit!
+    params.require(:exam).permit(:exam_date, :name, :marks, :duration, :conducted_by, :subject_id, :exam_type, :sub_classes, :jkci_class_id, :is_group ,:jkci_class_id)
   end
   
   def create_params
