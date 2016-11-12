@@ -44,7 +44,7 @@ module Users
       if duplicates.count > 0
         return render json: {success: true, email: params[:email], organisations: duplicates.map(&:organisation_json), multiple_organisations: duplicates.count > 1}
       else
-        return render json: {success: false, message: "Email not registered"}
+        return render json: {success: false, message: "Invalide"}
       end
     end
     
