@@ -69,6 +69,15 @@ class User < ActiveRecord::Base
     end
   end
 
+  def self.find_teacher_for_database_authentication(warden_conditions)
+    conditions = warden_conditions.dup
+    if (login = conditions.delete(:login)) && (org = conditions.delete(:organisation_id)) 
+      where(conditions.to_h).where(["(lower(username) = :value OR lower(email) = :value) AND organisation_id = :org", { :value => login.downcase, org: org }])
+    else
+      where(conditions.to_h).select{|u| u.has_role?(:teacher)}
+    end
+  end
+
   def self.check_duplicate(warden_conditions, password)
     conditions = warden_conditions.dup
     users = where(conditions.to_h).select{|u| u.valid_password? password}

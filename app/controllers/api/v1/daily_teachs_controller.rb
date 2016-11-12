@@ -22,7 +22,7 @@ class Api::V1::DailyTeachsController < ApplicationController
 sub_classes: time_table_class.sub_class_id, teacher_id: teacher.id}))
     
     if daily_teaching_point.save
-      #daily_teaching_point.create_catlog
+      daily_teaching_point.create_catlog
       render json: {success: true, dtp_id: daily_teaching_point.id }
     else
       render json: {success: false}

@@ -115,7 +115,7 @@ module Users
         data = data.merge({organisation_id: params[:user][:organisation_id]})
       end
 
-      res = resource_class.find_for_database_authentication(data)
+      res = resource_class.find_teacher_for_database_authentication(data)
       if res.count > 1
         res = res.first
       else
