@@ -58,9 +58,9 @@ module Users
       else
         resource.errors.add(:mobile_code, "is invalid. Please regenerate code") 
       end
-      
       yield resource if block_given?
       if resource.persisted?
+        resource.create_other_organisations_users
         if resource.role == 'organisation'
           resource.add_organiser_roles 
         elsif resource.role == 'teacher'

@@ -12,6 +12,10 @@ class UserMobileLoginSerializer < ActiveModel::Serializer
   def name
     object.organisation.name
   end
+  
+  def logo_url
+    object.organisation.logo_url
+  end
 
   def success
     true

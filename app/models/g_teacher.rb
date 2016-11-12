@@ -49,7 +49,7 @@ class GTeacher < ActiveRecord::Base
         end
       end
     else
-      self.generate_email_code(org)
+      self.generate_email_code(org) if org.present?
     end
   end
 

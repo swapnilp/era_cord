@@ -174,6 +174,12 @@ class User < ActiveRecord::Base
     return is_save, new_user
   end
 
+  def create_other_organisations_users
+    teach = GTeacher.unscoped.where(email: self.email).first
+    teach.manage_registered_teacher(nil) if teach.present?
+    
+  end
+
   def generate_mobile_token
     charset = %w{ 2 3 4 6 7 9 0 1}
     token_str = (0...6).map{ charset.to_a[rand(charset.size)] }.join
