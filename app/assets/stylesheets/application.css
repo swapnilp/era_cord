@@ -334,11 +334,12 @@ ul.nostyle i {
 }
 
 #hero-banner {
-  background: url('https://s3.amazonaws.com/Eracord/Eracord/images/bg1.png') no-repeat 77% bottom;
+  /*background: url('https://s3.amazonaws.com/Eracord/Eracord/images/bg1.png') no-repeat 77% bottom;*/
+  background: url('https://s3.amazonaws.com/Eracord/Eracord/images/bg1.jpg') no-repeat 77% bottom;
 }
 
 #hero-banner h2 {
-  margin-top: 180px;
+  margin-top: 272px;
   font-size: 39px;
   line-height: 49px;
 }
