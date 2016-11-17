@@ -48,6 +48,7 @@ class GTeacher < ActiveRecord::Base
           t_user.add_teacher_roles 
         else
           o_user.add_role :teacher
+          o_user.update(role: "teacher") if o_user.role != 'organisation'
         end
       end
       
