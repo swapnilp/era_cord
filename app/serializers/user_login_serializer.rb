@@ -36,6 +36,12 @@ class UserLoginSerializer < ActiveModel::Serializer
   def logo_url
     object.organisation.logo_url || ""
   end
-
+  def mobile
+    if object.mobile.present? && !object.verify_mobile
+      "#{object.mobile.first(2)}*****#{object.mobile.last(3)}"
+    else
+      object.mobile
+    end
+  end
   
 end

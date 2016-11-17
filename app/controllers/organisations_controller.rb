@@ -214,14 +214,12 @@ class OrganisationsController < ApplicationController
 
   def delete_clerk
     user = @organisation.users.clerks.where(id: params[:user_id]).first
-    if user
-      user.roles = []
-      user.destroy
-      render json: {success: true}
+    if user && (!user.has_role? :organisation)
+      success  = user.delete_user('clerk')
+      render json: {success: success}
     else
       render json: {success: false}
     end
-    
   end
 
   def get_organisation_standards

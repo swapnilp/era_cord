@@ -41,6 +41,8 @@ class GTeacher < ActiveRecord::Base
           t_user.mobile = teacher.mobile
           if (user.mobile == teacher.mobile && user.verify_mobile)
             t_user.verify_mobile = true
+          else
+            t_user.verify_mobile = false
           end
           t_user.save(:validate => false)
           t_user.add_teacher_roles 
@@ -48,6 +50,7 @@ class GTeacher < ActiveRecord::Base
           o_user.add_role :teacher
         end
       end
+      
     else
       self.generate_email_code(org) if org.present?
     end

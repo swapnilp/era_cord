@@ -18,14 +18,15 @@ class User < ActiveRecord::Base
   validates :organisation_id, :presence => true#, :email => true, scope: :organisation_id
 
   
-  validates_uniqueness_of :email, :scope => [:organisation_id, :role], :case_sensitive => false, :allow_blank => true#, :if => true
+  validates_uniqueness_of :email, :scope => [:organisation_id], :case_sensitive => false, :allow_blank => true#, :if => true
   validates_presence_of :email
   validates_format_of :email, :with => Devise.email_regexp, :allow_blank => true, :if => :email_changed?
   validates_presence_of :password, :on=>:create , :if => proc{ |u| !u.encrypted_password.present? }
   validates_confirmation_of :password, :if => proc{ |u| !u.encrypted_password.present? }#,  #:on=>[:create, :update]
   validates_length_of :password, :within => Devise.password_length, :allow_blank => true, :if => proc{ |u| !u.encrypted_password.present? }
 
-  scope :clerks, -> {where(role: 'clerk')}
+  scope :clerks, -> {with_role :clerk }
+  scope :teachers, -> {with_role :teacher }
 
   def reset_auth_token!
     if token_expires_at.blank? || token_expires_at < Time.now
@@ -114,7 +115,7 @@ class User < ActiveRecord::Base
   end
 
   def add_organiser_roles
-    u_roles = ["admin", "clerk", "verify_exam", "exam_conduct", "verify_exam_absenty", "add_exam_result", "verify_exam_result", "publish_exam", "create_exam", "add_exam_absenty", "create_daily_teach", "add_daily_teach_absenty", "verify_daily_teach_absenty", "publish_daily_teach_absenty", "manage_class_sms", "organisation", "add_student", "manage_student_subject", "manage_class_student", "manage_roll_number", "manage_class", "manage_organiser", "toggle_student_sms", "download_class_report"]
+    u_roles = ["admin", "verify_exam", "exam_conduct", "verify_exam_absenty", "add_exam_result", "verify_exam_result", "publish_exam", "create_exam", "add_exam_absenty", "create_daily_teach", "add_daily_teach_absenty", "verify_daily_teach_absenty", "publish_daily_teach_absenty", "manage_class_sms", "organisation", "add_student", "manage_student_subject", "manage_class_student", "manage_roll_number", "manage_class", "manage_organiser", "toggle_student_sms", "download_class_report"]
     if organisation.root?
       u_roles << 'accountant'
     end
@@ -124,12 +125,11 @@ class User < ActiveRecord::Base
   end
   
   def add_clerk_roles
-    ["create_exam", "verify_exam", "exam_conduct", "add_exam_absenty", 
+    ["clerk", "create_exam", "verify_exam", "exam_conduct", "add_exam_absenty", 
      "add_exam_result", "publish_exam", "create_daily_teach", "add_daily_teach_absenty", 
      "verify_daily_teach_absenty"].each do |u_role|
       self.add_role u_role.to_sym 
-    end
-    
+    end    
   end
   
   def add_teacher_roles
@@ -137,6 +137,20 @@ class User < ActiveRecord::Base
      "create_exam", "add_exam_absenty", "create_daily_teach", "add_daily_teach_absenty", "verify_daily_teach_absenty", 
      "publish_daily_teach_absenty", "teacher"].each do |u_role|
       self.add_role u_role.to_sym 
+    end
+  end
+
+  def delete_user(user_role)
+
+    if user_role != "organisation"
+      if (self.roles.map(&:name) & ["organisation", "clerk", "teacher"]).size > 1
+        self.remove_role user_role
+      else
+        return self.destroy if self.role != "organisation"
+      end
+      return true
+    else
+      return false
     end
   end
 
@@ -151,11 +165,21 @@ class User < ActiveRecord::Base
       end
     end
     self.add_role :clerk
+    if self.teacher.present?
+      self.add_role :teacher
+      self.update(role: "teacher")
+    end
     self.update(token_expires_at: nil)
   end
 
   def self.create_clerk(user_params, organisation)
     check_user = User.where(email: user_params[:email]).first
+    org_user  = organisation.users.where(email: user_params[:email]).first
+    if org_user.present?
+      org_user.add_role :clerk
+      is_save = true
+      return is_save, org_user
+    end
     if check_user.present?
       new_user = check_user.dup
       new_user.role = 'clerk'

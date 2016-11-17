@@ -1,7 +1,7 @@
 class Teacher < ActiveRecord::Base
   #attr_accessor :subject_id, :first_name, :last_name, :mobile, :email, :address
 
-  has_many :teacher_subjects
+  has_many :teacher_subjects, dependent: :destroy
   has_many :subjects, through: :teacher_subjects
   has_many :daily_teaching_points
   belongs_to :g_teacher
@@ -18,6 +18,10 @@ class Teacher < ActiveRecord::Base
   
   def name
     "#{first_name} #{last_name}"
+  end
+
+  def user
+    organisation.users.teachers.where(email: self.email).first
   end
 
   def self.get_g_teacher(teacher_params, org)

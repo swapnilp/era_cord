@@ -105,9 +105,11 @@ class TeachersController < ApplicationController
   def destroy
     return render json: {success: false, message: "Must be root user"} unless @organisation.root?
     
-    teacher = Teacher.where(id: params[:id]).first
+    teacher = @organisation.teachers.where(id: params[:id]).first
     if teacher.present?
       
+      teacher.user.delete_user("teacher") if teacher.user.present?
+      teacher.destroy
       render json: {success: true}
     else
       render json: {success: false}

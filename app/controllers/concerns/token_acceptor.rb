@@ -26,11 +26,9 @@ module TokenAcceptor
     token_payload, token_header = JWT.decode(token, nil, false)
     # If the token says it's expired, trust it
     return reject_token if token_expired? token_header
-    
     user = User.find_by(email: token_payload['email'], organisation_id: token_payload['organisation_id'])
 
     if user && user.validate_auth_token(token)
-      
       if current_user && current_user.id == user.id
       else
         sign_in user
