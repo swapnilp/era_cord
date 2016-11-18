@@ -275,7 +275,19 @@ class JkciClassesController < ApplicationController
     else
       render json: {success: false}
     end
-    
+  end
+  
+  def get_time_table_to_verify
+    jkci_class = @organisation.jkci_classes.includes({subjects: :standard}).where(id: params[:id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+
+    time_table = jkci_class.time_tables.where(sub_class_id: nil).first
+    if time_table
+      time_table_classes = time_table.time_table_classes.where(teacher_id: nil)
+      render json: {success: true,  slots: time_table_classes.as_json}
+    else
+      render json: {success: false}
+    end
   end
 
   def check_verify_students

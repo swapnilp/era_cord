@@ -163,6 +163,7 @@ Rails.application.routes.draw do
       get 'manage_roll_number'
       get 'get_notifications'
       get 'get_timetable'
+      get 'get_time_table_to_verify'
       get 'get_batch'
       post "import_students_excel"
       post 'make_active_class'

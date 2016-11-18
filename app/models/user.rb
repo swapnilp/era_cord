@@ -222,7 +222,7 @@ class User < ActiveRecord::Base
   def send_otp_token
     if self.mobile.present?
       self.generate_mobile_token
-      message = "One time password is #{self.mobile_token} for #{self.email} registation on EraCord. Please do not share OTP to any one for securiety reason."
+      message = "One Time Password for mobile number verification of user #{self.email} is #{self.mobile_token}. Please do not share OTP to anyone for security reason."
       url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=eracod&dmobile=91#{self.mobile}&message=#{message}"
       url_arry = [url, message, self.id, self.id, self.mobile]
       Delayed::Job.enqueue UserOtpSms.new(url_arry)

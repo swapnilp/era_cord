@@ -446,7 +446,7 @@ class Organisation < ActiveRecord::Base
   end
 
   def organisation_sms_message
-    message = "One time password is #{self.mobile_code}  for #{self.name} registation on EraCord. Please do not share OTP to any one for securiety reason."
+    message = "One Time Password for mobile number verification of user #{self.name} is #{self.mobile_code}. Please do not share OTP to anyone for security reason."
     url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=eracod&dmobile=91#{self.mobile}&message=#{message}"
     url_arry = [url, message, self.id, self.id, self.mobile]
   end
