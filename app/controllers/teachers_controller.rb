@@ -121,7 +121,7 @@ class TeachersController < ApplicationController
 
     if teacher
       timetable = teacher.time_table_classes.includes([:sub_class, :subject, :teacher, :jkci_class]).day_wise_sort
-      render json: {success: true, timetable: timetable}
+      render json: {success: true, timetable: timetable, count: timetable.count}
     else
       render json: {success: false, message: "Invalid teacher"}
     end
