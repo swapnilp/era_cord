@@ -213,7 +213,7 @@ class Exam < ActiveRecord::Base
 
   def exam_status
     if is_completed == nil && exam_date < Date.today - 1.day 
-      return "Pass date"
+      return "Pending"
     elsif is_result_decleared == true
       return "Published"
     elsif verify_result  == true
