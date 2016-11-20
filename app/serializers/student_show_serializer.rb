@@ -22,7 +22,7 @@ class StudentShowSerializer < ActiveModel::Serializer
   end
 
   def subjects
-    object.subjects.map(&:std_name).join(', ')
+    object.subjects.map(&:std_name)
   end
 
   def roll_number

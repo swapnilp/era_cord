@@ -130,6 +130,7 @@ class StudentsController < ApplicationController
       if params[:type] == 'all'
         keys, values = student.exams_graph_reports(params[:time_zone], params[:type])
         values = [values];
+        header = ['Average Subjects']
       else
         keys, header, values = student.exams_graph_reports_by_subject(params[:time_zone])
       end
