@@ -53,7 +53,7 @@ class TimeTableClass < ActiveRecord::Base
     options.merge({
                     id: id,
                     sub_class: sub_class.try(:name),
-                    subject: subject.std_name,
+                    subject: subject.try(:std_name),
                     cwday: cwday,
                     start_time: ('%.2f' % start_time.to_f).gsub(".", ":"),
                     end_time: ('%.2f' % end_time.to_f).gsub(".", ":"),

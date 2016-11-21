@@ -384,7 +384,7 @@ class Exam < ActiveRecord::Base
       is_result_decleared: node.is_result_decleared, conducted_by: node.conducted_by, 
       jkci_class: node.jkci_class.class_name, duration: node.duration, documents: node.documents_url, root: node.root?, root_id: node.root_id,
       is_point_added: node.is_point_added,
-    chapters_points: node.chapters_points.map(&:chapter_name).join(', ')}
+    chapters_points: node.chapters_points.map(&:chapter_name)}
   end
 
   def calendar_json(org_id, user)
