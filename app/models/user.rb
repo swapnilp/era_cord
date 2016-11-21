@@ -111,7 +111,7 @@ class User < ActiveRecord::Base
   end
 
   def active_for_authentication?
-    super && is_enable
+    super && ((is_enable && role == 'clerk') || (role != 'clerk'))
   end
 
   def add_organiser_roles
