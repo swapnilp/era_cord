@@ -11,6 +11,8 @@ class ApplicationController < ActionController::Base
   skip_before_filter  :verify_authenticity_token
 
   before_action :configure_permitted_parameters, if: :devise_controller?
+  after_filter :set_access_control_headers
+
   
   rescue_from CanCan::AccessDenied do |exception|
     
@@ -23,6 +25,11 @@ class ApplicationController < ActionController::Base
     @organisation = current_user.organisation
     Organisation.current_id = @organisation.present? ? @organisation.root.subtree.map(&:id) : nil
     #@organisation.update_attributes({last_signed_in: Time.now}) if @organisation.present?
+  end
+
+  def set_access_control_headers
+    return unless Rails.env.development? # important! we don't want to set it in production, since we already did on nginx
+    headers['access-control-allow-origin'] = '*'
   end
 
   def authenticate_organisation!(options={})
