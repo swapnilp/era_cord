@@ -4,7 +4,7 @@ class JkciClassSerializer < ActiveModel::Serializer
   :is_current_active, :organisation_id
 
   def subjects
-    object.subjects.map(&:name).join(', ')
+    object.subjects.map(&:name)
   end
 
   def has_time_table
