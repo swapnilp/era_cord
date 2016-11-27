@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161125072159) do
+ActiveRecord::Schema.define(version: 20161127134655) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -122,19 +122,20 @@ ActiveRecord::Schema.define(version: 20161125072159) do
 
   create_table "daily_teaching_points", force: :cascade do |t|
     t.datetime "date"
-    t.text     "points",            limit: 65535
+    t.text     "points",              limit: 65535
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "jkci_class_id",     limit: 4
-    t.integer  "teacher_id",        limit: 4
-    t.boolean  "is_fill_catlog",    limit: 1,     default: false
-    t.boolean  "is_sms_sent",       limit: 1,     default: false
-    t.integer  "chapter_id",        limit: 4
-    t.string   "chapters_point_id", limit: 255
-    t.string   "sub_classes",       limit: 255
-    t.boolean  "verify_absenty",    limit: 1,     default: false
-    t.integer  "organisation_id",   limit: 4
-    t.integer  "subject_id",        limit: 4
+    t.integer  "jkci_class_id",       limit: 4
+    t.integer  "teacher_id",          limit: 4
+    t.boolean  "is_fill_catlog",      limit: 1,     default: false
+    t.boolean  "is_sms_sent",         limit: 1,     default: false
+    t.integer  "chapter_id",          limit: 4
+    t.string   "chapters_point_id",   limit: 255
+    t.string   "sub_classes",         limit: 255
+    t.boolean  "verify_absenty",      limit: 1,     default: false
+    t.integer  "organisation_id",     limit: 4
+    t.integer  "subject_id",          limit: 4
+    t.integer  "class_catlogs_count", limit: 4,     default: 0
   end
 
   create_table "delayed_jobs", force: :cascade do |t|
