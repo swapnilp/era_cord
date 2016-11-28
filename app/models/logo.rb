@@ -65,7 +65,7 @@ class Logo < ActiveRecord::Base
   end
 
   def image_url(type= 'original')
-    "https://s3-ap-southeast-1.amazonaws.com/jkciphoto/#{image.path(type.to_sym)}"
+    "https://s3-ap-southeast-1.amazonaws.com/#{IMAGE_BUCKET}/#{image.path(type.to_sym)}"
   end
 
 
