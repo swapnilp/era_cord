@@ -7,7 +7,7 @@ class Logo < ActiveRecord::Base
   has_attached_file :image,
     :whiny => true,
     :storage => :s3,
-    :path => "#{SERVER_TYPE}/image/:id/:style/:filename",
+    :path => "#{SERVER_TYPE}/logos/:id/:style/:filename",
     :url => "http://s3-ap-southeast-1.amazonaws.com/#{IMAGE_BUCKET}/#{SERVER_TYPE}/logos/:id/:style/:filename",
     :s3_credentials => File.join(Rails.root,'config', 's3.yml'),
     :s3_premissions => 'public',
@@ -65,7 +65,7 @@ class Logo < ActiveRecord::Base
   end
 
   def image_url(type= 'original')
-    "https://s3-ap-southeast-1.amazonaws.com/#{IMAGE_BUCKET}/#{image.path(type.to_sym)}"
+    "https://s3.amazonaws.com/#{IMAGE_BUCKET}/#{image.path(type.to_sym)}"
   end
 
 
