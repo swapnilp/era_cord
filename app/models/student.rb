@@ -17,6 +17,7 @@ class Student < ActiveRecord::Base
   has_many :subjects, through: :student_subjects
   has_many :student_fees
   has_many :hostel_transactions
+  has_many :student_photos
   belongs_to :batch
   belongs_to :user
   belongs_to :standard

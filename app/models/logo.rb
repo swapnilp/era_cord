@@ -8,11 +8,11 @@ class Logo < ActiveRecord::Base
     :whiny => true,
     :storage => :s3,
     :path => "#{SERVER_TYPE}/image/:id/:style/:filename",
-    :url => "http://s3-ap-southeast-1.amazonaws.com/jkciphoto/#{SERVER_TYPE}/image/:id/:style/:filename",
+    :url => "http://s3-ap-southeast-1.amazonaws.com/#{IMAGE_BUCKET}/#{SERVER_TYPE}/logos/:id/:style/:filename",
     :s3_credentials => File.join(Rails.root,'config', 's3.yml'),
     :s3_premissions => 'public',
     :s3_protocol => 'http',
-    :bucket => 'jkciphoto',
+    :bucket => "#{IMAGE_BUCKET}",
     :styles => { :medium => "400x400>",
       :thumb => "200x" }
 

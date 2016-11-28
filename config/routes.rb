@@ -93,6 +93,7 @@ Rails.application.routes.draw do
       post 'update'
       post 'toggle_sms'
       post 'allocate_hostel'
+      post 'upload_photo'
       delete 'deallocate_hostel'
     end
     collection do 

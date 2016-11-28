@@ -18,11 +18,11 @@ class Document < ActiveRecord::Base
     :whiny => true,
     :storage => :s3,
     :path => "#{SERVER_TYPE}/exams/:id/:filename",
-    :url => "http://s3-ap-southeast-1.amazonaws.com/jkciPhoto/#{SERVER_TYPE}/exams/:id/:filename",
+    :url => "http://s3-ap-southeast-1.amazonaws.com/#{IMAGE_BUCKET}/#{SERVER_TYPE}/exams/:id/:filename",
     :s3_credentials => File.join(Rails.root,'config', 's3.yml'),
     :s3_premissions => 'public',
     :s3_protocol => 'http',
-    :bucket => 'Eracord'
+    :bucket => "#{IMAGE_BUCKET}"
     
   validates_attachment :document, :content_type => { :content_type => %w(application/pdf application/msword application/vnd.openxmlformats-officedocument.wordprocessingml.document) }
   #after_create :transliterate_file_name
