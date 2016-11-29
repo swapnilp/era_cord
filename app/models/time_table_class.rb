@@ -58,7 +58,9 @@ class TimeTableClass < ActiveRecord::Base
                     start_time: ('%.2f' % start_time.to_f).gsub(".", ":"),
                     end_time: ('%.2f' % end_time.to_f).gsub(".", ":"),
                     class_room: class_room,
-                    color: subject.try(:color)
+                    color: subject.try(:color),
+                    teacher: teacher.try(:name),
+                    teacher_mobile: teacher.try(:mobile)
                   })
   end
 
