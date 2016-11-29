@@ -14,6 +14,18 @@ class TimeTableClass < ActiveRecord::Base
     all.group_by(&:cwday).collect{|key , value| {Date.cwday_day(key) => value.map(&:teacher_time_table_json)}}.reduce Hash.new, :merge
   end
 
+  def clock_time(time)
+    if time.present?
+      postpix = time > 12 ? 'PM' : 'AM'
+      new_time = time > 12 ? (time - 12) : time
+      new_time = sprintf('%.2f', new_time).gsub('.', ':')
+      new_time = "#{new_time} #{postpix}"
+    else
+      new_time = ""
+    end
+    return new_time
+  end
+
   
   def as_json(options = {})
     options.merge({
@@ -41,8 +53,8 @@ class TimeTableClass < ActiveRecord::Base
                     name: sub_class_id.present? ? "#{subject.try(:only_std_name)}- #{sub_class.try(:name)}" : subject.try(:only_std_name),
                     color: subject.try(:color),
                     cwday: cwday,
-                    start_time: start_time,
-                    end_time: end_time,
+                    start_time: clock_time(start_time),
+                    end_time: clock_time(end_time),
                     slot_type: slot_type,
                     jkci_class_id: time_table.jkci_class_id,
                     my_class: my_standards.include?(subject.try(:standard_id) || 0)
@@ -91,5 +103,7 @@ class TimeTableClass < ActiveRecord::Base
                     
                   })
   end
+
+  
   
 end
