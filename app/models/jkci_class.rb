@@ -20,6 +20,7 @@ class JkciClass < ActiveRecord::Base
   has_many :notifications
   has_many :pending_notifications, -> { where("is_completed in (?) && verification_require = ?", [nil, false], true)}, class_name: "Notification"
   has_many :time_tables
+  has_many :time_table_classes, through: :time_tables
   has_many :off_classes
   has_many :student_fees
   has_many :parents_meetings

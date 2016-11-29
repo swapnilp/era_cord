@@ -46,8 +46,18 @@ class JkciClassesController < ApplicationController
 
   def get_dtp_info
     jkci_class = @organisation.jkci_classes.includes({subjects: :standard}).where(id: params[:id]).first
+    options = {}
+    if params[:ttc_id].present?
+      time_table_class = jkci_class.time_table_classes.where(id: params[:ttc_id]).first
+      sub_classes = jkci_class.sub_classes.as_json({selected: [time_table_class.sub_class_id]})
+      options = {subject_id: time_table_class.subject_id, sub_classes: sub_classes}
+    else
+      sub_classes = jkci_class.sub_classes
+      options = {sub_classes: sub_classes}
+    end
+
     if jkci_class
-      render json: {success: true, data: ClassExamDataSerializer.new(jkci_class).as_json} 
+      render json: {success: true, data: ClassDtpDataSerializer.new(jkci_class).as_json.merge(options)} 
     else
       render json: {success: false}
     end
