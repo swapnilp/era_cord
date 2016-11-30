@@ -329,6 +329,11 @@ Rails.application.routes.draw do
       end
       
       resources :students, only: [:index]
+      resources :time_tables, only: [] do
+        collection do
+          get 'get_time_tables'
+        end
+      end
     end
   end
 
