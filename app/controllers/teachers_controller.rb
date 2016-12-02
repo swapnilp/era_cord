@@ -7,7 +7,7 @@ class TeachersController < ApplicationController
   def index
     return render json: {success: false, message: "Must be root user"} unless @organisation.root?
     
-    teachers = Teacher.all
+    teachers = Teacher.active
     render json: {success: true, teachers: teachers.as_json}
   end
   
@@ -19,9 +19,15 @@ class TeachersController < ApplicationController
     return render json: {success: false, message: "Must be root user"} unless @organisation.root?
     
     g_teacher = Teacher.get_g_teacher(create_params, @organisation)
-    teacher = Teacher.new(create_params)
+    teacher = Teacher.where(email: create_params[:email]).first_or_initialize
+    teacher.first_name = create_params[:first_name]
+    teacher.last_name = create_params[:last_name]
+    teacher.mobile = create_params[:mobile]
+    teacher.address = create_params[:address]
     teacher.g_teacher_id = g_teacher.id
+    
     teacher.organisation_id = @organisation.id
+    teacher.active = true
     if teacher.save
       g_teacher.manage_registered_teacher(@organisation)
       render json: {success: true, teacher_id: teacher.id}
@@ -107,9 +113,9 @@ class TeachersController < ApplicationController
     
     teacher = @organisation.teachers.where(id: params[:id]).first
     if teacher.present?
-      
       teacher.user.delete_user("teacher") if teacher.user.present?
-      teacher.destroy
+      teacher.time_table_classes.update_all({teacher_id: nil})
+      teacher.update_attributes({active: false})
       render json: {success: true}
     else
       render json: {success: false}

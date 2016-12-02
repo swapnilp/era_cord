@@ -15,6 +15,8 @@ class Teacher < ActiveRecord::Base
   validates_uniqueness_of :email, :scope => :organisation_id, :case_sensitive => false, presence: true
   
   default_scope { where(organisation_id: Organisation.current_id) }  
+
+  scope :active, -> { where(active: true) }
   
   def name
     "#{first_name} #{last_name}"

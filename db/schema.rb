@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161127134655) do
+ActiveRecord::Schema.define(version: 20161202031450) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -708,6 +708,7 @@ ActiveRecord::Schema.define(version: 20161127134655) do
     t.boolean  "is_full_time",    limit: 1,     default: true
     t.integer  "g_teacher_id",    limit: 4
     t.text     "photo",           limit: 65535
+    t.boolean  "active",          limit: 1,     default: true
   end
 
   add_index "teachers", ["email"], name: "index_teachers_on_email", using: :btree
