@@ -143,6 +143,24 @@ class StudentFee < ActiveRecord::Base
                   })
   end
 
+  def log_json(options= {})
+    options.merge({
+                    id: id,
+                    student_id: student_id,
+                    student_name: student.try(:name),
+                    class_name: jkci_class.try(:class_name),
+                    date: created_at.strftime("%d/%m/%Y @ %T"),
+                    amount: amount,
+                    payment_type: payment_type,
+                    bank_name: bank_name,
+                    cheque_number: cheque_number,
+                    cheque_issue_date: cheque_issue_date,
+                    book_number: book_number,
+                    receipt_number: receipt_number,
+                    reason: payment_reason.reason
+                  })
+  end
+
   def remaining_fee
     klass_student = ClassStudent.where(student_id: self.student_id, jkci_class_id: self.jkci_class_id, batch_id: self.batch_id).first
     unless klass_student.present?

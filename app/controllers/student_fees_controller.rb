@@ -33,7 +33,9 @@ class StudentFeesController < ApplicationController
 
   def get_logs
     fees = StudentFee.includes(:jkci_class, :student, :payment_reason).order("id desc")
-    render json: {success: true}
+    student_fees, filter_student_ids = filter_student_fees(fees)
+    student_page = Kaminari.paginate_array(student_fees).page(params[:page]).per(10)
+    render json: {success: true, logs: student_page.map(&:log_json), count: student_page.total_count}
   end
 
   def get_transactions
