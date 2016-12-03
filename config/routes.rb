@@ -114,6 +114,7 @@ Rails.application.routes.draw do
     end
     
     collection do
+      get 'get_logs'
       get "filter_data"
       get "graph_data"
       get 'print_account'

@@ -31,6 +31,11 @@ class StudentFeesController < ApplicationController
     end
   end
 
+  def get_logs
+    fees = StudentFee.includes(:jkci_class, :student, :payment_reason).order("id desc")
+    render json: {success: false, message: "Unauthorized !!!! You Must be Root Organisation."}
+  end
+
   def get_transactions
     student_fees = StudentFee.where(student_id: params[:student_id], jkci_class_id: params[:jkci_class_id])
     if student_fees.present?

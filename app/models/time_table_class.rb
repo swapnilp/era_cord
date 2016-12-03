@@ -81,6 +81,7 @@ class TimeTableClass < ActiveRecord::Base
                     id: id,
                     class_name: "#{sub_class.try(:class_name) || jkci_class.class_name}",
                     subject: subject.name,
+                    sub_class_name: sub_class.try(:name),
                     start_time: start_time,
                     end_time: end_time,
                     class_room: class_room,
