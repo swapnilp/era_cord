@@ -33,7 +33,7 @@ class StudentFeesController < ApplicationController
 
   def get_logs
     fees = StudentFee.includes(:jkci_class, :student, :payment_reason).order("id desc")
-    render json: {success: false, message: "Unauthorized !!!! You Must be Root Organisation."}
+    render json: {success: true}
   end
 
   def get_transactions
