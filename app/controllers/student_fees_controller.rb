@@ -34,8 +34,9 @@ class StudentFeesController < ApplicationController
   def get_logs
     fees = StudentFee.includes(:jkci_class, :student, :payment_reason).order("id desc")
     student_fees, filter_student_ids = filter_student_fees(fees)
+    amount = student_fees.map(&:amount).sum
     student_page = Kaminari.paginate_array(student_fees).page(params[:page]).per(10)
-    render json: {success: true, logs: student_page.map(&:log_json), count: student_page.total_count}
+    render json: {success: true, logs: student_page.map(&:log_json), count: student_page.total_count, amount: amount}
   end
 
   def get_transactions
@@ -145,9 +146,18 @@ class StudentFeesController < ApplicationController
       filter_student_ids = student_ids
     end
 
+    if params[:filter].present? &&  JSON.parse(params[:filter])['dateRange'] && JSON.parse(params[:filter])['dateRange']['startDate'].present?
+      student_fees = student_fees.where("date >= ? ", JSON.parse(params[:filter])['dateRange']['startDate'].to_date)
+    end
+
+    if params[:filter].present? &&  JSON.parse(params[:filter])['dateRange'] && JSON.parse(params[:filter])['dateRange']['endDate'].present?
+      student_fees = student_fees.where("date <= ? ", JSON.parse(params[:filter])['dateRange']['endDate'].to_date)
+    end
+
     if params[:filter].present? && JSON.parse(params[:filter])['remaining'].present?
       student_fees = student_fees.select {|student_fee| student_fee.remaining_fee > 0 }
     end
+    
     #if params[:filter].present? &&  JSON.parse(params[:filter])['is_remaining'] == 'Remaining'
     #  student_fees = student_fees.select{|sf| sf.remaining_fee > 0}
     #end
