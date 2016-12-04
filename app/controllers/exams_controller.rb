@@ -15,6 +15,12 @@ class ExamsController < ApplicationController
       if params[:filter].present? &&  JSON.parse(params[:filter])['filterExamType'].present?
         exams = exams.where(is_group: JSON.parse(params[:filter])['filterExamType'] == "Grouped")
       end
+      if params[:filter].present? &&  JSON.parse(params[:filter])['dateRange'].present? && JSON.parse(params[:filter])['dateRange']['startDate'].present?
+        exams = exams.where("exam_date >= ?", JSON.parse(params[:filter])['dateRange']['startDate'].to_time)
+      end
+      if params[:filter].present? &&  JSON.parse(params[:filter])['dateRange'].present? && JSON.parse(params[:filter])['dateRange']['endDate'].present?
+        exams = exams.where("exam_date <= ?", JSON.parse(params[:filter])['dateRange']['endDate'].to_time)
+      end
       if params[:filter].present? &&  JSON.parse(params[:filter])['filterExamStatus'].present?
         exams = exams.send(JSON.parse(params[:filter])['filterExamStatus'].downcase.to_sym)
       end
@@ -24,6 +30,12 @@ class ExamsController < ApplicationController
       #@organisation.exams.roots.order("id desc").page(params[:page])
       if params[:filter].present? &&  JSON.parse(params[:filter])['filterStandard'].present?
         exams = exams.where("jkci_classes.standard_id = ?", JSON.parse(params[:filter])['filterStandard'])
+      end
+      if params[:filter].present? &&  JSON.parse(params[:filter])['dateRange'].present? && JSON.parse(params[:filter])['dateRange']['startDate'].present?
+        exams = exams.where("exam_date >= ?", JSON.parse(params[:filter])['dateRange']['startDate'].to_time)
+      end
+      if params[:filter].present? &&  JSON.parse(params[:filter])['dateRange'].present? && JSON.parse(params[:filter])['dateRange']['endDate'].present?
+        exams = exams.where("exam_date <= ?", JSON.parse(params[:filter])['dateRange']['endDate'].to_time)
       end
       if params[:filter].present? &&  JSON.parse(params[:filter])['filterBatch'].present?
         exams = exams.where("jkci_classes.batch_id = ?", JSON.parse(params[:filter])['filterBatch'])
