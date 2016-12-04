@@ -10,6 +10,13 @@ class OffClassesController < ApplicationController
     if params[:filter].present? &&  JSON.parse(params[:filter])['filterTeacher'].present?
       off_classes = off_classes.where(teacher_id: JSON.parse(params[:filter])['filterTeacher'])
     end
+    if params[:filter].present? &&  JSON.parse(params[:filter])['dateRange'].present? && JSON.parse(params[:filter])['dateRange']['startDate'].present?
+      off_classes = off_classes.where("date >= ?", JSON.parse(params[:filter])['dateRange']['startDate'].to_date)
+    end
+    if params[:filter].present? &&  JSON.parse(params[:filter])['dateRange'].present? && JSON.parse(params[:filter])['dateRange']['endDate'].present?
+      off_classes = off_classes.where("date <= ?", JSON.parse(params[:filter])['dateRange']['endDate'].to_date)
+    end
+    
     off_classes = off_classes.page(params[:page])
     render json: {success: true, off_classes: off_classes.as_json, count: off_classes.total_count}
   end
