@@ -253,6 +253,7 @@ Rails.application.routes.draw do
   resources :hostels do
     member do 
       get "get_unallocated_students"
+      get 'get_logs'
     end
     
     resources :hostel_rooms, only: [:index, :edit, :create, :update] do

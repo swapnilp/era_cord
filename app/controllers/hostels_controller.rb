@@ -19,6 +19,7 @@ class HostelsController < ApplicationController
     
     hostel = @organisation.hostels.build(create_params)
     if hostel.save
+      hostel.add_log_create
       render json: {success: true, id: hostel.id}
     else
       render json: {success: false}
@@ -53,10 +54,28 @@ class HostelsController < ApplicationController
     hostel = Hostel.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Hostel"} unless hostel.present?
     if hostel.update_attributes(update_params)
+      hostel.add_log_edit
       render json: {success: true, id: hostel.id}
     else
       render json: {success: false, messages: hostel.errors.full_messages.join(' , ')}
     end
+  end
+
+  def get_logs
+    return render json: {success: false, message: "Must be root user"} unless @organisation.root?
+    
+    hostel = Hostel.where(id: params[:id]).first
+    if hostel.present?
+      logs = hostel.hostel_logs
+      
+      hostel_logs = filter_hostel_logs(logs)
+      hostel_logs = hostel_logs.page(params[:page])
+      
+      render json: {success: true, logs: hostel_logs.map(&:hostel_json), total_count: hostel_logs.total_count}
+    else
+      render json: {success: false, message: "Invalid Hostel"}
+    end
+    
   end
 
   def get_unallocated_students
@@ -71,6 +90,26 @@ class HostelsController < ApplicationController
   end
   
   private
+
+
+  def filter_hostel_logs(hostel_logs)
+
+    if params[:filter].present? &&  JSON.parse(params[:filter])['name'].present?
+      query = "%#{JSON.parse(params[:filter])['name']}%"
+      student_ids = Student.where("CONCAT_WS(' ', first_name, last_name) LIKE ? || CONCAT_WS(' ', last_name, first_name) LIKE ? || p_mobile like ? || CONCAT_WS(' ', first_name, middle_name, last_name) LIKE ?", query, query, query, query).map(&:id)
+      hostel_logs = hostel_logs.where("student_id in (?)", student_ids)
+    end
+
+    if params[:filter].present? &&  JSON.parse(params[:filter])['dateRange'] && JSON.parse(params[:filter])['dateRange']['startDate'].present?
+      hostel_logs = hostel_logs.where("created_at >= ? ", JSON.parse(params[:filter])['dateRange']['startDate'].to_time)
+    end
+
+    if params[:filter].present? &&  JSON.parse(params[:filter])['dateRange'] && JSON.parse(params[:filter])['dateRange']['endDate'].present?
+      hostel_logs = hostel_logs.where("created_at <= ? ", JSON.parse(params[:filter])['dateRange']['endDate'].to_time)
+    end
+
+    return hostel_logs
+  end
   
   def create_params
     params.require(:hostel).permit(:name, :gender, :rooms, :owner, :address, :average_fee, :student_occupancy, :is_service_tax, :service_tax, :months)

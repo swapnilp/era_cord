@@ -18,6 +18,7 @@ class Student < ActiveRecord::Base
   has_many :student_fees
   has_many :hostel_transactions
   has_many :student_photos
+  has_many :hostel_logs
   belongs_to :batch
   belongs_to :user
   belongs_to :standard
@@ -245,6 +246,18 @@ class Student < ActiveRecord::Base
 
   def total_remaining_fees
     self.class_students.map(&:remaining_class_fee) + self.removed_class_students.map(&:remaining_class_fee)
+  end
+
+  def hostel_log_deallocate
+    self.hostel_logs.build({hostel_id: self.hostel_id, organisation_id: self.organisation_id, hostel_room_id: self.hostel_room_id, reason: "Deallocate hostel"}).save
+  end
+  
+  def hostel_log_allocate
+    self.hostel_logs.build({hostel_id: self.hostel_id, organisation_id: self.organisation_id, reason: "Allocate hostel"}).save
+  end
+
+  def hostel_log_allocate_room
+    self.hostel_logs.build({hostel_id: self.hostel_id, organisation_id: self.organisation_id, reason: "Allocate room", hostel_room_id: self.hostel_room_id}).save
   end
 
   def as_json(options= {})

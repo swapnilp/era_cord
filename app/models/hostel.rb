@@ -3,6 +3,7 @@ class Hostel < ActiveRecord::Base
   has_many :hostel_rooms
   has_many :students
   has_many :hostel_transactions
+  has_many :hostel_logs
   
   default_scope { where(organisation_id: Organisation.current_id) }    
 
@@ -20,6 +21,14 @@ class Hostel < ActiveRecord::Base
     else
       collect_fee(1)
     end
+  end
+
+  def add_log_create
+    self.hostel_logs.build({organisation_id: self.organisation_id, reason: "Create Hostel", param: "#{name}, #{rooms}, #{average_fee}, #{student_occupancy}"}).save
+  end
+
+  def add_log_edit
+    self.hostel_logs.build({organisation_id: self.organisation_id, reason: "Edit Hostel", param: "#{name}, #{rooms}, #{average_fee}, #{student_occupancy}"}).save
   end
 
   def collect_fee(fee_months)

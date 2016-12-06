@@ -36,6 +36,7 @@ class HostelRoomsController < ApplicationController
     
     hostel_room = hostel.hostel_rooms.build(create_params.merge({organisation_id: @organisation.id}))
     if hostel_room.save
+      hostel_room.add_log_new_room
       render json: {success: true}
     else
       render json: {success: false, mssage: ""}
@@ -50,6 +51,7 @@ class HostelRoomsController < ApplicationController
     room = hostel.hostel_rooms.where(id: params[:id]).first
     
     if room.update_attributes(update_params)
+      room.add_log_edit_room
       render json: {success: true}
     else
       render json: {success: false, mssage: ""}
@@ -67,6 +69,7 @@ class HostelRoomsController < ApplicationController
     if room && (student_ids.count > 0) && (room.remaining_beds >= student_ids.count)
       students = hostel.students.where(id: student_ids)
       room.students << students
+      students.map(&:hostel_log_allocate_room)
       render json: {success: true}
     else
       render json: {success: false, mssage: "Invalid Students"}

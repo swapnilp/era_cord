@@ -247,7 +247,10 @@ class StudentsController < ApplicationController
   
   def allocate_hostel
     student = @organisation.students.where(id: params[:id]).first
-    if student && student.update_attributes(update_hostel_params)
+    if student
+      student.hostel_log_remove if student.hostel_id
+      student.update_attributes(update_hostel_params)
+      student.hostel_log_allocate
       render json: {success: true}
     else
       render json: {success: false}
@@ -257,6 +260,7 @@ class StudentsController < ApplicationController
   def deallocate_hostel
     student = @organisation.students.where(id: params[:id]).first
     if student && student.update_attributes({hostel_id: nil, hostel_room_id: nil})
+      student.hostel_log_deallocate
       render json: {success: true}
     else
       render json: {success: false}
