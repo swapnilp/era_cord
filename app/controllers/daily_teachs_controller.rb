@@ -11,6 +11,14 @@ class DailyTeachsController < ApplicationController
     if params[:filter] && JSON.parse(params[:filter])['subject'].present?
       daily_teaching_points = daily_teaching_points.where(subject_id: JSON.parse(params[:filter])['subject'])
     end
+
+    if params[:filter] && JSON.parse(params[:filter])['dateRange'].present? && params[:filter] && JSON.parse(params[:filter])['dateRange']['startDate'].present?
+      daily_teaching_points = daily_teaching_points.where("date >= ? ", JSON.parse(params[:filter])['dateRange']['startDate'].to_time)
+    end
+
+    if params[:filter] && JSON.parse(params[:filter])['dateRange'].present? && params[:filter] && JSON.parse(params[:filter])['dateRange']['endDate'].present?
+      daily_teaching_points = daily_teaching_points.where("date <= ? ", JSON.parse(params[:filter])['dateRange']['endDate'].to_time)
+    end
     
     daily_teaching_points = daily_teaching_points.page(params[:page])
     render json: {success: true, daily_teaching_points: daily_teaching_points.map{|dtp| dtp.as_json({}, @organisation)}, count: daily_teaching_points.total_count}
