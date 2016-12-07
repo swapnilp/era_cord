@@ -286,6 +286,13 @@ class JkciClassesController < ApplicationController
       render json: {success: false}
     end
   end
+
+  def get_subjects
+    jkci_class = @organisation.jkci_classes.includes({subjects: :standard}).where(id: params[:id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+
+    render json: {success: true, subjects: jkci_class.subjects.as_json}
+  end
   
   def get_time_table_to_verify
     jkci_class = @organisation.jkci_classes.includes({subjects: :standard}).where(id: params[:id]).first

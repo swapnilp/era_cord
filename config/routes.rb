@@ -167,6 +167,7 @@ Rails.application.routes.draw do
       get 'get_timetable'
       get 'get_time_table_to_verify'
       get 'get_batch'
+      get 'get_subjects'
       post "import_students_excel"
       post 'make_active_class'
       post 'make_deactive_class'

@@ -25,14 +25,14 @@ class Subject < ActiveRecord::Base
                options.merge({
                                id: self.id,
                                std_name: std_name,
-                               name: name,
+                               name: name.capitalize,
                                ticked: options[:selected].include?(id)
                              })
              else
                options.merge({
                                id: self.id,
                                std_name: std_name,
-                               name: name,
+                               name: name.capitalize,
                                color: color,
                                text_color: text_color
                              })

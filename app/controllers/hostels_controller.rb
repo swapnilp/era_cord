@@ -66,7 +66,7 @@ class HostelsController < ApplicationController
     
     hostel = Hostel.where(id: params[:id]).first
     if hostel.present?
-      logs = hostel.hostel_logs
+      logs = hostel.hostel_logs.order("id desc")
       
       hostel_logs = filter_hostel_logs(logs)
       hostel_logs = hostel_logs.page(params[:page])
