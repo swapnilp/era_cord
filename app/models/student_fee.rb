@@ -86,8 +86,8 @@ class StudentFee < ActiveRecord::Base
   end
 
   def self.remaining_students(class_student_ids, filter, filter_student_ids = [])
-    r_students = ClassStudent.includes(:student, :jkci_class).where(collected_fee: 0.0)
-    removed_students = RemovedClassStudent.includes(:student, :jkci_class)
+    r_students = ClassStudent.includes([:student, :jkci_class]).where(collected_fee: 0.0)
+    removed_students = RemovedClassStudent.includes([:student, :jkci_class])
     if class_student_ids.present?
       r_students = r_students.where("student_id not in (?)", class_student_ids)
       removed_students = removed_students.where("student_id not in (?)", class_student_ids)
@@ -101,10 +101,16 @@ class StudentFee < ActiveRecord::Base
       removed_students = removed_students.where(batch_id: b_id)
     end
 
+    if filter.present? &&  JSON.parse(filter)['standard'].present?
+      r_students = r_students.joins([:student]).where("students.standard_id = ?", JSON.parse(filter)['standard'])
+      removed_students = removed_students.joins([:student]).where("students.standard_id = ?", JSON.parse(filter)['standard'])
+    end
+    
     if filter_student_ids.present?
       r_students = r_students.where("student_id in  (?)", filter_student_ids)
       removed_students = removed_students.where("student_id in  (?)", filter_student_ids)
     end
+
     r_students.map(&:accounts_json) + removed_students.map(&:accounts_json)
   end
   
