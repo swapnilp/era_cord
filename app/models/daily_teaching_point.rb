@@ -167,6 +167,7 @@ class DailyTeachingPoint < ActiveRecord::Base
                     chapter_id: chapter_id,
                     chapters_point_id: chapters_point_id.split(',').map(&:to_i),
                     jkci_class: jkci_class.class_name,
+                    verify_absenty: verify_absenty,
                     subject: subject.std_name
                   })
   end
