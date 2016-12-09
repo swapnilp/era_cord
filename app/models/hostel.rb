@@ -37,6 +37,7 @@ class Hostel < ActiveRecord::Base
       (1..fee_months).to_a.each do |index|
         hostel_transaction = hostel_transactions.find_or_initialize_by({date: fee_date, student_id: student.id})
         hostel_transaction.hostel_room_id =  student.hostel_room_id
+        hostel_transaction.organisation_id =  student.organisation_id
         hostel_transaction.hostel_id = student.hostel_id
         room_fee = self.average_fee + hostel_transaction.hostel_room.extra_charges
         hostel_transaction.amount = room_fee

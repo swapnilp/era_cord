@@ -21,7 +21,7 @@ class StudentsController < ApplicationController
       students = students.joins(:class_students).where("class_students.jkci_class_id = ?", JSON.parse(params[:filter])['class'])
     end
     if params[:filter].present? &&  JSON.parse(params[:filter])['hostel'].present?
-      if JSON.parse(params[:filter])['hostel'] == 'Non Hostelied'
+      if JSON.parse(params[:filter])['hostel'] == 'Non Hostelite'
         students = students.where(hostel_id: nil)
       else
         students = students.where("hostel_id is not ?", nil)
