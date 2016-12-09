@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161205102343) do
+ActiveRecord::Schema.define(version: 20161209161046) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -343,6 +343,7 @@ ActiveRecord::Schema.define(version: 20161205102343) do
     t.integer  "students_count",    limit: 4,   default: 0
     t.integer  "months",            limit: 4,   default: 1
     t.date     "start_date"
+    t.integer  "start_month",       limit: 4,   default: 6, null: false
   end
 
   create_table "jkci_classes", force: :cascade do |t|

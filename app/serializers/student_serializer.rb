@@ -1,5 +1,5 @@
 class StudentSerializer < ActiveModel::Serializer
-  attributes :id, :name, :batch, :standard, :parent_name, :p_mobile, :mobile, :class_names, :roll_number, :enable_sms, :remaining_fee, :has_hostel
+  attributes :id, :name, :batch, :standard, :parent_name, :p_mobile, :mobile, :class_names, :roll_number, :enable_sms, :remaining_fee, :has_hostel, :logo_url
   
   def name
     object.name
@@ -27,6 +27,10 @@ class StudentSerializer < ActiveModel::Serializer
 
   def has_hostel
     object.hostel_id.present? ? true : false
+  end
+
+  def logo_url
+    "https://s3.amazonaws.com/Eracord/Eracord/images/man.png"
   end
 
 end
