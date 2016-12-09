@@ -23,6 +23,10 @@ class Hostel < ActiveRecord::Base
     end
   end
 
+  def fee_months_arry
+    (self.start_month...(self.start_month+12)).to_a.map{|a| (a % 12) == 0 ? 12 : (a % 12)}
+  end
+
   def add_log_create
     self.hostel_logs.build({organisation_id: self.organisation_id, reason: "Create Hostel", param: "#{name}, #{rooms}, #{average_fee}, #{student_occupancy}"}).save
   end
@@ -66,7 +70,8 @@ class Hostel < ActiveRecord::Base
                     is_service_tax: is_service_tax,
                     service_tax: service_tax,
                     occupied_students: students_count,
-                    months: months
+                    months: months,
+                    start_month: start_month
                   })
   end
 end
