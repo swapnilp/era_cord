@@ -44,25 +44,26 @@ class Hostel < ActiveRecord::Base
 
   def collect_fee
     students.each do |student|
-      fee_dates = self.fee_months_arry
-      fee_dates.each do |fee_date|
-        hostel_transaction = hostel_transactions.find_or_initialize_by({date: fee_date, student_id: student.id})
-        hostel_transaction.hostel_room_id = student.hostel_room_id
-        hostel_transaction.organisation_id = student.organisation_id
-        hostel_transaction.hostel_id = student.hostel_id
-        room_fee = self.average_fee + hostel_transaction.hostel_room.extra_charges
-        hostel_transaction.amount = room_fee
-        if student.advances <= room_fee
-          hostel_transaction.is_dues = true
-        end
-        if hostel_transaction.new_record?
-          hostel_transaction.save
-          student.remove_amount_from_advances(room_fee)
-          self.add_log_payment(student.hostel_room_id, student.id, room_fee, hostel_transaction.date)
-        else
-          hostel_transaction.save
-        end
-        
+      transaction do
+        fee_dates = self.fee_months_arry
+        fee_dates.each do |fee_date|
+          hostel_transaction = hostel_transactions.find_or_initialize_by({date: fee_date, student_id: student.id})
+          hostel_transaction.hostel_room_id = student.hostel_room_id
+          hostel_transaction.organisation_id = student.organisation_id
+          hostel_transaction.hostel_id = student.hostel_id
+          room_fee = self.average_fee + hostel_transaction.hostel_room.extra_charges
+          hostel_transaction.amount = room_fee
+          if student.advances <= room_fee
+            hostel_transaction.is_dues = true
+          end
+          if hostel_transaction.new_record?
+            hostel_transaction.save
+            student.remove_amount_from_advances(room_fee)
+            self.add_log_payment(student.hostel_room_id, student.id, room_fee, hostel_transaction.date)
+          else
+            hostel_transaction.save
+          end
+        end 
       end
     end
   end
