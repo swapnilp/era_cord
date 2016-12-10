@@ -287,6 +287,31 @@ class StudentsController < ApplicationController
     end
   end
 
+  def get_other_rooms
+    return render json: {success: false, message: "Must be root user"} unless @organisation.root?
+    hostel = Hostel.where(id: params[:hostel_id]).first
+    student = Student.where(id: params[:student_id]).first
+    if hostel.present? && student.present?
+      hostel_rooms = hostel.hostel_rooms.where("id != ?", student.hostel_room_id)
+      render json: {success: true, rooms: hostel_rooms.as_json, student: student.try(:name)} 
+    else
+      render json: {success: false}
+    end
+  end
+
+  def change_room
+    return render json: {success: false, message: "Must be root user"} unless @organisation.root?
+    hostel = Hostel.where(id: params[:hostel_id]).first
+    student = Student.where(id: params[:student_id]).first
+    hostel_room = hostel.hostel_rooms.where(id: change_room_params['hostel_room_id']).first
+    if hostel.present? && student.present? && hostel_room.present?
+      student.update(change_room_params)
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+  end
+
   private
   
   def my_sanitizer
@@ -308,6 +333,10 @@ class StudentsController < ApplicationController
 
   def update_hostel_params
     params.require(:student).permit(:hostel_id)
+  end
+
+  def change_room_params
+    params.require(:student).permit(:hostel_room_id)
   end
 
 end

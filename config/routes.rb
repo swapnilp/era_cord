@@ -257,6 +257,11 @@ Rails.application.routes.draw do
       get 'get_logs'
     end
     
+    resources :students, only: [] do
+      get "get_other_rooms"
+      post "change_room"
+    end
+    
     resources :hostel_rooms, only: [:index, :edit, :create, :update] do
       member do
         get "allocate_students"
