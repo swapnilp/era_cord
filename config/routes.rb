@@ -320,6 +320,8 @@ Rails.application.routes.draw do
         end
       end
       
+      resources :off_classes, only: [:index]
+      
       resources :time_table_classes, only: [:index] do
         member do
           get 'get_chapters'

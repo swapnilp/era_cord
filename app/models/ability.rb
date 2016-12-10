@@ -87,6 +87,7 @@ class Ability
       can :toggle_class_sms, JkciClass
       can :toggle_exam_sms, JkciClass
       can :presenty_catlog, JkciClass
+      can :get_subjects, JkciClass
 
       can :read, Notification
       
