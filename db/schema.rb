@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161209161046) do
+ActiveRecord::Schema.define(version: 20161210042019) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -325,6 +325,7 @@ ActiveRecord::Schema.define(version: 20161209161046) do
     t.boolean  "is_dues",         limit: 1,  default: false
     t.datetime "created_at",                                 null: false
     t.datetime "updated_at",                                 null: false
+    t.integer  "pay_month",       limit: 4
   end
 
   create_table "hostels", force: :cascade do |t|

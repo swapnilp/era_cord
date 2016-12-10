@@ -33,6 +33,9 @@ class HostelLog < ActiveRecord::Base
       params = Hash[['Beds', 'Extra charges', ' Students count'].zip(self.param.split(','))] if self.param.present?
     elsif self.reason == "Add hostel room"
       params = Hash[['Beds', 'Extra charges', ' Students count'].zip(self.param.split(','))] if self.param.present?
+    elsif self.reason == "Payment"
+      params = Hash[['Amount', 'Date'].zip(self.param.split(','))] if self.param.present?
+      params['Date'] = params['Date'].to_date.strftime("%B %Y") if params['Date'].present?
     end
     return params
   end
