@@ -4,7 +4,7 @@ class Api::V1::TimeTableClassesController < ApiController
   def index
     teacher = current_user.teacher 
     return render json: {success: false, message: "Invalid teacher"} unless teacher
-    time_table_classes = teacher.time_table_classes
+    time_table_classes = teacher.time_table_classes.includes([:sub_class, :jkci_class, :time_table, :subject])
     render json: {success: true, time_table_classes: time_table_classes.map(&:teacher_json)} 
   end
 
