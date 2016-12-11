@@ -70,7 +70,7 @@ class ClassStudent < ActiveRecord::Base
                     student_id: student_id,
                     class_id: jkci_class_id,
                     class_name: jkci_class.class_name,
-                    remaining_fee: jkci_class.fee - collected_fee
+                    remaining_fee: jkci_class.fee.to_f - collected_fee
                   })
   end
 

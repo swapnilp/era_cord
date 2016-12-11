@@ -14,7 +14,10 @@ class Date
       "Friday"
     when 6
       "Saturday"
+    when 7
+      "Sunday"
     end
+
   end
 
   def database_time #(dd_date)
