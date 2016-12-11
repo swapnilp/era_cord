@@ -7,7 +7,7 @@ class Api::V1::DailyTeachsController < ApplicationController
     teacher = current_user.teacher
     return render json: {success: false, message: "Invalid teacher"} unless teacher
     
-    daily_teaching_points = teacher.daily_teaching_points.includes([:subject, :chapter, :class_catlogs, :jkci_class]).order("date desc").page(params[:page])
+    daily_teaching_points = teacher.daily_teaching_points.includes([:subject, :chapter, :class_catlogs, :jkci_class]).order(id: :desc, date: :desc).page(params[:page])
     render json: {success: true, daily_teaching_points: daily_teaching_points.map{|dtp| dtp.as_json({}, @organisation)}, count: daily_teaching_points.total_count}
   end
 

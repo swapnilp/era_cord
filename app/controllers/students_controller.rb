@@ -317,7 +317,7 @@ class StudentsController < ApplicationController
     hostel = Hostel.where(id: params[:hostel_id]).first
     student = hostel.students.where(id: params[:student_id]).first
     if hostel.present? && student.present?
-      students = hostel.students.where("id != ?", student.hostel_room_id)
+      students = hostel.students.where("hostel_room_id != ?", student.hostel_room_id)
       render json: {success: true, students: students.map(&:hostel_json), student: student.try(:name)} 
     else
       render json: {success: false}

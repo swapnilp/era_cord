@@ -6,7 +6,7 @@ class DailyTeachsController < ApplicationController
     jkci_class = JkciClass.where(id: params[:jkci_class_id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     
-    daily_teaching_points = jkci_class.daily_teaching_points.includes([:subject, :chapter]).order("date desc")
+    daily_teaching_points = jkci_class.daily_teaching_points.includes([:subject, :chapter]).order(id: :desc, date: :desc)
     
     if params[:filter] && JSON.parse(params[:filter])['subject'].present?
       daily_teaching_points = daily_teaching_points.where(subject_id: JSON.parse(params[:filter])['subject'])

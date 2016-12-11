@@ -66,9 +66,12 @@ class DailyTeachingPoint < ActiveRecord::Base
   end
 
   def create_catlog
-    class_students.each do |student|
-      self.class_catlogs.build({student_id: student.id, date: self.date, jkci_class_id: self.jkci_class_id, organisation_id: self.organisation_id}).save
-    end
+    #### #create catlog when RFID installed get absent student from RFID
+
+
+    #class_students.each do |student|
+    #  self.class_catlogs.build({student_id: student.id, date: self.date, jkci_class_id: self.jkci_class_id, organisation_id: self.organisation_id}).save
+    #end
   end
 
   def fill_catlog(absent_list,  date)
