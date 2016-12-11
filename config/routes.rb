@@ -260,6 +260,7 @@ Rails.application.routes.draw do
     resources :students, only: [] do
       get "get_other_rooms"
       post "change_room"
+      get 'get_hostel_students'
     end
     
     resources :hostel_rooms, only: [:index, :edit, :create, :update] do
