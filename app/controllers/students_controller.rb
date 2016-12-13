@@ -305,7 +305,9 @@ class StudentsController < ApplicationController
     student = Student.where(id: params[:student_id]).first
     hostel_room = hostel.hostel_rooms.where(id: change_room_params['hostel_room_id']).first
     if hostel.present? && student.present? && hostel_room.present?
+      old_room_id = student.hostel_room_id
       student.update(change_room_params)
+      student.hostel_log_change_room(old_room_id)
       render json: {success: true}
     else
       render json: {success: false}
@@ -316,6 +318,7 @@ class StudentsController < ApplicationController
     return render json: {success: false, message: "Must be root user"} unless @organisation.root?
     hostel = Hostel.where(id: params[:hostel_id]).first
     student = hostel.students.where(id: params[:student_id]).first
+
     if hostel.present? && student.present?
       students = hostel.students.where("hostel_room_id != ?", student.hostel_room_id)
       render json: {success: true, students: students.map(&:hostel_json), student: student.try(:name)} 
@@ -324,6 +327,25 @@ class StudentsController < ApplicationController
     end
   end
 
+  def swap_room_student
+    return render json: {success: false, message: "Must be root user"} unless @organisation.root?
+    hostel = Hostel.where(id: params[:hostel_id]).first
+    student = hostel.students.where(id: params[:student_id]).first
+    old_student = hostel.students.where(id: params[:swap_student_id]).first
+
+    if hostel.present? && student.present? && old_student.present?
+      room_id = student.hostel_room_id
+      old_room_id = old_student.hostel_room_id
+      student.update_attributes({hostel_room_id: old_student.hostel_room_id})
+      old_student.update_attributes({hostel_room_id: room_id})
+      student.hostel_log_swap_room(old_student.id, room_id)
+      old_student.hostel_log_swap_room(student.id, old_room_id)
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+  end
+  
   private
   
   def my_sanitizer

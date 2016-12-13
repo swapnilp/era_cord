@@ -260,6 +260,14 @@ class Student < ActiveRecord::Base
     self.hostel_logs.build({hostel_id: self.hostel_id, organisation_id: self.organisation_id, reason: "Allocate room", hostel_room_id: self.hostel_room_id}).save
   end
 
+  def hostel_log_change_room(old_room_id)
+    self.hostel_logs.build({hostel_id: self.hostel_id, organisation_id: self.organisation_id, reason: "Change room", hostel_room_id: self.hostel_room_id, param: "#{old_room_id}"}).save
+  end
+
+  def hostel_log_swap_room(student_id, old_room_id)
+    self.hostel_logs.build({hostel_id: self.hostel_id, organisation_id: self.organisation_id, reason: "Swap room", hostel_room_id: self.hostel_room_id, param: "#{student_id}, #{old_room_id}"}).save
+  end
+
   def as_json(options= {})
     options.merge({
                     first_name: first_name, 

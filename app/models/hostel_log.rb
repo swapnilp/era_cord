@@ -25,6 +25,13 @@ class HostelLog < ActiveRecord::Base
       params = nil
     elsif self.reason == "Allocate room"
       params = nil
+    elsif self.reason == "Change room"
+      h_room = HostelRoom.select([:id, :name]).where(id: self.param.split(',').first).first.try(:name)
+      params = Hash[['old room'].zip([h_room])] if self.param.present?
+    elsif self.reason == "Swap room"
+      h_student = Student.select([:id, :first_name, :middle_name, :last_name]).where(id: self.param.split(',').first).first.try(:name)
+      h_room = HostelRoom.select([:id, :name]).where(id: self.param.split(',').last).first.try(:name)
+      params = Hash[['student', 'old room'].zip([h_student, h_room])] if self.param.present?
     elsif self.reason == "Create Hostel"
       params = Hash[['Hostel name', 'Rooms', 'Average fee', 'Student occupancy'].zip(self.param.split(','))] if self.param.present?
     elsif self.reason == "Edit Hostel"
