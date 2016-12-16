@@ -1,5 +1,6 @@
 class Api::V1::FeedbacksController < ApiController
-    before_action :authenticate_user!
+  skip_before_filter :authenticate_with_token!, only: [:create]
+
   
   def create
     feedback = FeedBack.new(create_params)
