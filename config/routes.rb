@@ -324,6 +324,8 @@ Rails.application.routes.draw do
       
       resources :off_classes, only: [:index]
       
+      resources :feedbacks, only: [:create]
+      
       resources :time_table_classes, only: [:index] do
         member do
           get 'get_chapters'
