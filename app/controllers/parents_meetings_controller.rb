@@ -5,7 +5,7 @@ class ParentsMeetingsController < ApplicationController
   
 
   def index
-    parents_meetings = ParentsMeeting.my_organisation(@organisation.id).order("id desc")
+    parents_meetings = ParentsMeeting.my_organisation(@organisation.id).order("date desc")
     
     parents_meetings = parents_meetings.page(params[:page])
     render json: {success: true, parents_meetings: parents_meetings.as_json, count: parents_meetings.total_count}
@@ -45,10 +45,20 @@ class ParentsMeetingsController < ApplicationController
     end
   end
 
+  def get_meeting_students
+    parents_meeting = ParentsMeeting.where(id: params[:id]).first
+    if parents_meeting.present?
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+  end
+
   def publish_meeting
     parents_meeting = ParentsMeeting.where(id: params[:id]).first
     if parents_meeting.present?
       parents_meeting.update_attributes({sms_sent: true})
+      parents_meeting.publish_metting
       render json: {success: true}
     else
       render json: {success: false}
@@ -58,9 +68,6 @@ class ParentsMeetingsController < ApplicationController
   private
 
   def create_params
-    params.require(:parents_meeting).permit(:agenda, :date, :contact_person)
+    params.require(:parents_meeting).permit(:agenda, :date, :contact_person, :jkci_class_id)
   end
-
-  
-
 end

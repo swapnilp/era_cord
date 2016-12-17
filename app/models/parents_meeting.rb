@@ -9,8 +9,11 @@ class ParentsMeeting < ActiveRecord::Base
 
   def create_meetings_students(org, students_list = "")
     Student.select([:id, :p_mobile]).where(id: students_list.split(',')).each do |m_student|
-      self.meetings_students.find_or_initialize_by({student_id: m_student.id, mobile: m_student.p_mobile}).save
+      self.meetings_students.find_or_initialize_by({student_id: m_student.id, mobile: m_student.p_mobile, organisation_id: org.id}).save
     end
+  end
+
+  def publish_metting
     Delayed::Job.enqueue ParentMeetingsSms.new(sms_arry(org))
   end
 
@@ -37,7 +40,8 @@ class ParentsMeeting < ActiveRecord::Base
                     agenda: agenda,
                     date: date.strftime("%d %b %Y %I:%M %p"),
                     contact_person: contact_person,
-                    sms_sent: sms_sent
+                    sms_sent: sms_sent,
+                    jkci_class_id: jkci_class_id
                   })
     
   end

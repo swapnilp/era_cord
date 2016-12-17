@@ -40,7 +40,8 @@ Rails.application.routes.draw do
 
   resources :parents_meetings, only: [:index, :new, :create, :show] do
     member do
-      get :publish_meeting      
+      get :publish_meeting
+      get :get_meeting_students
     end
     collection do 
       get :get_class_students
