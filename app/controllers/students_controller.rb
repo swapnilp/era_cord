@@ -143,7 +143,8 @@ class StudentsController < ApplicationController
   def upload_photo
     student = Student.where(id: params[:id]).first
     photo = student.student_photos.build
-    photo.image = logo_upload_params[:image]
+    photo.image = photo_upload_params[:file]
+
     photo.organisation_id = @organisation.id
     if photo.save
       #student.update_attributes(photo_url: photo.image_url(:thumb))
@@ -371,6 +372,10 @@ class StudentsController < ApplicationController
 
   def change_room_params
     params.require(:student).permit(:hostel_room_id)
+  end
+
+  def photo_upload_params
+    params.require(:student).permit(:file)
   end
 
 end

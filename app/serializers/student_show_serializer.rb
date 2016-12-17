@@ -1,5 +1,5 @@
 class StudentShowSerializer < ActiveModel::Serializer
-  attributes :id, :name, :batch, :standard, :parent_name, :p_mobile, :mobile, :class_names, :roll_number, :enable_sms, :remaining_fee, :subjects, :hostel_id, :hostel
+  attributes :id, :name, :batch, :standard, :parent_name, :p_mobile, :mobile, :class_names, :roll_number, :enable_sms, :remaining_fee, :subjects, :hostel_id, :hostel, :image_url
   
   def name
     object.name
@@ -31,6 +31,10 @@ class StudentShowSerializer < ActiveModel::Serializer
 
   def hostel
     object.hostel.try(:name)
+  end
+
+  def image_url
+    object.photo_url #"https://s3.amazonaws.com/Eracord/Eracord/images/man.png"
   end
 
 end

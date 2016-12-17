@@ -268,6 +268,14 @@ class Student < ActiveRecord::Base
     self.hostel_logs.build({hostel_id: self.hostel_id, organisation_id: self.organisation_id, reason: "Swap room", hostel_room_id: self.hostel_room_id, param: "#{student_id}, #{old_room_id}"}).save
   end
 
+  def photo_url
+    if student_photos.last.present?
+      student_photos.last.image.url(:thumb)
+    else
+      "https://s3.amazonaws.com/Eracord/Eracord/images/man.png"
+    end
+  end
+
   def as_json(options= {})
     options.merge({
                     first_name: first_name, 

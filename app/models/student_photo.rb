@@ -16,7 +16,7 @@ class StudentPhoto < ActiveRecord::Base
     :s3_protocol => 'http',
     :bucket => "#{IMAGE_BUCKET}",
     :styles => { :medium => "400x400>",
-      :thumb => "200x" }
+      :thumb => "200x" , :logo => '64x64'}
 
   #after_create :transliterate_file_name
 
@@ -66,10 +66,9 @@ class StudentPhoto < ActiveRecord::Base
     self.image.instance_write(:file_name, "#{Time.now.to_i.to_s}.#{transliterate(extension)}")
   end
 
-  def image_url(type= 'original')
-    "https://s3-ap-southeast-1.amazonaws.com/jkciphoto/#{image.path(type.to_sym)}"
+  def image_url(type= 'thumb')
+    "https://s3-ap-southeast-1.amazonaws.com/jkciphoto/#{image.url(type.to_sym)}"
   end
-
 
   private
 
