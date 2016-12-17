@@ -39,6 +39,9 @@ Rails.application.routes.draw do
   resources :sms_sent, only: [:index]
 
   resources :parents_meetings, only: [:index, :new, :create, :show] do
+    member do
+      get :publish_meeting      
+    end
     collection do 
       get :get_class_students
     end

@@ -45,6 +45,16 @@ class ParentsMeetingsController < ApplicationController
     end
   end
 
+  def publish_meeting
+    parents_meeting = ParentsMeeting.where(id: params[:id]).first
+    if parents_meeting.present?
+      parents_meeting.update_attributes({sms_sent: true})
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+  end
+
   private
 
   def create_params
