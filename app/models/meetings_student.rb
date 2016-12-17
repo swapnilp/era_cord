@@ -5,4 +5,13 @@ class MeetingsStudent < ActiveRecord::Base
 
   
   default_scope { where(organisation_id: Organisation.current_id) }  
+
+  def as_json(options = {})
+    options.merge({
+                    name: student.try(:name),
+                    mobile: mobile,
+                    sent_sms: sent_sms
+                    
+                  })
+  end
 end

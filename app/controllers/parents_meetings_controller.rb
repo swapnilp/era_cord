@@ -48,7 +48,8 @@ class ParentsMeetingsController < ApplicationController
   def get_meeting_students
     parents_meeting = ParentsMeeting.where(id: params[:id]).first
     if parents_meeting.present?
-      render json: {success: true}
+      students = parents_meeting.meetings_students.includes(:student).order("id desc").page(params[:page])
+      render json: {success: true, students: students.as_json, total_count: students.total_count}
     else
       render json: {success: false}
     end
