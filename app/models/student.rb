@@ -268,9 +268,9 @@ class Student < ActiveRecord::Base
     self.hostel_logs.build({hostel_id: self.hostel_id, organisation_id: self.organisation_id, reason: "Swap room", hostel_room_id: self.hostel_room_id, param: "#{student_id}, #{old_room_id}"}).save
   end
 
-  def photo_url
+  def photo_url(size = 'thumb')
     if student_photos.last.present?
-      student_photos.last.image.url(:thumb)
+      student_photos.last.image.url(size.to_sym)
     else
       "https://s3.amazonaws.com/Eracord/Eracord/images/man.png"
     end

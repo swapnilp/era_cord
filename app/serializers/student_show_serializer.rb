@@ -34,7 +34,7 @@ class StudentShowSerializer < ActiveModel::Serializer
   end
 
   def image_url
-    object.photo_url #"https://s3.amazonaws.com/Eracord/Eracord/images/man.png"
+    object.photo_url(scope[:image]) #"https://s3.amazonaws.com/Eracord/Eracord/images/man.png"
   end
 
 end
