@@ -270,7 +270,7 @@ class Student < ActiveRecord::Base
 
   def photo_url(size = 'thumb')
     if student_photos.last.present?
-      student_photos.last.image.url(size.to_sym)
+      student_photos.last.image.url(size.to_sym).to_s.gsub("%3F", "?")
     else
       "https://s3.amazonaws.com/Eracord/Eracord/images/man.png"
     end
