@@ -148,7 +148,7 @@ class StudentsController < ApplicationController
     photo.organisation_id = @organisation.id
     if photo.save
       #student.update_attributes(photo_url: photo.image_url(:thumb))
-      render json: {success: true, url: photo.image_url(:thumb)}
+      render json: {success: true, url: photo.image_url(:original)}
     else
       render json: {success: false, message: photo.errors.full_messages.join(' , ')}
     end

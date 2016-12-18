@@ -19,6 +19,7 @@ class StudentPhoto < ActiveRecord::Base
       :thumb => "200x" , :logo => '64x64'}
 
   #after_create :transliterate_file_name
+  process_in_background :image
 
   validates_attachment :image, 
   :presence => true, 
