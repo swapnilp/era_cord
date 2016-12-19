@@ -41,7 +41,9 @@ class SmsSent < ActiveRecord::Base
                     message: message,
                     is_parent: is_parent,
                     student_name: student.try(:name),
-                    number: number
+                    number: number,
+                    time: created_at.strftime("%d %b %Y @ %I:%M %p")
+                    
                   })
   end
   
