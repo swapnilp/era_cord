@@ -7,8 +7,16 @@ class SmsSentController < ApplicationController
 
   def index
     sms_sents = SmsSent.our_organisations.my_organisation(@organisation.id).order("id desc")
-    if params[:filter].present?
-      sms_sents = sms_sents.where("number like ?", "%#{params[:filter]}%")
+    if params[:filter].present? &&  JSON.parse(params[:filter])['student'].present?
+      sms_sents = sms_sents.where("number like ?", "%#{JSON.parse(params[:filter])['student']}%")
+    end
+
+    if params[:filter].present? &&  JSON.parse(params[:filter])['dateRange'].present? && JSON.parse(params[:filter])['dateRange']['startDate'].present?
+      sms_sents = sms_sents.where("created_at >= ? ", JSON.parse(params[:filter])['dateRange']['startDate'])
+    end
+
+    if params[:filter].present? &&  JSON.parse(params[:filter])['dateRange'].present? && JSON.parse(params[:filter])['dateRange']['endDate'].present?
+      sms_sents = sms_sents.where("created_at <= ? ", JSON.parse(params[:filter])['dateRange']['endDate'])
     end
     
     sms_sents = sms_sents.page(params[:page])
