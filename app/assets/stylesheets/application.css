@@ -816,6 +816,29 @@ ul.nostyle i {
   margin-bottom: 30px;
 }
 
+#mobile-app {
+  padding: 100px 0 70px;
+  background: #EDEDED;
+  background-size: cover;
+  color: #000;
+}
+
+#mobile-app h1,
+#mobile-app h2,
+#mobile-app h3,
+#mobile-app h4 {
+  color: #000;
+  margin-top:10px;
+}
+#mobile-app img {
+  max-height:200px;
+}
+
+#mobile-app strong {
+  display: block;
+  margin-bottom: 30px;
+}
+
 .business-stats {
   display: inline-block;
   width: 140px;
