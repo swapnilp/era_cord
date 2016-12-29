@@ -146,7 +146,7 @@ class JkciClassesController < ApplicationController
   end
 
   def get_chapters
-    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    jkci_class = JkciClass.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     
     chapters = jkci_class.subjects.where(id:  params[:subject_id]).first.chapters.select([:id, :name, :chapt_no])
@@ -278,7 +278,7 @@ class JkciClassesController < ApplicationController
   end
 
   def get_timetable
-    jkci_class = @organisation.jkci_classes.includes({subjects: :standard}).where(id: params[:id]).first
+    jkci_class = JkciClass.includes({subjects: :standard}).where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
 
     time_table = jkci_class.time_tables.where(sub_class_id: nil).first
@@ -290,7 +290,7 @@ class JkciClassesController < ApplicationController
   end
 
   def get_subjects
-    jkci_class = @organisation.jkci_classes.includes({subjects: :standard}).where(id: params[:id]).first
+    jkci_class = JkciClass.includes({subjects: :standard}).where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
 
     render json: {success: true, subjects: jkci_class.subjects.as_json}
