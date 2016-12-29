@@ -19,6 +19,19 @@ class HostelRoom < ActiveRecord::Base
     self.hostel_logs.build({organisation_id: self.organisation_id, hostel_id: self.hostel_id, reason: "Edit hostel room", param: "#{self.beds}, #{self.extra_charges}, #{self.students_count}"}).save
   end
 
+  def add_log_delete_room
+    self.hostel_logs.build({organisation_id: self.organisation_id, hostel_id: self.hostel_id, reason: "Delete hostel room", param: "#{self.beds}, #{self.extra_charges}, #{self.students_count}"}).save
+  end
+
+  def delete_room
+    self.students.each do |student|
+      student.hostel_log_deallocate
+      student.update_attributes({hostel_room_id: nil})
+    end
+    self.add_log_delete_room
+    self.destroy
+  end
+
   def as_json(options = {})
     options.merge({
                     id: id,

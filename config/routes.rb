@@ -268,7 +268,7 @@ Rails.application.routes.draw do
       get 'get_hostel_students'
     end
     
-    resources :hostel_rooms, only: [:index, :edit, :create, :update] do
+    resources :hostel_rooms, only: [:index, :edit, :create, :update, :destroy] do
       member do
         get "allocate_students"
       end

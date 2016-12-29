@@ -75,6 +75,17 @@ class HostelRoomsController < ApplicationController
       render json: {success: false, mssage: "Invalid Students"}
     end
   end
+
+  def destroy
+    return render json: {success: false, message: "Must be root user"} unless @organisation.root?
+    
+    hostel = Hostel.where(id: params[:hostel_id]).first
+    room = hostel.hostel_rooms.where(id: params[:id]).first
+    return render json: {success: false, message: "Invalid Hostel or Room"} unless hostel.present? || room.present?
+    
+    room.delete_room
+    render json: {success: true}
+  end
   
   private
   
