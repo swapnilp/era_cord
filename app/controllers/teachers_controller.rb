@@ -5,7 +5,7 @@ class TeachersController < ApplicationController
   load_and_authorize_resource param_method: :my_sanitizer
   
   def index
-    return render json: {success: false, message: "Must be root user"} unless @organisation.root?
+    #return render json: {success: false, message: "Must be root user"} unless @organisation.root?
     
     teachers = Teacher.active
     render json: {success: true, teachers: teachers.as_json}
