@@ -45,7 +45,9 @@ class JkciClassesController < ApplicationController
   end
 
   def get_dtp_info
-    jkci_class = @organisation.jkci_classes.includes({subjects: :standard}).where(id: params[:id]).first
+    jkci_class = JkciClass.includes({subjects: :standard}).where(id: params[:id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    
     options = {}
     if params[:ttc_id].present?
       time_table_class = jkci_class.time_table_classes.where(id: params[:ttc_id]).first
