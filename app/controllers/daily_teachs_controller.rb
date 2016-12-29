@@ -26,7 +26,7 @@ class DailyTeachsController < ApplicationController
 
   def create
     raise ActionController::RoutingError.new('Not Found') unless current_user.has_role? :create_daily_teach 
-    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    jkci_class = JkciClass.where(id: params[:jkci_class_id]).first
     
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     daily_teaching_point = jkci_class.daily_teaching_points.build(create_params.merge({organisation_id: @organisation.id}))
@@ -40,7 +40,7 @@ class DailyTeachsController < ApplicationController
   end
 
   def show
-    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    jkci_class = JkciClass.where(id: params[:jkci_class_id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     daily_teaching_point = jkci_class.daily_teaching_points.where(id: params[:id]).first
     if daily_teaching_point
@@ -51,7 +51,7 @@ class DailyTeachsController < ApplicationController
   end
 
   def get_catlogs
-    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    jkci_class = JkciClass.where(id: params[:jkci_class_id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     daily_teaching_point = jkci_class.daily_teaching_points.where(id: params[:id]).first
     if daily_teaching_point
@@ -64,7 +64,7 @@ class DailyTeachsController < ApplicationController
   
   def fill_catlog
     raise ActionController::RoutingError.new('Not Found') unless current_user.has_role? :add_daily_teach_absenty
-    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    jkci_class = JkciClass.where(id: params[:jkci_class_id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     daily_teaching_point = jkci_class.daily_teaching_points.where(id: params[:id]).first
     if daily_teaching_point
@@ -76,7 +76,7 @@ class DailyTeachsController < ApplicationController
   end
 
   def add_absent_student
-    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    jkci_class = JkciClass.where(id: params[:jkci_class_id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     daily_teaching_point = jkci_class.daily_teaching_points.where(id: params[:id]).first
     if daily_teaching_point
@@ -88,7 +88,7 @@ class DailyTeachsController < ApplicationController
   end
   
   def remove_absent_student
-    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    jkci_class = JkciClass.where(id: params[:jkci_class_id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     daily_teaching_point = jkci_class.daily_teaching_points.where(id: params[:id]).first
     if daily_teaching_point
@@ -100,7 +100,7 @@ class DailyTeachsController < ApplicationController
   end
 
   def edit
-    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    jkci_class = JkciClass.where(id: params[:jkci_class_id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     
     daily_teaching_point = jkci_class.daily_teaching_points.where(id: params[:id]).first
@@ -115,7 +115,7 @@ class DailyTeachsController < ApplicationController
 
   def class_absent_verification
     return render json: {success: false, message: "Unauthorised"} unless current_user.has_role? :verify_daily_teach_absenty
-    daily_teaching_point = @organisation.daily_teaching_points.where(id: params[:id]).first
+    daily_teaching_point = DailyTeachingPoint.where(id: params[:id]).first
     
     if daily_teaching_point
       daily_teaching_point.verify_presenty
@@ -126,7 +126,7 @@ class DailyTeachsController < ApplicationController
   end
 
   def update
-    daily_teaching_point = @organisation.daily_teaching_points.where(id: params[:id]).first
+    daily_teaching_point = DailyTeachingPoint.where(id: params[:id]).first
     if daily_teaching_point && daily_teaching_point.update_attributes(update_params)
       render json: {success: true}
     else
@@ -135,7 +135,7 @@ class DailyTeachsController < ApplicationController
   end
 
   def publish_absenty
-    jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+    jkci_class = JkciClass.where(id: params[:jkci_class_id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     
     daily_teaching_point = @organisation.daily_teaching_points.where(id: params[:id]).first
@@ -154,7 +154,7 @@ class DailyTeachsController < ApplicationController
   
 
   def get_class_students
-    @daily_teaching_point = @organisation.daily_teaching_points.where(id: params[:id]).first
+    @daily_teaching_point = DailyTeachingPoint.where(id: params[:id]).first
     @students = @daily_teaching_point.jkci_class.students
     @present_students = @daily_teaching_point.class_catlogs.map(&:student_id)
     render json: {html: render_to_string(:partial => "student_catlog.html.erb", :layout => false)}
@@ -162,7 +162,7 @@ class DailyTeachsController < ApplicationController
   
   def class_presenty
     present_students = params[:students]
-    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
+    jkci_class = JkciClass.where(id: params[:id]).first
   end
   
 
