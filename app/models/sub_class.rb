@@ -1,6 +1,7 @@
 class SubClass < ActiveRecord::Base
   belongs_to :jkci_class
   has_many :time_table_classes
+  has_many :daily_teaching_points
  
 
   #has_one :time_table

@@ -19,7 +19,7 @@ class Api::V1::DailyTeachsController < ApplicationController
     return render json: {success: false, message: "Invalid teacher"} unless teacher
     
     daily_teaching_point = time_table_class.jkci_class.daily_teaching_points.build(create_params.merge({organisation_id: @organisation.id, subject_id: time_table_class.subject_id,
-sub_classes: time_table_class.sub_class_id, teacher_id: teacher.id}))
+sub_classes: time_table_class.sub_class_id, teacher_id: teacher.id, sub_class_id: time_table_class.sub_class_id}))
     
     if daily_teaching_point.save
       daily_teaching_point.create_catlog
