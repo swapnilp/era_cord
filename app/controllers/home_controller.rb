@@ -1,11 +1,15 @@
 class HomeController < ApplicationController
   layout "application"
-  skip_before_filter :authenticate_with_token!, only: [:index, :mobile]
+  skip_before_filter :authenticate_with_token!, only: [:index, :mobile, :terms_of_service]
 
   def index
   end
 
   def mobile
+  end
+
+  def terms_of_service
+    render layout: "terms"
   end
 
   def new_organisation
