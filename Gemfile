@@ -57,7 +57,7 @@ gem 'groupdate', '~> 2.5.0'
 gem 'counter_culture', '~> 0.1.33'
 gem 'simple_form'
 gem 'local-subdomain'
-gem 'delayed_paperclip'
+#gem 'delayed_paperclip'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
