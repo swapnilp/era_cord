@@ -145,7 +145,7 @@ class DailyTeachingPoint < ActiveRecord::Base
                       jkci_class: jkci_class.class_name,
                       verify_absenty: verify_absenty,
                       enable_sms: jkci_class.enable_class_sms,
-                      sub_class_name: sub_class.try(:name),
+                      sub_class_name: sub_class.try(:name) || '',
                       self_organisation: organisation_id == org.id
                     })
     else
@@ -159,7 +159,7 @@ class DailyTeachingPoint < ActiveRecord::Base
                       is_sms_sent: is_sms_sent,
                       jkci_class: jkci_class.class_name,
                       verify_absenty: verify_absenty,
-                      sub_class_name: sub_class.try(:name),
+                      sub_class_name: sub_class.try(:name) || '',
                       enable_sms: jkci_class.enable_class_sms
                     })
     end
