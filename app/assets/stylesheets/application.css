@@ -1066,3 +1066,7 @@ ul.nostyle i {
 .phases img {
   width:100%;
 }
+
+.phases li {
+  word-break: break-all;
+}
