@@ -1074,3 +1074,7 @@ ul.nostyle i {
 .phases h2 {
   color: #999;
 }
+
+.phases .marginT20 {
+  margin-top: 20px;
+}
