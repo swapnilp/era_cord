@@ -1,6 +1,6 @@
 class HomeController < ApplicationController
   layout "application"
-  skip_before_filter :authenticate_with_token!, only: [:index, :mobile, :terms_of_service]
+  skip_before_filter :authenticate_with_token!, only: [:index, :mobile, :terms_of_service, :presentation]
 
   def index
   end
@@ -10,6 +10,10 @@ class HomeController < ApplicationController
 
   def terms_of_service
     render layout: "terms"
+  end
+
+  def presentation
+    render layout: "presentation"
   end
 
   def new_organisation

@@ -358,6 +358,7 @@ Rails.application.routes.draw do
   #get 'index' => "home#index"
   get 'mobile_page' => "home#mobile"
   get 'terms_of_service' => "home#terms_of_service"
+  get 'presentation' => "home#presentation"
   root 'home#index'
   
   # Example of regular route:
