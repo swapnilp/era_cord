@@ -1080,7 +1080,7 @@ ul.nostyle i {
 
 #phaseI-banner {
   /*background: url('https://s3.amazonaws.com/Eracord/Eracord/images/bg1.png') no-repeat 77% bottom;*/
-  background: url('/assets/Phase1.png') no-repeat 77% bottom;
+  background-image: url('Phase1.png');
   background-size: 100%;
 }
 
