@@ -141,17 +141,18 @@ class StudentsController < ApplicationController
   end
 
   def upload_photo
-    student = Student.where(id: params[:id]).first
-    photo = student.student_photos.build
-    photo.image = photo_upload_params[:file]
-
-    photo.organisation_id = @organisation.id
-    if photo.save
-      #student.update_attributes(photo_url: photo.image_url(:thumb))
-      render json: {success: true, url: photo.image_url(:original)}
-    else
-      render json: {success: false, message: photo.errors.full_messages.join(' , ')}
-    end
+    #student = Student.where(id: params[:id]).first
+    #photo = student.student_photos.build
+    #photo.image = photo_upload_params[:file]
+    #
+    #photo.organisation_id = @organisation.id
+    #if photo.save
+    #  #student.update_attributes(photo_url: photo.image_url(:thumb))
+    #  render json: {success: true, url: photo.image_url(:original)}
+    #else
+    #  render json: {success: false, message: photo.errors.full_messages.join(' , ')}
+    #end
+    render json: {success: false}
   end
   
   def download_report
