@@ -1070,3 +1070,7 @@ ul.nostyle i {
 .phases li {
   word-break: break-all;
 }
+
+.phases h2 {
+  color: #999;
+}
