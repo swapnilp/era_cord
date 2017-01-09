@@ -52,7 +52,7 @@ class TimeTableClass < ActiveRecord::Base
                     subject_id: subject_id,
                     name: sub_class_id.present? ? "#{subject.try(:only_std_name)}- #{sub_class.try(:name)}" : subject.try(:only_std_name),
                     color: subject.try(:color),
-                    cwday: cwday,
+                    cwday: cwday == 7 ? 0 : cwday,
                     start_time: clock_time(start_time),
                     end_time: clock_time(end_time),
                     slot_type: slot_type,

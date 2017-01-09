@@ -1055,6 +1055,12 @@ ul.nostyle i {
   }
 }
 
+@media only screen and (max-width: 330px) {
+  #about h2 {
+    font-size: 24px;
+  }
+}
+
 .phases a {
   -webkit-transition: all 0.5s ease;
   -moz-transition: all 0.5s ease;

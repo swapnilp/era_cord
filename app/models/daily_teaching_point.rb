@@ -17,7 +17,11 @@ class DailyTeachingPoint < ActiveRecord::Base
  
 
   def check_off_classes
-    self.jkci_class.off_classes.where(date: self.date.to_date, subject_id: self.subject_id).destroy_all
+    if self.sub_classes.present?
+      self.jkci_class.off_classes.where(date: self.date.to_date, subject_id: self.subject_id, sub_class_id: self.sub_classes.split(',').map(&:to_i)).destroy_all
+    else
+      self.jkci_class.off_classes.where(date: self.date.to_date, subject_id: self.subject_id).destroy_all
+    end
   end
   
   def absent_count

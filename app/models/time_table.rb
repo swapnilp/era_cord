@@ -33,15 +33,20 @@ class TimeTable < ActiveRecord::Base
     if self.jkci_class.is_current_active
       #table_classes = self.time_table_classes.where(cwday: date.cwday)
       #table_subjects = table_classes.map(&:subject_id)
-      daily_classes = self.jkci_class.daily_teaching_points.where("date >= ? && date < ?", date.to_date.database_time, (date+1.day).to_date.database_time)
-      exams = self.jkci_class.exams.where("exam_date >= ? && exam_date < ?", date.to_date.database_time, (date+1.day).to_date.database_time)
+      db_date = date.in_time_zone.utc
+      daily_classes = self.jkci_class.daily_teaching_points.where("date >= ? && date <= ?", db_date, (db_date+1.day))
+      exams = self.jkci_class.exams.where("exam_date >= ? && exam_date < ?", db_date, (db_date+1.day))
+      
       self.time_table_classes.where(cwday: date.cwday).each do |tt_class|
         if tt_class.sub_class_id.present?
-          exams = exams.where("sub_classes like '%,?,%' OR  sub_classes like ?", tt_class.sub_class_id, '')
+          tt_exams = exams.where("sub_classes like '%,?,%' OR  sub_classes like ?", tt_class.sub_class_id, '')
+          tt_daily_classes = daily_classes.where("sub_classes like '%,?,%' OR  sub_classes like ?", tt_class.sub_class_id, ',,')
         end
-        exams = exams.where(subject_id: tt_class.subject_id)
-        daily_classes = daily_classes.where(subject_id: tt_class.subject_id)
-        if (exams.count + daily_classes.count) == 0
+        
+        tt_exams = tt_exams.where(subject_id: tt_class.subject_id)
+        tt_daily_classes = tt_daily_classes.where(subject_id: tt_class.subject_id)
+        
+        if (tt_exams.count + tt_daily_classes.count) == 0
           off_class = self.jkci_class.off_classes.find_or_initialize_by({date: date, subject_id: tt_class.subject_id, cwday: date.cwday, organisation_id: self.organisation_id, sub_class_id: tt_class.sub_class_id})
           off_class.teacher_id = tt_class.teacher_id
           off_class.save

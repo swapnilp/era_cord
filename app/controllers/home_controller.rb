@@ -1,6 +1,7 @@
 class HomeController < ApplicationController
   layout "application"
-  skip_before_filter :authenticate_with_token!, only: [:index, :mobile, :terms_of_service, :presentation]
+  skip_before_filter :authenticate_with_token!, only: [:index, :mobile, :terms_of_service, :presentation, :presentation_ppt]
+  http_basic_authenticate_with name: "eracord", password: "er@c0rd123", only: :presentation
 
   def index
   end
@@ -13,6 +14,10 @@ class HomeController < ApplicationController
   end
 
   def presentation
+    render layout: "presentation"
+  end
+
+  def presentation_ppt
     render layout: "presentation"
   end
 

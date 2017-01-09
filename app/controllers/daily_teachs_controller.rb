@@ -209,7 +209,7 @@ class DailyTeachsController < ApplicationController
   end
 
   def create_params
-    params.require(:daily_teaching_point).permit(:subject_id, :chapter_id, :date, :sub_classes, :chapters_point_id)
+    params.require(:daily_teaching_point).permit(:subject_id, :chapter_id, :date, :sub_classes, :chapters_point_id, :sub_class_id)
   end
 
   def update_params
