@@ -13,7 +13,7 @@ class DailyTeachingPoint < ActiveRecord::Base
   default_scope { where(organisation_id: Organisation.current_id) }
   scope :chapters_points, -> { where("chapter_id is not ?", nil) }
   #after_save :add_current_chapter
-  after_save :check_off_classes
+  after_create :check_off_classes
  
 
   def check_off_classes
@@ -21,6 +21,21 @@ class DailyTeachingPoint < ActiveRecord::Base
       self.jkci_class.off_classes.where(date: self.date.to_date, subject_id: self.subject_id, sub_class_id: self.sub_classes.split(',').map(&:to_i)).destroy_all
     else
       self.jkci_class.off_classes.where(date: self.date.to_date, subject_id: self.subject_id).destroy_all
+    end
+    check_teacher
+  end
+
+  def check_teacher
+    if self.sub_class_id.present?
+      tt_class = self.jkci_class.time_table_classes.where(cwday: self.date.to_date.cwday, subject_id: self.subject_id, sub_class_id: self.sub_class_id).first
+      if tt_class.present?
+        self.update_attributes({teacher_id: tt_class.teacher_id})
+      end
+    else
+      tt_class = self.jkci_class.time_table_classes.where(cwday: self.date.to_date.cwday, subject_id: self.subject_id).first
+      if tt_class.present?
+        self.update_attributes({teacher_id: tt_class.teacher_id})
+      end
     end
   end
   
