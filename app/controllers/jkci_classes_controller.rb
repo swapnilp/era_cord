@@ -309,6 +309,14 @@ class JkciClassesController < ApplicationController
     end
   end
 
+  def get_time_table
+    jkci_class = @organisation.jkci_classes.includes({subjects: :standard}).where(id: params[:id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+
+    time_table_classes = jkci_class.time_table_classes.day_wise_sort
+    render json: {success: true, slots: time_table_classes, count: time_table_classes.count}
+  end
+
   def check_verify_students
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     if !jkci_class.present? || !current_user.has_role?(:manage_class)
@@ -422,94 +430,6 @@ class JkciClassesController < ApplicationController
     class_students = ClassStudent.select([:id, :jkci_class_id, :student_id, :sub_class]).joins(:jkci_class).where("jkci_classes.is_current_active = ?", true)
     render json: {success: true, class_students: class_students.map(&:sync_json)}
   end
-
-  ####################################
-  
-  def create
-    params.permit!
-    @jkci_class = @organisation.jkci_classes.build(params[:jkci_class])
-    if @jkci_class.save
-      redirect_to jkci_classes_path
-    end
-  end
-
-  def edit
-    @jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
-    @teachers = @organisation.teachers
-    @batches = Batch.all
-  end
-
-
-  
-
-  
-
-  
-  
-  
-
-  
-
-  
-  
-  def update
-    params.permit!
-    @jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
-    if @jkci_class
-      if @jkci_class.update(params[:jkci_class])
-        redirect_to jkci_classes_path
-      end
-    end
-  end
-  
-  def destroy
-    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
-    if jkci_class.destroy
-      redirect_to jkci_classes_path
-    end
-  end
-
-
-  
-
-
-  def class_daily_teaches
-    jkci_class = @organisation.jkci_classes.includes([:daily_teaching_points, :class_catlogs]).where(id: params[:id]).first
-    @daily_teaching_points = jkci_class.daily_teaching_points.order('id desc')
-    if params[:chapters].present?
-      @daily_teaching_points = @daily_teaching_points.where(chapter_id: params[:chapters].split(',').map(&:to_i))
-    end
-    @daily_teaching_points = @daily_teaching_points.page(params[:page])
-    respond_to do |format|
-      format.html
-      format.json {render json: {success: true, html: render_to_string(:partial => "daily_teaching_point.html.erb", :layout => false, locals: {daily_teaching_points: @daily_teaching_points}), pagination_html:  render_to_string(partial: 'daily_teach_pagination.html.erb', layout: false, locals: {class_daily_teach: @daily_teaching_points}),  css_holder: ".dailyTeach"}}
-    end
-  end
-  
-  def filter_class_exams
-    @jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
-    @class_exams = @jkci_class.jk_exams.order("updated_at desc").page(params[:page])
-    respond_to do |format|
-      format.html
-      format.json {render json: {success: true, html: render_to_string(:partial => "/exams/exam.html.erb", :layout => false, locals: {exams: @class_exams}), pagination_html:  render_to_string(partial: 'exam_pagination.html.erb', layout: false, locals: {class_exams: @class_exams}), css_holder: ".examsTable tbody"}}
-    end
-  end
-
-  def filter_daily_teach
-    @jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
-    @daily_teaching_points = @jkci_class.daily_teaching_points.includes(:class_catlogs).chapters_points.order('id desc')
-    if params[:chapters].present?
-      @daily_teaching_points = @daily_teaching_points.where(chapter_id: params[:chapters].split(',').map(&:to_i))
-    end
-    @daily_teaching_points = @daily_teaching_points.page(params[:page])
-    respond_to do |format|
-      format.html
-      format.json {render json: {success: true, html: render_to_string(:partial => "daily_teaching_point.html.erb", :layout => false, locals: {daily_teaching_points: @daily_teaching_points, hide_edit: true}), pagination_html:  render_to_string(partial: 'daily_teach_pagination.html.erb', layout: false, locals: {class_daily_teach: @daily_teaching_points}), css_holder: ".dailyTeach tbody"}}
-    end
-  end
-
-
-  
   
   def my_sanitizer
     #params.permit!

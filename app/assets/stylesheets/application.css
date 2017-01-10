@@ -834,6 +834,11 @@ ul.nostyle i {
   max-height:200px;
 }
 
+#mobile-app .googleImg {
+  width:100px;
+  margin-top:20px;
+}
+
 #mobile-app strong {
   display: block;
   margin-bottom: 30px;
