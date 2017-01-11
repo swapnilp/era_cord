@@ -30,6 +30,7 @@ module EraCord
     
     config.autoload_paths += %W(#{config.root}/lib)
     config.autoload_paths += %W(#{config.root}/app/workers)
+    config.assets.paths << Rails.root.join("app", "assets", "fonts")
     
     Dir[File.join(Rails.root, "lib", "core_extensions", "*.rb")].each {|l| require l }
 
