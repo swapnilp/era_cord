@@ -11,7 +11,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161230155639) do
+ActiveRecord::Schema.define(version: 20170110121628) do
+
+  create_table "activity_logs", force: :cascade do |t|
+    t.string   "type",               limit: 255
+    t.integer  "organisation_id_id", limit: 4
+    t.integer  "object_id",          limit: 4
+    t.integer  "user_email_id",      limit: 4
+    t.string   "reason",             limit: 255
+    t.string   "attributes",         limit: 255
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+  end
 
   create_table "albums", force: :cascade do |t|
     t.string   "name",        limit: 255

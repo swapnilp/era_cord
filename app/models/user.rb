@@ -30,7 +30,7 @@ class User < ActiveRecord::Base
 
   def reset_auth_token!
     if token_expires_at.blank? || token_expires_at < Time.now
-      update(token_expires_at: Time.now + TOKEN_EXPIRE_TIME)
+      update(token_expires_at: (Time.now + TOKEN_EXPIRE_TIME).beginning_of_minute)
     end
     JWT.encode token_fields, TOKEN_SECRET, 'HS256', exp: token_expires_at.to_i
   end

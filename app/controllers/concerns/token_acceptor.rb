@@ -12,13 +12,14 @@ module TokenAcceptor
     token = params[:authorization_token] unless token
 
     return reject_token if token.nil?
+    
+    # Since we're sent 'Bearer <token>', get rid of the 'Bearer' part
+    token.gsub!(/\ABearer\s/, '')
 
     if current_user && current_user.validate_auth_token(token)
       return true 
     end 
     
-    # Since we're sent 'Bearer <token>', get rid of the 'Bearer' part
-    token.gsub!(/\ABearer\s/, '')
 
     return reject_token unless token_valid? token
 
