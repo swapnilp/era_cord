@@ -35,6 +35,10 @@ class User < ActiveRecord::Base
     JWT.encode token_fields, TOKEN_SECRET, 'HS256', exp: token_expires_at.to_i
   end
 
+  def clear_token!
+    update(token_expires_at: nil)
+  end
+
   def validate_auth_token(token)
     if token_expires_at.blank? || token_expires_at < Time.now
       update token_expires_at: nil

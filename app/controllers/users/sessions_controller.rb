@@ -19,6 +19,7 @@ module Users
 
       return invalid_login_attempt unless resource
       if resource.valid_password? params[:user][:password]
+        
         resource.set_last_sign_in_at
         render json: resource, success: true, status: :created, serializer: UserLoginSerializer, root: false
       else
@@ -70,8 +71,9 @@ module Users
       end
 
       user = User.find_by email: email
+      user.clear_token!
       sign_out user
-      user.reset_auth_token!
+      #user.reset_auth_token!
       render json: { message: 'Logged out successfully.' }, success: true, status: 204
     end
 

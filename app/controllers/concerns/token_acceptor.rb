@@ -35,6 +35,7 @@ module TokenAcceptor
         sign_in user
       end
     else
+      user.clear_token! if user
       reject_token
     end
   end
