@@ -24,19 +24,19 @@
   font-family: 'Raleway';
   font-style: normal;
   font-weight: 400;
-  src: local('Raleway'), url(http://fonts.gstatic.com/s/raleway/v9/0dTEPzkLWceF7z0koJaX1A.woff2) format('woff2'), url(http://fonts.gstatic.com/s/raleway/v9/IczWvq5y_Cwwv_rBjOtT0w.woff) format('woff');
+  src: local('Raleway'), url(/assets/0dTEPzkLWceF7z0koJaX1A.woff2) format('woff2'), url(/assets/IczWvq5y_Cwwv_rBjOtT0w.woff) format('woff');
 }
 @font-face {
   font-family: 'Raleway';
   font-style: normal;
   font-weight: 500;
-  src: local('Raleway Medium'), local('Raleway-Medium'), url(http://fonts.gstatic.com/s/raleway/v9/CcKI4k9un7TZVWzRVT-T8_k_vArhqVIZ0nv9q090hN8.woff2) format('woff2'), url(http://fonts.gstatic.com/s/raleway/v9/CcKI4k9un7TZVWzRVT-T8xsxEYwM7FgeyaSgU71cLG0.woff) format('woff');
+  src: local('Raleway Medium'), local('Raleway-Medium'), url(/assets/CcKI4k9un7TZVWzRVT-T8_k_vArhqVIZ0nv9q090hN8.woff2) format('woff2'), url(/assets/CcKI4k9un7TZVWzRVT-T8xsxEYwM7FgeyaSgU71cLG0.woff) format('woff');
 }
 @font-face {
   font-family: 'Raleway';
   font-style: normal;
   font-weight: 700;
-  src: local('Raleway Bold'), local('Raleway-Bold'), url(http://fonts.gstatic.com/s/raleway/v9/JbtMzqLaYbbbCL9X6EvaI_k_vArhqVIZ0nv9q090hN8.woff2) format('woff2'), url(http://fonts.gstatic.com/s/raleway/v9/JbtMzqLaYbbbCL9X6EvaIxsxEYwM7FgeyaSgU71cLG0.woff) format('woff');
+  src: local('Raleway Bold'), local('Raleway-Bold'), url(/assets/JbtMzqLaYbbbCL9X6EvaI_k_vArhqVIZ0nv9q090hN8.woff2) format('woff2'), url(/assets/JbtMzqLaYbbbCL9X6EvaIxsxEYwM7FgeyaSgU71cLG0.woff) format('woff');
 }
 
 body {
