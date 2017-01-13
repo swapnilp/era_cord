@@ -153,6 +153,13 @@ Rails.application.routes.draw do
     end
   end
   
+  resources :teachers, only: [] do
+    member do
+      get :get_subjects
+      get :daily_teachs
+    end
+  end
+  
   resources :jkci_classes do
     member do
       get 'presenty_catlog'

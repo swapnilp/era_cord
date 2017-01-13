@@ -7,7 +7,7 @@ class TeacherSubject < ActiveRecord::Base
   def as_json(options = {})
     options.merge({
                     id: id,
-                    subject_name: subject.std_name
+                    name: subject.std_name
                   })
   end
 end

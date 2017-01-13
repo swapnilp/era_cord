@@ -74,6 +74,18 @@ class TeachersController < ApplicationController
     end
   end
 
+  def daily_teachs
+    teacher = Teacher.where(id: params[:id]).first
+    if teacher
+      dtps = teacher.daily_teaching_points.includes(:jkci_class, :subject, :chapter).order("id desc").page(params[:page])
+      render json: {success: true, daily_teaching_points: dtps.as_json, count: dtps.total_count}
+    else
+      render json: {success: false}
+    end
+
+  end
+    
+
   def get_remaining_subjects
     teacher = Teacher.where(id: params[:id]).first
     if teacher
