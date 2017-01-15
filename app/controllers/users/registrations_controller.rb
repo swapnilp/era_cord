@@ -100,6 +100,16 @@ module Users
       end
     end
 
+    def register_notification
+      resource = current_user
+      if params[:user].present? && params[:user][:notification_id] && params[:user][:os]
+        User.where(email: resource.email).update_all({notification_id: params[:user][:notification_id], os: params[:user][:os]})
+        render json: { success: true, message: 'Notification created successfully' }, status: 200
+      else
+        render json: { success: false, message: 'Notification not created' }, status: 200
+      end
+    end
+
     def update
       resource = current_user
       success = true

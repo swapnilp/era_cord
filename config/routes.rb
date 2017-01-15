@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     post '/users/mpin_sign_in', to: "users/sessions#mpin_login"
     get '/users/get_organisations', to: "users/sessions#get_organisations"
     post '/users/mobile_sign_up', to: "users/registrations#create_mpin"
+    post '/users/register_notification', to: "users/registrations#register_notification"
   end
   
   devise_for :users,

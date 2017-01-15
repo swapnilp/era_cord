@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170111063818) do
+ActiveRecord::Schema.define(version: 20170115060934) do
 
   create_table "activity_logs", force: :cascade do |t|
     t.string   "type",            limit: 255
@@ -824,6 +824,8 @@ ActiveRecord::Schema.define(version: 20170111063818) do
     t.integer  "mpin",                   limit: 4
     t.boolean  "verify_mobile",          limit: 1,     default: false
     t.string   "mobile_token",           limit: 255
+    t.integer  "notification_id",        limit: 4
+    t.string   "os",                     limit: 255
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
