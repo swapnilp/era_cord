@@ -10,7 +10,8 @@ class TemporaryOrganisation < ActiveRecord::Base
   
   def generate_code(user)
     e_code = (0...50).map { ('a'..'z').to_a[rand(26)] }.join
-    m_code = (0...7).map { ('a'..'z').to_a[rand(26)] }.join
+    charset = %w{ 2 3 4 6 7 9 0 1}
+    m_code = (0...6).map{ charset.to_a[rand(charset.size)] }.join
     update_attributes({id_hash: e_code, user_sms_code: m_code})
     self.send_generated_code(user)
   end

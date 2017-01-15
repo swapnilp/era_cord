@@ -87,7 +87,8 @@ class Organisation < ActiveRecord::Base
       user.add_organiser_roles 
     else
       e_code = (0...50).map { ('a'..'z').to_a[rand(26)] }.join
-      m_code = (0...7).map { ('a'..'z').to_a[rand(26)] }.join
+      charset = %w{ 2 3 4 6 7 9 0 1}
+      m_code = (0...6).map{ charset.to_a[rand(charset.size)] }.join
       update_attributes({email_code: e_code, mobile_code: m_code})
       self.send_generated_code
       self.update_attributes({super_organisation_id: self.root_id})
@@ -229,7 +230,8 @@ class Organisation < ActiveRecord::Base
   end
 
   def regenerate_organisation_code(mobile_number)
-    m_code = (0...7).map { ('a'..'z').to_a[rand(26)] }.join
+    charset = %w{ 2 3 4 6 7 9 0 1}
+    m_code = (0...6).map{ charset.to_a[rand(charset.size)] }.join
     update_attributes({mobile_code: m_code, mobile: mobile_number})
     Delayed::Job.enqueue OrganisationRegistationSms.new(organisation_sms_message)
   end
