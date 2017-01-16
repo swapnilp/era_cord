@@ -214,7 +214,6 @@ class User < ActiveRecord::Base
   def create_other_organisations_users
     teach = GTeacher.unscoped.where(email: self.email).first
     teach.manage_registered_teacher(nil) if teach.present?
-    
   end
 
   def generate_mobile_token

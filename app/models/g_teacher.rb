@@ -47,11 +47,14 @@ class GTeacher < ActiveRecord::Base
           end
           t_user.save(:validate => false)
           t_user.add_teacher_roles 
+          Delayed::Job.enqueue TeacherIntimateMailQueue.new(t_user)
         else
           o_user.add_role :teacher
           o_user.update(role: "teacher") if o_user.role != 'organisation'
+          Delayed::Job.enqueue TeacherIntimateMailQueue.new(o_user)
         end
-      end
+
+      end  
       
     else
       self.generate_email_code(org) if org.present?
