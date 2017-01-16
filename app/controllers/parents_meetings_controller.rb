@@ -7,6 +7,13 @@ class ParentsMeetingsController < ApplicationController
   def index
     parents_meetings = ParentsMeeting.my_organisation(@organisation.id).order("date desc")
     
+    if params[:filter].present? &&  JSON.parse(params[:filter])['dateRange'].present? && JSON.parse(params[:filter])['dateRange']['startDate'].present?
+      parents_meetings = parents_meetings.where("date >= ?", JSON.parse(params[:filter])['dateRange']['startDate'].to_time)
+    end
+    if params[:filter].present? &&  JSON.parse(params[:filter])['dateRange'].present? && JSON.parse(params[:filter])['dateRange']['endDate'].present?
+      parents_meetings = parents_meetings.where("date <= ?", JSON.parse(params[:filter])['dateRange']['endDate'].to_time)
+    end
+    
     parents_meetings = parents_meetings.page(params[:page])
     render json: {success: true, parents_meetings: parents_meetings.as_json, count: parents_meetings.total_count}
   end
