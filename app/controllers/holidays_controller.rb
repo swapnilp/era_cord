@@ -18,6 +18,7 @@ class HolidaysController < ApplicationController
   end
   
   def create
+    return render json: {success: false, message: "Must be root user"} unless @organisation.root?
     
     holiday = Holiday.new(create_params.merge({organisation_id: @organisation.id, is_goverment: false}))
     if holiday.save
