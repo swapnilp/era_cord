@@ -17,14 +17,23 @@ class HolidaysController < ApplicationController
     render json: {success: true, holidays: holidays.as_json, total_count: holidays.total_count}
   end
   
+  def create
+    
+    holiday = Holiday.new(create_params.merge({organisation_id: @organisation.id, is_goverment: false}))
+    if holiday.save
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+  end
     
   private
 
   def create_params
-    params.require(:hostel).permit(:name, :gender, :rooms, :owner, :address, :average_fee, :student_occupancy, :is_service_tax, :service_tax, :months, :start_month)
+    params.require(:holiday).permit(:date, :reason)
   end
 
   def update_params
-    params.require(:hostel).permit(:name, :gender, :rooms, :owner, :address, :average_fee, :student_occupancy, :is_service_tax, :service_tax)
+    params.require(:holiday).permit(:date, :reason)
   end
 end
