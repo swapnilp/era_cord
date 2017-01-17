@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170115060934) do
+ActiveRecord::Schema.define(version: 20170116184848) do
 
   create_table "activity_logs", force: :cascade do |t|
     t.string   "type",            limit: 255
@@ -313,6 +313,15 @@ ActiveRecord::Schema.define(version: 20170115060934) do
     t.integer  "album_id",           limit: 4
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
+  end
+
+  create_table "holidays", force: :cascade do |t|
+    t.date     "date"
+    t.string   "reason",          limit: 255
+    t.boolean  "is_goverment",    limit: 1
+    t.integer  "organisation_id", limit: 4,   default: 0
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
   end
 
   create_table "hostel_logs", force: :cascade do |t|

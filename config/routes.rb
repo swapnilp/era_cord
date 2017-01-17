@@ -264,6 +264,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :holidays
+  
   resources :hostels do
     member do 
       get "get_unallocated_students"
