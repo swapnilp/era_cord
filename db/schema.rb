@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170116184848) do
+ActiveRecord::Schema.define(version: 20170119105815) do
 
   create_table "activity_logs", force: :cascade do |t|
     t.string   "type",            limit: 255
@@ -320,8 +320,10 @@ ActiveRecord::Schema.define(version: 20170116184848) do
     t.string   "reason",          limit: 255
     t.boolean  "is_goverment",    limit: 1
     t.integer  "organisation_id", limit: 4,   default: 0
-    t.datetime "created_at",                              null: false
-    t.datetime "updated_at",                              null: false
+    t.datetime "created_at",                                  null: false
+    t.datetime "updated_at",                                  null: false
+    t.boolean  "specific_class",  limit: 1,   default: false
+    t.string   "classes",         limit: 255
   end
 
   create_table "hostel_logs", force: :cascade do |t|

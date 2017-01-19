@@ -264,7 +264,11 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :holidays
+  resources :holidays do
+    collection do 
+      get 'get_classes'
+    end
+  end
   
   resources :hostels do
     member do 
