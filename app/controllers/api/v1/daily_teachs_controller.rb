@@ -48,7 +48,7 @@ sub_classes: time_table_class.sub_class_id, teacher_id: teacher.id, sub_class_id
     daily_teaching_point = teacher.daily_teaching_points.where(id: params[:id]).first
     if daily_teaching_point
       catlogs = daily_teaching_point.students.map{|student| student.catlog_json([daily_teaching_point.class_catlogs.map(&:student_id)])}
-      render json: {success: true, class_catlogs: catlogs, is_update: (daily_teaching_point.date > Date.today - 2.days), message: "You can fill up catlog"}
+      render json: {success: true, class_catlogs: catlogs, is_update: (daily_teaching_point.date > Date.today - 2.days), message: "You can not fill up catlog, which is created 2 days before"}
     else
       render json: {success: false}
     end
