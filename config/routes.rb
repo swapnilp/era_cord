@@ -255,7 +255,12 @@ Rails.application.routes.draw do
     collection do 
       get 'calender_index'
     end
-    resources :time_table_classes, only: [:create, :index, :update, :destroy]
+    resources :time_table_classes, only: [:create, :index, :update, :destroy] do
+      member do
+        post "assign_teacher"
+      end
+    end
+    
   end
 
   resources :chapters, only: [:index] do

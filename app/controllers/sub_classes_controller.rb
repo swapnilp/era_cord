@@ -110,7 +110,7 @@ class SubClassesController < ApplicationController
     
     sub_class = jkci_class.sub_classes.where(id: params[:id]).first
     if sub_class
-      timetable = sub_class.time_table_classes.includes([:sub_class, :subject, :teacher]).day_wise_sort
+      timetable = sub_class.time_table_classes.includes([:sub_class, :subject, :teacher, :jkci_class]).day_wise_sort
       render json: {success: true, timetable: timetable ,count: timetable.count}
     else
       render json: {success: false, message: "Invalid Class"}

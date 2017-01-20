@@ -49,6 +49,20 @@ class TimeTableClassesController < ApplicationController
     
   end
 
+  def assign_teacher
+    time_table = TimeTable.where(id: params[:time_table_id]).first
+    return render json: {success: false, message: "Invalid Time table"} unless time_table
+    
+    time_table_class = time_table.time_table_classes.where(id: params[:id]).first
+    teacher = Teacher.where(id: assign_teacher_params[:teacher_id]).first
+    if time_table_class && teacher
+      time_table_class.update_attributes({teacher_id: teacher.id})
+      render json: {success: true}
+    else
+      render json: {success: false}
+    end
+  end
+
   private
   
   def my_sanitizer
@@ -58,6 +72,10 @@ class TimeTableClassesController < ApplicationController
 
   def create_params
     params.require(:time_table_class).permit(:teacher_id, :cwday, :sub_class_id, :slot_type, :subject_id, :class_room, :time_table_id, :start_time, :end_time, :durations)
+  end
+
+  def assign_teacher_params
+    params.require(:time_table_class).permit(:teacher_id)
   end
 
   def update_params

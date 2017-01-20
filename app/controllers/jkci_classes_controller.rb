@@ -278,12 +278,12 @@ class JkciClassesController < ApplicationController
   end
 
   def get_timetable
-    jkci_class = JkciClass.includes({subjects: :standard}).where(id: params[:id]).first
+    jkci_class = JkciClass.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
 
     time_table = jkci_class.time_tables.where(sub_class_id: nil).first
     if time_table
-      render json: {success: true, time_table: time_table.as_json, subjects: jkci_class.subjects.as_json, slots: time_table.time_table_classes.as_json, sub_classes: jkci_class.sub_classes.as_json}
+      render json: {success: true, time_table: time_table.as_json, subjects: jkci_class.subjects.as_json, slots: time_table.time_table_classes.includes([:subject, :sub_class, :jkci_class, :teacher]).as_json, sub_classes: jkci_class.sub_classes.as_json}
     else
       render json: {success: false}
     end
@@ -297,23 +297,23 @@ class JkciClassesController < ApplicationController
   end
   
   def get_time_table_to_verify
-    jkci_class = @organisation.jkci_classes.includes({subjects: :standard}).where(id: params[:id]).first
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
 
     time_table = jkci_class.time_tables.where(sub_class_id: nil).first
     if time_table
-      time_table_classes = time_table.time_table_classes.where(teacher_id: nil)
-      render json: {success: true,  slots: time_table_classes.as_json}
+      time_table_classes = time_table.time_table_classes.includes([:subject, :sub_class, :jkci_class]).where(teacher_id: nil)
+      render json: {success: true,  slots: time_table_classes.map(&:verify_json)}
     else
       render json: {success: false}
     end
   end
 
   def get_time_table
-    jkci_class = @organisation.jkci_classes.includes({subjects: :standard}).where(id: params[:id]).first
+    jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
 
-    time_table_classes = jkci_class.time_table_classes.day_wise_sort
+    time_table_classes = jkci_class.time_table_classes.includes([:subject, :sub_class, :jkci_class, :teacher]).day_wise_sort
     render json: {success: true, slots: time_table_classes, count: time_table_classes.count}
   end
 
