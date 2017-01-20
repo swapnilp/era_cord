@@ -5,14 +5,20 @@ class HolidaysController < ApplicationController
   load_and_authorize_resource param_method: :my_sanitizer
   
   def index
-    holidays = Holiday.all
+    holidays = Holiday.current
+    
     if params[:filter].present? &&  JSON.parse(params[:filter])['dateRange'].present? && JSON.parse(params[:filter])['dateRange']['startDate'].present?
       holidays = holidays.where("date >= ?", JSON.parse(params[:filter])['dateRange']['startDate'].to_time)
     end
     if params[:filter].present? &&  JSON.parse(params[:filter])['dateRange'].present? && JSON.parse(params[:filter])['dateRange']['endDate'].present?
       holidays = holidays.where("date <= ?", JSON.parse(params[:filter])['dateRange']['endDate'].to_time)
     end
-    holidays = holidays.page(params[:page])
+
+    if params[:filter].present? && JSON.parse(params[:filter])['type'].present?
+    else
+      holidays = holidays.upcomming
+    end
+    holidays = holidays.order("date asc").page(params[:page])
     
     render json: {success: true, holidays: holidays.as_json, total_count: holidays.total_count}
   end
