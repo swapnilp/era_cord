@@ -29,7 +29,11 @@ class TimeTable < ActiveRecord::Base
     #    off_class.save
     #  end
     #end
-
+    holiday = Holiday.where(date: date).first
+    if holiday.present? 
+      return true unless holiday.specific_class
+      return true if holiday.classes.split(',').map(&:to_i).include?(self.jkci_class.id)
+    end
     if self.jkci_class.is_current_active
       #table_classes = self.time_table_classes.where(cwday: date.cwday)
       #table_subjects = table_classes.map(&:subject_id)
