@@ -51,7 +51,8 @@ class HolidaysController < ApplicationController
   def destroy
     return render json: {success: false, message: "Must be root user"} unless @organisation.root?
     holiday = Holiday.where(id: params[:id]).first
-    if holiday && holiday.destroy
+    if holiday && !holiday.is_goverment
+      holiday.destroy
       render json: {success: true}
     else
       render json: {success: false, message: "Something went wrong"}
