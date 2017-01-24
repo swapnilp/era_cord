@@ -51,7 +51,7 @@ class User < ActiveRecord::Base
   end
 
   def request_per_min 
-    10
+    600
   end
   
   def check_not_registered
