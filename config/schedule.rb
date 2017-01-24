@@ -18,7 +18,7 @@
 # end
 
 every 1.day, :at => '1:00 am' do
-  rake "cd ~/work/era_cord/ && bundle exec rake offclass:calculate"
+  rake "offclass:calculate"
 end
 
 # Learn more: http://github.com/javan/whenever
