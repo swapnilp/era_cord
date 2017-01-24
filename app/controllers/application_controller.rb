@@ -22,9 +22,18 @@ class ApplicationController < ActionController::Base
   
   def authenticate_user!(options={})
     super(options)
+    validate_rpm
     @organisation = current_user.organisation
     Organisation.current_id = @organisation.present? ? @organisation.root.subtree.map(&:id) : nil
     #@organisation.update_attributes({last_signed_in: Time.now}) if @organisation.present?
+  end
+  
+  def validate_rpm
+
+    if ApiRpmStore.threshold?(current_user.id.to_s, current_user.request_per_min) # request_per_min is  threshold for
+      render json: {message: 'too_many_requests'}, status: :too_many_requests
+      return false
+    end
   end
 
   def set_access_control_headers

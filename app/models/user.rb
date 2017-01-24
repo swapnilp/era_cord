@@ -27,6 +27,7 @@ class User < ActiveRecord::Base
 
   scope :clerks, -> {with_role :clerk }
   scope :teachers, -> {with_role :teacher }
+  
 
   def reset_auth_token!
     if token_expires_at.blank? || token_expires_at < Time.now
@@ -49,6 +50,9 @@ class User < ActiveRecord::Base
     JWT.secure_compare token, server_token
   end
 
+  def request_per_min 
+    10
+  end
   
   def check_not_registered
     Organisaiton.where("email_code != ?", nil)
