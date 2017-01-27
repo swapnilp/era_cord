@@ -132,7 +132,8 @@ class JkciClass < ActiveRecord::Base
     table = [["Chapters", "Points"]]
     chapters = subject.chapters
     chapters.each_with_index do |chapter, index|
-      table << ["#{chapter.name}", "#{chapter.points_name}"]
+      ids = self.daily_teaching_points.where(chapter_id: chapter.id).map(&:chapters_point_id).join(',').split(',').map(&:to_i).uniq
+      table << ["#{chapter.name}", "#{chapter.points_name(ids)}"]
     end
     table
   end

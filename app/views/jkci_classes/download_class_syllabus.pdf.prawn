@@ -14,10 +14,10 @@ prawn_document do |pdf|
   pdf.move_down(10)
   @subjects.each do |subject|
     pdf.text "Subject -  #{subject.std_name}", align: :left
-
+  
     pdf.text "Teacher -  #{@jkci_class.teacher.try(:name) || '____________________'}", align: :right
-
-    pdf.table(@jkci_class.chapters_table_format(subject), :column_widths => [100, 420],  :cell_style => { :overflow => :shrink_to_fit, :size => 10}) do
+  
+    pdf.table(@jkci_class.chapters_table_format(subject), :column_widths => [100, 420],  :cell_style => { :overflow => :shrink_to_fit, :size => 10, :inline_format => true}) do
       row(0).font_style = :bold
       row(0).size = 12
     end 

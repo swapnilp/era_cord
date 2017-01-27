@@ -3,8 +3,15 @@ class Chapter < ActiveRecord::Base
   has_many :chapters_points
   has_many :current_classes, class_name: "JkciClass", foreign_key: "current_chapter_id"
 
-  def points_name
-    self.chapters_points.map(&:name).join(",    ")
+  def points_name(ids = [])
+    if ids.blank?
+      points_str = self.chapters_points.map(&:name)
+      points_str = "#{points_str.join(", ")}"
+    else
+      points_str = self.chapters_points.collect {|p| ids.include?(p.id) ?  "<b>#{p.name}</b>" : p.name }
+       points_str = "<em>#{points_str.join(", ")}</em>"
+    end
+    points_str
   end
 
   def as_json(options = {})
