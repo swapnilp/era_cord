@@ -255,10 +255,12 @@ class JkciClassesController < ApplicationController
   end
 
   def download_class_syllabus
-    @jkci_class = JkciClass.where(id: params[:id]).first
+    @jkci_class = JkciClass.includes(:daily_teaching_points).where(id: params[:id]).first
     raise ActionController::RoutingError.new('Not Found') unless @jkci_class
     
     @subjects = @jkci_class.standard.subjects.includes({chapters: :chapters_points})
+    @points_hash = @jkci_class.daily_teaching_points.collect {|dtp| {dtp.chapter_id => dtp.chapters_point_id.split(',').map(&:to_i) }}
+    @points_hash = @points_hash.inject(:merge)
     #@subject = @jkci_class.standard.subjects.where(id: params[:subject]).first
     #@chapters_table = @jkci_class.chapters_table_format(@subject)
     respond_to do |format|

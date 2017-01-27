@@ -128,11 +128,11 @@ class JkciClass < ActiveRecord::Base
     end
   end
   
-  def chapters_table_format(subject)
+  def chapters_table_format(subject, points_hash)
     table = [["Chapters", "Points"]]
     chapters = subject.chapters
     chapters.each_with_index do |chapter, index|
-      ids = self.daily_teaching_points.where(chapter_id: chapter.id).map(&:chapters_point_id).join(',').split(',').map(&:to_i).uniq
+      ids = points_hash[chapter.id] #self.daily_teaching_points.where(chapter_id: chapter.id).map(&:chapters_point_id).join(',').split(',').map(&:to_i).uniq
       table << ["#{chapter.name}", "#{chapter.points_name(ids)}"]
     end
     table
