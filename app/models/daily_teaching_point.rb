@@ -104,6 +104,7 @@ class DailyTeachingPoint < ActiveRecord::Base
       #self.class_catlogs.build({student_id: student.id, date: self.date, jkci_class_id: self.jkci_class_id, organisation_id: self.organisation_id}).save
       class_catlog = self.class_catlogs.find_or_initialize_by({student_id: student.id, jkci_class_id: self.jkci_class_id, organisation_id: self.organisation_id})
       class_catlog.is_present = false
+      class_catlog.date = date
       class_catlog.save
     end
   end

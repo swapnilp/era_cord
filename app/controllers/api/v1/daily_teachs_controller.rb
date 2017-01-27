@@ -61,7 +61,7 @@ sub_classes: time_table_class.sub_class_id, teacher_id: teacher.id, sub_class_id
     daily_teaching_point = teacher.daily_teaching_points.where(id: params[:id]).first
     if daily_teaching_point
       if params[:daily_teaching_point].present?
-        daily_teaching_point.fill_catlog(params[:daily_teaching_point][:absenty_string].split(',').map(&:to_i),  Date.today)
+        daily_teaching_point.fill_catlog(params[:daily_teaching_point][:absenty_string].split(',').map(&:to_i), daily_teaching_point.date)
       end
       render json: {success: true}
     else
