@@ -139,6 +139,10 @@ class Ability
         can :allocate_students, HostelRoom
         can :edit, HostelRoom
         can :update, HostelRoom
+        can :get_other_rooms, Student
+        can :get_hostel_students, Student
+        can :swap_room_student, Student
+        can :change_room, Student
       end
     else
       can :read, Gallery
