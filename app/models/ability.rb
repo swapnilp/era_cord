@@ -113,6 +113,8 @@ class Ability
       can :download_report, Student
       can :get_graph_data, Student
       can :get_filter_values, Student
+      can :update, Student if roles.include?('add_student')
+      can :create, Student if roles.include?('add_student')
       can :get_fee_info, Student if roles.include?('accountant')  || roles.include?('accountant_clerk')
       can :paid_student_fee, Student if roles.include?('accountant')  || roles.include?('accountant_clerk')
       
@@ -130,6 +132,7 @@ class Ability
         can :graph_data, StudentFee
         can :print_account, StudentFee
         can :download_excel, StudentFee
+        can :get_transactions, StudentFee
         can :get_logs, StudentFee
         can :get_payments_info, Student
       end
