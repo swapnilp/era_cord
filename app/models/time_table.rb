@@ -34,7 +34,7 @@ class TimeTable < ActiveRecord::Base
       return true unless holiday.specific_class
       return true if holiday.classes.split(',').map(&:to_i).include?(self.jkci_class.id)
     end
-    if self.jkci_class.is_current_active
+    if self.jkci_class.is_current_active && self.jkci_class.is_student_verified
       #table_classes = self.time_table_classes.where(cwday: date.cwday)
       #table_subjects = table_classes.map(&:subject_id)
       db_date = date.in_time_zone.utc
