@@ -122,6 +122,7 @@ class Ability
       can :create, Student if roles.include?('accountant') || roles.include?('accountant_clerk')
 
       can :read, SmsSent
+      can :read, Holiday
 
       if roles.include? 'accountant'
         can :index, StudentFee
