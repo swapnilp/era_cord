@@ -151,6 +151,8 @@ class Ability
         can :get_hostel_students, Student
         can :swap_room_student, Student
         can :change_room, Student
+        can :allocate_hostel, Student
+        can :deallocate_hostel, Student
       end
     else
       can :read, Gallery
