@@ -115,7 +115,7 @@ class Ability
       can :get_filter_values, Student
       can :get_fee_info, Student if roles.include?('accountant')  || roles.include?('accountant_clerk')
       can :paid_student_fee, Student if roles.include?('accountant')  || roles.include?('accountant_clerk')
-      can :get_payments_info, Student if roles.include? 'accountant' 
+      
       can :manage, Contact
       can :print_receipt, StudentFee if roles.include?('accountant') || roles.include?('accountant_clerk')
       can :new, Student if roles.include?('accountant') || roles.include?('accountant_clerk')
@@ -130,15 +130,20 @@ class Ability
         can :graph_data, StudentFee
         can :print_account, StudentFee
         can :download_excel, StudentFee
+        can :get_logs, StudentFee
+        can :get_payments_info, Student
       end
       if roles.include? 'manage_hostel'
         can :index, Hostel
         can :show, Hostel
         can :get_unallocated_students, Hostel
+        can :get_logs, Hostel
         can :index, HostelRoom
         can :allocate_students, HostelRoom
         can :edit, HostelRoom
         can :update, HostelRoom
+        can :create, HostelRoom
+        can :destroy, HostelRoom
         can :get_other_rooms, Student
         can :get_hostel_students, Student
         can :swap_room_student, Student
