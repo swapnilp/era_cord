@@ -45,6 +45,9 @@ class TimeTable < ActiveRecord::Base
         if tt_class.sub_class_id.present?
           tt_exams = exams.where("sub_classes like '%,?,%' OR  sub_classes like ?", tt_class.sub_class_id, '')
           tt_daily_classes = daily_classes.where("sub_classes like '%,?,%' OR  sub_classes like ?", tt_class.sub_class_id, ',,')
+        else
+          tt_exams = exams
+          tt_daily_classes = daily_classes
         end
         
         tt_exams = tt_exams.where(subject_id: tt_class.subject_id)
