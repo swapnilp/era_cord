@@ -2,6 +2,7 @@ class ApplicationController < ActionController::Base
   include TokenAcceptor
   #include LocalSubdomain
   include UrlHelper
+
   
   Range.include CoreExtensions::Range
 
