@@ -49,6 +49,7 @@ class Organisation < ActiveRecord::Base
   has_many :user_clerks
   has_many :hostel_logs
   has_many :holidays
+  has_many :vendors
     
 
   cattr_accessor :current_id
