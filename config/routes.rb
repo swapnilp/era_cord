@@ -160,6 +160,8 @@ Rails.application.routes.draw do
       get :daily_teachs
     end
   end
+
+  resources :vendors
   
   resources :jkci_classes do
     member do
