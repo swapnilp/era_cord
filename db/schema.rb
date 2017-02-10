@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170209113138) do
+ActiveRecord::Schema.define(version: 20170210061944) do
 
   create_table "activity_logs", force: :cascade do |t|
     t.string   "type",            limit: 255
@@ -849,6 +849,19 @@ ActiveRecord::Schema.define(version: 20170209113138) do
   end
 
   add_index "users_roles", ["user_id", "role_id"], name: "index_users_roles_on_user_id_and_role_id", using: :btree
+
+  create_table "vendor_transactions", force: :cascade do |t|
+    t.integer  "vendor_id",        limit: 4
+    t.integer  "organisation_id",  limit: 4
+    t.string   "type",             limit: 255
+    t.float    "amount",           limit: 24
+    t.string   "cheque_number",    limit: 255
+    t.date     "issue_date"
+    t.string   "transaction_type", limit: 255, default: "Debit", null: false
+    t.string   "user_email",       limit: 255
+    t.datetime "created_at",                                     null: false
+    t.datetime "updated_at",                                     null: false
+  end
 
   create_table "vendors", force: :cascade do |t|
     t.string   "name",            limit: 255

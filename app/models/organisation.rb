@@ -50,6 +50,7 @@ class Organisation < ActiveRecord::Base
   has_many :hostel_logs
   has_many :holidays
   has_many :vendors
+  has_many :vendor_transactions
     
 
   cattr_accessor :current_id

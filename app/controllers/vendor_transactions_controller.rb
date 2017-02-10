@@ -1,4 +1,4 @@
-class VendorsController < ApplicationController
+class VendorTransactionsController < ApplicationController
   before_action :authenticate_user!, except: [:sync_organisation_students]
   
   load_and_authorize_resource
@@ -8,10 +8,6 @@ class VendorsController < ApplicationController
   
   def index
     vendors = Vendor.all
-    if params[:filter].present? &&  JSON.parse(params[:filter])['name'].present?
-      query = "%#{JSON.parse(params[:filter])['name']}%"
-      vendors = vendors.where("name LIKE ? || nick_name LIKE ? || mobile like ?", query, query, query)
-    end
     vendors = vendors.page(params[:page])
     render json: {success: true, vendors: vendors.as_json, total_count: vendors.total_count}
   end
@@ -50,11 +46,11 @@ class VendorsController < ApplicationController
   private
   
   def create_params
-    params.require(:vendor).permit(:name, :nick_name, :cheque_name, :ac_no, :bank, :address, :reason, :mobile)
+    params.require(:vendor_transaction).permit(:type, :amount, :cheque_number, :issue_date, :transaction_type)
   end
 
   def update_params
-    params.require(:vendor).permit(:name, :nick_name, :cheque_name, :ac_no, :bank, :address, :reason, :mobile)
+    params.require(:vendor_transaction).permit(:type, :amount, :cheque_number, :issue_date, :transaction_type)
   end
 
 end
