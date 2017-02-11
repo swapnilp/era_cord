@@ -7,7 +7,7 @@ class VendorsController < ApplicationController
   #load_and_authorize_resource param_method: :my_sanitizer, except: [:sync_organisation_students]
   
   def index
-    vendors = Vendor.all
+    vendors = Vendor.all.order("id desc")
     if params[:filter].present? &&  JSON.parse(params[:filter])['name'].present?
       query = "%#{JSON.parse(params[:filter])['name']}%"
       vendors = vendors.where("name LIKE ? || nick_name LIKE ? || mobile like ?", query, query, query)
@@ -39,11 +39,22 @@ class VendorsController < ApplicationController
   end
 
   def edit
-
+    vendor = Vendor.where(id: params[:id]).first
+    if vendor.present?
+      render json: {success: true, vendor: vendor.as_json}
+    else
+      render json: {success: false}
+    end
   end
 
   def update
-    
+    vendor = Vendor.where(id: params[:id]).first
+    if vendor.present?
+      vendor.update(update_params)
+      render json: {success: true, vendor_id: vendor.id}
+    else
+      render json: {success: false}
+    end
   end
   
     
@@ -54,7 +65,7 @@ class VendorsController < ApplicationController
   end
 
   def update_params
-    params.require(:vendor).permit(:name, :nick_name, :cheque_name, :ac_no, :bank, :address, :reason, :mobile)
+    params.require(:vendor).permit(:nick_name, :cheque_name, :ac_no, :bank, :address, :reason, :mobile)
   end
 
 end
