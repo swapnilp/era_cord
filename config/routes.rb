@@ -161,7 +161,9 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :vendors
+  resources :vendors do
+    resources :vendor_transactions
+  end
   
   resources :jkci_classes do
     member do
