@@ -423,6 +423,7 @@ class Exam < ActiveRecord::Base
                       is_group: is_group, 
                       divisions: divisions, 
                       conducted_by: conducted_by, 
+                      remark: remark
                     })
     else
       options.merge({
@@ -435,7 +436,8 @@ class Exam < ActiveRecord::Base
                       is_group: is_group, 
                       divisions: divisions, 
                       conducted_by: conducted_by, 
-                      duration: duration
+                      duration: duration,
+                      remark: remark
                     })
     end
   end

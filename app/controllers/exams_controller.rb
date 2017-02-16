@@ -430,11 +430,11 @@ class ExamsController < ApplicationController
   end
   
   def create_params
-    params.require(:exam).permit(:name, :conducted_by, :marks, :exam_date, :duration, :subject_id, :exam_type, :sub_classes, :jkci_class_id, :is_group, :ancestry)
+    params.require(:exam).permit(:name, :conducted_by, :marks, :exam_date, :duration, :subject_id, :exam_type, :sub_classes, :jkci_class_id, :is_group, :ancestry, :remark)
   end
 
   def update_params
-    params.require(:exam).permit(:name, :marks, :subject_id, :exam_date, :exam_type, :jkci_class_id, :is_group, :conducted_by, :duration, :sub_classes, :ancestry)
+    params.require(:exam).permit(:name, :marks, :subject_id, :exam_date, :exam_type, :jkci_class_id, :is_group, :conducted_by, :duration, :sub_classes, :ancestry, :remark)
   end
 
 end
