@@ -163,6 +163,9 @@ Rails.application.routes.draw do
 
   resources :vendors do
     resources :vendor_transactions
+    collection do
+      get :get_logs
+    end
   end
   
   resources :jkci_classes do

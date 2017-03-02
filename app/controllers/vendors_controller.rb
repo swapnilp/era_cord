@@ -56,6 +56,13 @@ class VendorsController < ApplicationController
       render json: {success: false}
     end
   end
+
+  def get_logs
+    logs = VendorTransaction.includes(:vendor).all
+    logs = logs.page(params[:page])
+    
+    render json: {success: true, logs: logs.map(&:logs_json), total_logs: logs.total_count}
+  end
   
     
   private
