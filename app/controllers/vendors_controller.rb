@@ -59,6 +59,15 @@ class VendorsController < ApplicationController
 
   def get_logs
     logs = VendorTransaction.includes(:vendor).all
+
+    if params[:filter].present? &&  JSON.parse(params[:filter])['dateRange'] && JSON.parse(params[:filter])['dateRange']['startDate'].present?
+      logs = logs.where("created_at >= ? ", JSON.parse(params[:filter])['dateRange']['startDate'].to_date)
+    end
+
+    if params[:filter].present? &&  JSON.parse(params[:filter])['dateRange'] && JSON.parse(params[:filter])['dateRange']['endDate'].present?
+      logs = logs.where("created_at <= ? ", JSON.parse(params[:filter])['dateRange']['endDate'].to_date)
+    end
+    
     logs = logs.page(params[:page])
     
     render json: {success: true, logs: logs.map(&:logs_json), total_logs: logs.total_count}
