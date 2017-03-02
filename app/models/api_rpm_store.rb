@@ -11,9 +11,14 @@ class ApiRpmStore
  
     def incr(key)
       #val = redis_client.incr(key)
-      val = $redis.incr(key)
-      $redis.expire(key, TIME_TO_EXPIRE) if val == 1
-      val
+      begin
+        val = $redis.incr(key)
+        $redis.expire(key, TIME_TO_EXPIRE) if val == 1
+        val
+      rescue
+        return 1
+      end
+        
     end
  
     def threshold?(key, threshold_value = 0)
