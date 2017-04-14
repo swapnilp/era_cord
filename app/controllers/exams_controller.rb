@@ -390,7 +390,8 @@ class ExamsController < ApplicationController
     return render json: {success: false, message: "Invalid Calss"} unless jkci_class
     
     exam = jkci_class.exams.where(id: params[:id]).first
-    if exam && !exam.create_verification
+    if exam && !exam.is_result_decleared
+      exam.exam_catlogs.destroy_all
       exam.update_attributes({is_active: false})
       exam.descendants.update_all({is_active: false})
       exam.delete_notification if exam.root?
