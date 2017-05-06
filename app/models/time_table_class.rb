@@ -1,13 +1,12 @@
 class TimeTableClass < ActiveRecord::Base
-
+  acts_as_organisation
+  
   belongs_to :time_table
   belongs_to :subject
-  belongs_to :organisation
   belongs_to :sub_class
   belongs_to :teacher
   has_one :jkci_class, through: :time_table
   
-  default_scope { where(organisation_id: Organisation.current_id) }  
   attr_accessor :teacher_name
 
   def self.day_wise_sort

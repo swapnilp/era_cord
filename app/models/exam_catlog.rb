@@ -1,5 +1,5 @@
 class ExamCatlog < ActiveRecord::Base
-
+  acts_as_organisation
   belongs_to :exam
   belongs_to :student
   belongs_to :jkci_class
@@ -13,7 +13,6 @@ class ExamCatlog < ActiveRecord::Base
   scope :completed, -> {where("is_present in (?)",  [true, false])}
 
   
-  default_scope { where(organisation_id: Organisation.current_id) }
 
   def exam_report
     r_name = "#{exam.name} "
@@ -37,4 +36,15 @@ class ExamCatlog < ActiveRecord::Base
     end
   end
 
+  def student_info_json(options = {})
+    options.merge({
+                    id: id,
+                    date: self.exam.try(:exam_date).present? ? self.exam.exam_date.strftime("%b %d-%Y") : "",
+                    marks: marks,
+                    is_present: is_present,
+                    absent_sms_sent: absent_sms_sent,
+                    name: exam.try(:std_subject_name)
+                  })
+  end
+  
 end

@@ -1,12 +1,11 @@
 class HostelRoom < ActiveRecord::Base
-  belongs_to :organisation
+  acts_as_organisation
+  
   belongs_to :hostel
   has_many :students
   has_many :hostel_transactions
   has_many :hostel_logs
   
-  default_scope { where(organisation_id: Organisation.current_id) }
-
   def remaining_beds
     return beds - students_count
   end

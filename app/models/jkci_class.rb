@@ -1,5 +1,8 @@
 class JkciClass < ActiveRecord::Base
   include SendingSms
+
+  acts_as_organisation
+  
   belongs_to :teacher
   has_many :class_students
   has_many :students, through: :class_students
@@ -11,7 +14,6 @@ class JkciClass < ActiveRecord::Base
   #belongs_to :subject
   belongs_to :standard
   has_many :subjects, through: :standard
-  belongs_to :organisation
   belongs_to :current_chapter, class_name: "Chapter", foreign_key: "current_chapter_id"
   has_many :sub_classes
   has_many :exam_notifications, through: :exams, source: :notifications
@@ -29,12 +31,10 @@ class JkciClass < ActiveRecord::Base
 
   validates :class_name, presence: true
   validates :batch_id, presence: true
-  validates :organisation_id, presence: true
   #validates :standard_id, presence: true, uniqueness: { scope: [:organisation_id, :batch_id],
   #  message: "should happen once per organisation per batch" }
   
-  #default_scope  {where(is_active: true)} 
-  default_scope { where(organisation_id: Organisation.current_id) }
+
   scope :active, -> { where(is_current_active: true, is_active: true) }
 
   after_create :generate_time_table
@@ -156,7 +156,7 @@ class JkciClass < ActiveRecord::Base
       new_class.class_name = "#{new_class.standard.std_name}-#{next_batch.name}"
       new_class.save
 
-      new_next_class = JkciClass.find_or_initialize_by({batch_id: next_batch.id, standard_id: next_standard.id, organisation_id: Organisation.current_id })
+      new_next_class = JkciClass.find_or_initialize_by({batch_id: next_batch.id, standard_id: next_standard.id})
       new_next_class.organisation_id = next_old_class.organisation_id
       new_next_class.class_name = "#{new_next_class.standard.std_name}-#{next_batch.name}"
       new_next_class.fee = next_old_class.fee

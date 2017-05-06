@@ -1,13 +1,13 @@
 class SmsSent < ActiveRecord::Base
   include ActiveSupport::Inflector
   #self.inheritance_column = :obj_type
-
+  acts_as_organisation
+  
   belongs_to :student
 
   after_save :update_record
 
-  default_scope { where(organisation_id: Organisation.current_id) }  
-  scope :our_organisations, -> { where(organisation_id: Organisation.current_id, obj_type: ["Activation", "absent_exam", "exam result", "exam_result", "group_exam_result", "activation_sms", "student_fee"]) }
+  scope :our_organisations, -> { where(obj_type: ["Activation", "absent_exam", "exam result", "exam_result", "group_exam_result", "activation_sms", "student_fee"]) }
   
 
   def update_record

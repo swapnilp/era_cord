@@ -1,8 +1,9 @@
 class StudentFee < ActiveRecord::Base
+  acts_as_organisation
+  
   belongs_to :student
   belongs_to :batch
   belongs_to :jkci_class
-  belongs_to :organisation
   belongs_to :user
   belongs_to :payment_reason
   
@@ -12,7 +13,6 @@ class StudentFee < ActiveRecord::Base
   
   has_one :removed_class_student, ->(student_fee){ where("removed_class_students.batch_id = :batch_id",  batch_id: student_fee.batch_id) }, class_name: "RemovedClassStudent", :foreign_key => "student_id", primary_key: "student_id"
   
-  default_scope { where(organisation_id: Organisation.current_id) }    
 
   after_create :send_account_sms
   validates_presence_of :student_id, :batch_id, :date, :amount,  :payment_type, :organisation_id, :user_id

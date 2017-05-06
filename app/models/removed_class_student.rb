@@ -1,8 +1,9 @@
 class RemovedClassStudent < ActiveRecord::Base
+  acts_as_organisation
+  
   belongs_to :jkci_class
   belongs_to :student
   
-  default_scope { where(organisation_id: Organisation.current_id) }
   
   def self.add_removed_class_students(class_students)
     if class_students.is_a?(Array)

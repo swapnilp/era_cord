@@ -5,7 +5,7 @@ class ParentsMeetingsController < ApplicationController
   
 
   def index
-    parents_meetings = ParentsMeeting.my_organisation(@organisation.id).order("date desc")
+    parents_meetings = ParentsMeeting.order("date desc")
     
     if params[:filter].present? &&  JSON.parse(params[:filter])['dateRange'].present? && JSON.parse(params[:filter])['dateRange']['startDate'].present?
       parents_meetings = parents_meetings.where("date >= ?", JSON.parse(params[:filter])['dateRange']['startDate'].to_time)

@@ -1,4 +1,5 @@
 class DailyTeachingPoint < ActiveRecord::Base
+  acts_as_organisation
   
   belongs_to :jkci_class
   belongs_to :teacher
@@ -10,7 +11,6 @@ class DailyTeachingPoint < ActiveRecord::Base
   belongs_to :sub_class
   has_many :notifications, -> {where("notifications.object_type like ?", 'DailyTeaching_point')}, :foreign_key => :object_id 
   
-  default_scope { where(organisation_id: Organisation.current_id) }
   scope :chapters_points, -> { where("chapter_id is not ?", nil) }
   #after_save :add_current_chapter
   after_create :check_off_classes
@@ -61,7 +61,7 @@ class DailyTeachingPoint < ActiveRecord::Base
 
   def class_students
     #Student.where(std: std, is_active: true)
-    if sub_classes.present?
+    if sub_classes.present? && sub_classes.split(',').present?
       self.jkci_class.sub_classes_students(self.sub_classes.split(',').map(&:to_i), self.subject) rescue []
     else 
       self.subject.students.joins(:class_students).where("class_students.jkci_class_id = ?", self.jkci_class_id) rescue []

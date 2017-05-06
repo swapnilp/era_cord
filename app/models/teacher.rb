@@ -1,11 +1,12 @@
 class Teacher < ActiveRecord::Base
   #attr_accessor :subject_id, :first_name, :last_name, :mobile, :email, :address
+  acts_as_organisation
+  
 
   has_many :teacher_subjects, dependent: :destroy
   has_many :subjects, through: :teacher_subjects
   has_many :daily_teaching_points
   belongs_to :g_teacher
-  belongs_to :organisation
   has_many :standards, through: :subjects
   has_many :time_table_classes
   has_many :jkci_classes, through: :time_table_classes
@@ -14,8 +15,6 @@ class Teacher < ActiveRecord::Base
   #validates :email, uniqueness: true, presence: true
   validates_uniqueness_of :email, :scope => :organisation_id, :case_sensitive => false, presence: true
   
-  default_scope { where(organisation_id: Organisation.current_id) }  
-
   scope :active, -> { where(active: true) }
   
   def name

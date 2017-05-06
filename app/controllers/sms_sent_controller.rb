@@ -6,7 +6,7 @@ class SmsSentController < ApplicationController
   
 
   def index
-    sms_sents = SmsSent.our_organisations.my_organisation(@organisation.id).order("id desc")
+    sms_sents = SmsSent.our_organisations.order("id desc")
     if params[:filter].present? &&  JSON.parse(params[:filter])['student'].present?
       sms_sents = sms_sents.where("number like ?", "%#{JSON.parse(params[:filter])['student']}%")
     end

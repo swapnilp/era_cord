@@ -12,7 +12,7 @@ class StudentsController < ApplicationController
   before_action :authenticate_organisation!, only: [:sync_organisation_students]
   
   def index
-    students = Student.includes(:standard, :jkci_classes, :batch, :removed_class_students, :student_photos).select([:id, :first_name, :last_name, :middle_name, :standard_id, :group, :mobile, :p_mobile, :enable_sms, :gender, :is_disabled, :batch_id, :parent_name, :hostel_id]).order("id desc")
+    students = Student.includes(:standard, :jkci_classes, :batch, :removed_class_students, :student_photos).select([:id, :first_name, :last_name, :middle_name, :standard_id, :group, :mobile, :p_mobile, :enable_sms, :gender, :is_disabled, :batch_id, :parent_name, :hostel_id]).current_org.order("id desc")
     if params[:filter].present? &&  JSON.parse(params[:filter])['name'].present?
       query = "%#{JSON.parse(params[:filter])['name']}%"
       students = students.where("CONCAT_WS(' ', first_name, last_name) LIKE ? || CONCAT_WS(' ', last_name, first_name) LIKE ? || p_mobile like ?", query, query, query)
@@ -99,7 +99,7 @@ class StudentsController < ApplicationController
   end
 
   def update
-    student = @organisation.students.where(id: params[:id]).first
+    student = Student.where(id: params[:id]).first
     if student && student.update(update_params)
       student.add_students_subjects(params[:o_subjects], @organisation)
       render json: {success: true}
@@ -119,7 +119,7 @@ class StudentsController < ApplicationController
   end
   
   def get_filter_values
-    jkci_classes = JkciClass.active
+    jkci_classes = JkciClass.active.current_org
     render json: {success: true, classes: jkci_classes.map(&:student_filter_json)}
   end
   
@@ -271,10 +271,11 @@ class StudentsController < ApplicationController
   end
 
   def get_absentee
-    student = @organisation.students.where(id: params[:id]).first
+    student = Student.where(id: params[:id]).first
     if student
       class_catlogs = student.class_catlogs.where("is_present = false and date > ?", Date.today - 1.months).order("date desc")
-      render json: {success: true, absentee: class_catlogs.map(&:student_info_json)}
+      exam_catlogs = student.exam_catlogs.joins(:exam).where("exams.exam_date > ?", Date.today - 1.months).order("exam_date desc")
+      render json: {success: true, absentee: class_catlogs.map(&:student_info_json), exam_absentee: exam_catlogs.map(&:student_info_json)}
     else
       render json: {success: false}
     end

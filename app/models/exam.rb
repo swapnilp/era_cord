@@ -1,6 +1,8 @@
 class Exam < ActiveRecord::Base
   
   has_ancestry
+  
+  acts_as_organisation
 
   belongs_to :master_exam,   :class_name => "Exam", :foreign_key => "parent_id"
   has_many   :sub_exams,    :class_name => "Exam", :foreign_key => "parent_id"#, :dependent => :destroy
@@ -12,7 +14,7 @@ class Exam < ActiveRecord::Base
   #has_many :present_students, through: :exam_results, source: :student
   belongs_to :jkci_class
   delegate :batch, to: :jkci_class, allow_nil: true
-  belongs_to :organisation
+  #belongs_to :organisation
   has_many :exam_catlogs
   has_many :students, through: :exam_catlogs
   has_many :documents
@@ -20,7 +22,7 @@ class Exam < ActiveRecord::Base
   has_many :exam_points
   has_many :chapters_points, through: :exam_points
   
-  default_scope { where(is_active: true, organisation_id: Organisation.current_id) }
+  default_scope { where(is_active: true) }
   
   
   scope :upcomming_exams, -> { where("exam_date > ? && is_completed is ?", Date.tomorrow, nil) }

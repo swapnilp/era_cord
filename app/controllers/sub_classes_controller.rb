@@ -62,10 +62,8 @@ class SubClassesController < ApplicationController
     if params[:remaining].present? && params[:remaining] == 'true'
       students = jkci_class.class_students.includes(:student).where("class_students.student_id not in (?)", sub_class_students_ids)
     else
-      students = jkci_class.class_students.includes(:student).where("class_students.sub_class like ',0,'")
+      students = jkci_class.class_students.includes(:student).where("class_students.sub_class like ',0,' OR class_students.sub_class like ',,'")
     end
-    
-    
     render json: {success: true, students: students.map(&:sub_class_remaining_json)}
   end
 

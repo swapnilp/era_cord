@@ -1,11 +1,11 @@
 class OffClass < ActiveRecord::Base
+  acts_as_organisation
   
   belongs_to :subject
   belongs_to :jkci_class
   belongs_to :sub_class
   belongs_to :teacher
 
-  default_scope { where(organisation_id: Organisation.current_id) }  
   
   def calendar_json(options = {})
     options.merge({

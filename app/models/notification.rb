@@ -1,8 +1,9 @@
 class Notification < ActiveRecord::Base
+  acts_as_organisation
   
   belongs_to :jkci_class, :counter_cache => true
   
-  default_scope { where(organisation_id: Organisation.current_id) }  
+
   scope :pending, -> { where(is_completed: [nil, false], verification_require: true )}
 
 

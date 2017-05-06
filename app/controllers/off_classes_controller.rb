@@ -3,7 +3,7 @@ class OffClassesController < ApplicationController
   before_action :active_standards!, only: [:index, :calender_index]
   
   def index
-    off_classes = OffClass.includes([{subject: :standard}, :teacher]).joins(:jkci_class).where("jkci_classes.is_current_active = ? && jkci_classes.standard_id in (?)", true, @active_standards).where(organisation_id: Organisation.current_id)
+    off_classes = OffClass.includes([{subject: :standard}, :teacher]).joins(:jkci_class).current_org.where("jkci_classes.is_current_active = ? && jkci_classes.standard_id in (?)", true, @active_standards)
     if params[:filter].present? &&  JSON.parse(params[:filter])['filterClass'].present?
       off_classes = off_classes.where("jkci_classes.standard_id = ?",JSON.parse(params[:filter])['filterClass'])
     end
@@ -22,7 +22,7 @@ class OffClassesController < ApplicationController
   end
   
   def calender_index
-    off_classes = OffClass.includes([{subject: :standard}, :teacher, :sub_class]).joins(:jkci_class).where("jkci_classes.is_current_active = ? && jkci_classes.standard_id in (?)", true, @active_standards).where(organisation_id: Organisation.current_id)
+    off_classes = OffClass.includes([{subject: :standard}, :teacher, :sub_class]).joins(:jkci_class).where("jkci_classes.is_current_active = ? && jkci_classes.standard_id in (?)", true, @active_standards)
     if params[:start]
       off_classes = off_classes.where("date >= ? ", Date.parse(params[:start]))
     end

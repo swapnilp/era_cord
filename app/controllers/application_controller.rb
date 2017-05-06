@@ -25,7 +25,8 @@ class ApplicationController < ActionController::Base
     super(options)
     validate_rpm
     @organisation = current_user.organisation
-    Organisation.current_id = @organisation.present? ? @organisation.root.subtree.map(&:id) : nil
+    #Organisation.current_id = @organisation.present? ? @organisation.root.subtree.map(&:id) : nil
+    Organisation.set_current_organisation(@organisation)
     #@organisation.update_attributes({last_signed_in: Time.now}) if @organisation.present?
   end
   

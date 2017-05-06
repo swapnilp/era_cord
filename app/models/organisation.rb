@@ -382,8 +382,10 @@ class Organisation < ActiveRecord::Base
     # assign standard to new organisation when launch sub organisation
     
     new_organisation = Organisation.where(id: new_sub_organisation_id).first
+
     transaction do
       if new_organisation
+        Thread.current[:organisation_id] = (Thread.current[:organisation_id].to_a << new_sub_organisation_id)
         self.organisation_standards.where(standard_id: std.id).first.update_attributes({is_assigned_to_other: true})
         new_organisation.standards << std rescue nil
         if std.jkci_classes.present?

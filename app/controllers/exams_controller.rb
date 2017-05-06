@@ -26,7 +26,7 @@ class ExamsController < ApplicationController
       end
       #@organisation.exams.roots.order("id desc").page(params[:page])
     else
-      exams = Exam.joins(:jkci_class).includes({subject: :standard}, {jkci_class: :batch}).roots.where("exams.organisation_id in (?) and jkci_classes.standard_id in (?)", Organisation.current_id, @active_standards).order("exam_date desc")
+      exams = Exam.joins(:jkci_class).includes({subject: :standard}, {jkci_class: :batch}).roots.current_org.where("jkci_classes.standard_id in (?)", @active_standards).order("exam_date desc")
       #@organisation.exams.roots.order("id desc").page(params[:page])
       if params[:filter].present? &&  JSON.parse(params[:filter])['filterStandard'].present?
         exams = exams.where("jkci_classes.standard_id = ?", JSON.parse(params[:filter])['filterStandard'])
@@ -53,13 +53,13 @@ class ExamsController < ApplicationController
   end
 
   def get_filter_data
-    standards = @organisation.standards.where("organisation_standards.is_active = ?", true)
+    standards = @organisation.standards.where("organisation_standards.is_active = ? && organisation_standards.organisation_id in (?)", true, Thread.current[:current_organisation_id])
     batches = Batch.all
     render json: {success: true, standards: standards.as_json, batches: batches.as_json}
   end
 
   def calender_index
-    exams = Exam.includes({subject: :standard}, :organisation ).joins(:jkci_class).where("jkci_classes.is_current_active = ? && jkci_classes.standard_id in (?) ", true, @active_standards).where(organisation_id: Organisation.current_id)
+    exams = Exam.includes({subject: :standard}, :organisation ).joins(:jkci_class).where("jkci_classes.is_current_active = ? && jkci_classes.standard_id in (?) ", true, @active_standards)
     if params[:start]
       exams = exams.where("exam_date >= ? ", Date.parse(params[:start]))
     end
@@ -93,7 +93,7 @@ class ExamsController < ApplicationController
     jkci_class = get_jkci_class
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     exam = get_exam
-    render json: {exam: Exam.json(exam)}
+    render json: {exam: Exam.json(exam).merge({self_org: exam.organisation_id == @organisation.id})}
   end
   
   def create
@@ -411,7 +411,7 @@ class ExamsController < ApplicationController
     if current_user.has_role?(:teacher)
       jkci_class = JkciClass.where(id: params[:jkci_class_id]).first
     else
-      jkci_class = @organisation.jkci_classes.where(id: params[:jkci_class_id]).first
+      jkci_class = JkciClass.where(id: params[:jkci_class_id]).first
     end
     return jkci_class
   end
@@ -420,7 +420,7 @@ class ExamsController < ApplicationController
     if current_user.has_role?(:teacher)
       exam = Exam.where(id: params[:id]).first
     else
-      exam = @organisation.exams.where(id: params[:id]).first
+      exam = Exam.where(id: params[:id]).first
     end
     return exam
   end

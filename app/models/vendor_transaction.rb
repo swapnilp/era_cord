@@ -1,9 +1,8 @@
 class VendorTransaction < ActiveRecord::Base
-
-  belongs_to :vendor
-  belongs_to :organisation
+  acts_as_organisation
   
-  default_scope { where(organisation_id: Organisation.current_id) }  
+  belongs_to :vendor
+  
 
   def logs_json(options = {})
     options.merge({

@@ -3,6 +3,7 @@ class Student < ActiveRecord::Base
   #paginates_per 30
  # attr_accessible :first_name, :middle_name, :last_name, :email, :mobile, :parent_name, :p_mobile, :p_email, :address, :group, :rank
   resourcify
+  acts_as_organisation
   #has_many
   has_many :exam_absents
   has_many :exam_results
@@ -25,7 +26,7 @@ class Student < ActiveRecord::Base
   belongs_to :hostel, :counter_cache => true
   belongs_to :hostel_room, :counter_cache => true
   
-  default_scope { where(organisation_id: Organisation.current_id) }  
+
   scope :enable_students, -> { where(is_disabled: false) }
   
   scope :unoccupied_students, -> { where(hostel_room_id: nil) }
