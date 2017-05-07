@@ -3,6 +3,7 @@ class Exam < ActiveRecord::Base
   has_ancestry
   
   acts_as_organisation
+  include PublicActivity::Model
 
   belongs_to :master_exam,   :class_name => "Exam", :foreign_key => "parent_id"
   has_many   :sub_exams,    :class_name => "Exam", :foreign_key => "parent_id"#, :dependent => :destroy

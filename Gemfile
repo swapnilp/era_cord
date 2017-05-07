@@ -59,6 +59,7 @@ gem 'simple_form'
 gem 'local-subdomain'
 gem 'redis-rails', '~> 4'
 #gem 'delayed_paperclip'
+gem 'public_activity'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'

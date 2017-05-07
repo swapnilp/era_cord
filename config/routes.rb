@@ -232,6 +232,7 @@ Rails.application.routes.draw do
       member do
         get 'get_catlogs'
         get 'verify_exam'
+        get "get_activities"
         get 'exam_conducted'
         get 'get_exam_info'
         get 'get_descendants'

@@ -88,6 +88,14 @@ class ExamsController < ApplicationController
       render json: {success: false}
     end
   end
+
+  def get_activities
+    jkci_class = get_jkci_class
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    exam = get_exam
+    activities = exam.activities
+    render json: {success: true, activities: activities.as_json}
+  end
   
   def show
     jkci_class = get_jkci_class
@@ -103,6 +111,7 @@ class ExamsController < ApplicationController
     exam.sub_classes = ",#{ exam.sub_classes}," if exam.sub_classes.present?
     exam.organisation_id = @organisation.id
     if exam.save
+      exam.create_activity key: 'exam.created', owner: current_user, organisation_id: @organisation.id, recipient: jkci_class
       Notification.add_create_exam(exam.id, @organisation) if exam.root?
       render json: {success: true, id: exam.id}
     else
@@ -118,6 +127,7 @@ class ExamsController < ApplicationController
     document.document = params[:file]
     document.organisation_id = @organisation.id
     if document.save
+      exam.create_activity key: 'exam.upload_paper', owner: current_user, organisation_id: @organisation.id, recipient: jkci_class
       render json: {success: true}
     else
       render json: {success: false, message: document.errors.full_messages.join(' , ')}
@@ -139,6 +149,7 @@ class ExamsController < ApplicationController
     exam = @organisation.exams.where(id: params[:id]).first
     if exam
       exam.verify_exam(@organisation)
+      exam.create_activity key: 'exam.verify', owner: current_user, organisation_id: @organisation.id, recipient: jkci_class
       render json: {success: true}
     else
       render json: {success: false, message: "Invalid Exam"}
@@ -151,7 +162,10 @@ class ExamsController < ApplicationController
     return render json: {success: false, message: "Invalid Calss"} unless jkci_class
     exam = @organisation.exams.where(id: params[:id]).first
     if exam && exam.create_verification
-      exam.complete_exam unless exam.is_completed
+      unless exam.is_completed
+        exam.complete_exam 
+        exam.create_activity key: 'exam.conduct', owner: current_user, organisation_id: @organisation.id, recipient: jkci_class
+      end
       render json: {success: true}
     else
       render json: {success: false, message: "Something went wrong"}
@@ -244,6 +258,7 @@ class ExamsController < ApplicationController
     exam = @organisation.exams.where(id: params[:id]).first
     if exam && exam.verify_absenty && exam.verify_result
       exam.publish_results
+      exam.create_activity key: 'exam.publish', owner: current_user, organisation_id: @organisation.id, recipient: jkci_class
       render json: {success: true}
     else
       render json: {success: false}
@@ -256,6 +271,7 @@ class ExamsController < ApplicationController
     exam = @organisation.exams.where(id: params[:id]).first
     if exam
       exam.verify_exam_result
+      exam.create_activity key: 'exam.verify_result', owner: current_user, organisation_id: @organisation.id, recipient: jkci_class
       render json: {success: true}
     else
       render json: {success: false}
@@ -268,6 +284,7 @@ class ExamsController < ApplicationController
     exam = @organisation.exams.where(id: params[:id]).first
     if exam
       exam.verify_presenty(@organisation)
+      exam.create_activity key: 'exam.verify_absenty', owner: current_user, organisation_id: @organisation.id, recipient: jkci_class
       render json: {success: true}
     else
       render json: {success: false}
@@ -309,6 +326,7 @@ class ExamsController < ApplicationController
       if exam.sub_classes.present?
         sub_classes = ",#{exam.sub_classes.split(',').delete_if(&:empty?).join(',')}," 
         exam.update_attributes({sub_classes: sub_classes})
+        exam.create_activity key: 'exam.update', owner: current_user, organisation_id: @organisation.id, recipient: jkci_class
       end
       render json: {success: true, id: exam.id}
     else
@@ -395,6 +413,7 @@ class ExamsController < ApplicationController
       exam.update_attributes({is_active: false})
       exam.descendants.update_all({is_active: false})
       exam.delete_notification if exam.root?
+      exam.create_activity key: 'exam.destroy', owner: current_user, organisation_id: @organisation.id, recipient: jkci_class
       back_url = exam.root? ? "/classes/#{exam.jkci_class_id}" : "/classes/#{exam.jkci_class_id}/exams/#{exam.root.id}/show" 
 
       render json: {success: true, backUrl: back_url}
