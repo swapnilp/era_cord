@@ -2,6 +2,7 @@ class JkciClass < ActiveRecord::Base
   include SendingSms
 
   acts_as_organisation
+  include PublicActivity::Model
   
   belongs_to :teacher
   has_many :class_students

@@ -79,6 +79,7 @@ class JkciClassesController < ApplicationController
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     if jkci_class && current_user.has_role?(:manage_class_sms)
       jkci_class.update_attributes({enable_class_sms: params[:value]})
+      jkci_class.create_activity key: 'jkci_class.toggle_class_sms', owner: current_user, organisation_id: @organisation.id,  parameters: params.slice("value")
       render json: {success: true, id: jkci_class.id}
     else
       render json: {success: false, message: "Some thing went wrong"}
@@ -89,6 +90,7 @@ class JkciClassesController < ApplicationController
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     if jkci_class && current_user.has_role?(:manage_class_sms)
       jkci_class.update_attributes({enable_exam_sms: params[:value]})
+      jkci_class.create_activity key: 'jkci_class.toggle_exam_sms', owner: current_user, organisation_id: @organisation.id,  parameters: params.slice("value")
       render json: {success: true, id: jkci_class.id}
     else
       render json: {success: false, message: "Some thing went wrong"}
@@ -138,6 +140,7 @@ class JkciClassesController < ApplicationController
     if jkci_class
       jkci_class.remove_student_from_class(params[:student_id], @organisation) 
       jkci_class.update_attributes({is_student_verified: false})
+      jkci_class.create_activity key: 'jkci_class.remove_students', owner: current_user, organisation_id: @organisation.id,  parameters: params.slice("student_id")
       jkci_class.check_duplicates(false)
       render json: {success: true, id: jkci_class.id}
     else
@@ -170,6 +173,7 @@ class JkciClassesController < ApplicationController
         student = jkci_class.students.where(id: p_student['student_id']).first
         student.add_students_subjects(p_student["o_subjects"], @organisation) if student
       end
+      jkci_class.create_activity key: 'jkci_class.manage_student_subject', owner: current_user, organisation_id: @organisation.id
       render json: {success: true}
     else
       render json: {success: false}
@@ -192,6 +196,7 @@ class JkciClassesController < ApplicationController
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     if jkci_class
       jkci_class.save_class_roll_number(params[:roll_number])
+      jkci_class.create_activity key: 'jkci_class.manage_roll_number', owner: current_user, organisation_id: @organisation.id
       render json: {success: true}
     else
       render json: {success: false}
@@ -212,6 +217,7 @@ class JkciClassesController < ApplicationController
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     if jkci_class
       new_jkci_class = jkci_class.upgrade_batch(params[:student_list], @organisation, params[:standard_id])
+      jkci_class.create_activity key: 'jkci_class.upgrade_batch', owner: current_user, organisation_id: @organisation.id
       render json: {success: true, class_id: new_jkci_class.id , is_same_organisation:  new_jkci_class.organisation_id == @organisation.id}
     else
       render json: {success: false}
@@ -351,6 +357,7 @@ class JkciClassesController < ApplicationController
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     jkci_class.update_attributes({is_student_verified: true})
+    jkci_class.create_activity key: 'jkci_class.verify_student', owner: current_user, organisation_id: @organisation.id
     render json: {success: true}
   end
 
@@ -358,6 +365,7 @@ class JkciClassesController < ApplicationController
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     jkci_class.make_active_class(@organisation)
+    jkci_class.create_activity key: 'jkci_class.make_active', owner: current_user, organisation_id: @organisation.id
     jkci_classes = @organisation.jkci_classes.order("id desc")
     render json: {success: true, classes: jkci_classes.map(&:organisation_class_json)}
   end
@@ -366,6 +374,7 @@ class JkciClassesController < ApplicationController
     jkci_class = @organisation.jkci_classes.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     jkci_class.make_deactive_class(@organisation)
+    jkci_class.create_activity key: 'jkci_class.make_deactive', owner: current_user, organisation_id: @organisation.id
     jkci_classes = @organisation.jkci_classes.order("id desc")
     render json: {success: true, classes: jkci_classes.map(&:organisation_class_json)}
   end

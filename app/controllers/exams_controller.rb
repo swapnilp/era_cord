@@ -93,8 +93,8 @@ class ExamsController < ApplicationController
     jkci_class = get_jkci_class
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     exam = get_exam
-    activities = exam.activities
-    render json: {success: true, activities: activities.as_json}
+    activities = exam.activities.includes([:owner, :recipient]).order("id desc")
+    render json: {success: true, activities: activities.map(&:json)}
   end
   
   def show
@@ -321,8 +321,11 @@ class ExamsController < ApplicationController
   end
 
   def update
+    jkci_class = get_jkci_class
+    return render json: {success: false, message: "Invalid Calss"} unless jkci_class
     exam = @organisation.exams.where(id: params[:id]).first
     if exam && exam.update(update_params)
+      exam.create_activity key: 'exam.update', owner: current_user, organisation_id: @organisation.id, recipient: jkci_class, parameters: update_params
       if exam.sub_classes.present?
         sub_classes = ",#{exam.sub_classes.split(',').delete_if(&:empty?).join(',')}," 
         exam.update_attributes({sub_classes: sub_classes})
