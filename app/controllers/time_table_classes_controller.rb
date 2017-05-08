@@ -15,6 +15,7 @@ class TimeTableClassesController < ApplicationController
     
     time_table_class = time_table.time_table_classes.build(create_params.merge({organisation_id: @organisation.id}))
     if time_table_class.save
+      time_table.jkci_class.create_activity key: 'jkci_class.create_time_table_class', owner: current_user, organisation_id: @organisation.id,  parameters: create_params
       render json: {success: true, slot: time_table_class}
     else
       render json: {success: false}
@@ -30,6 +31,7 @@ class TimeTableClassesController < ApplicationController
     
     time_table_class = time_table.time_table_classes.where(id: params[:id]).first
     if time_table_class && time_table_class.update_attributes(update_params) 
+      time_table.jkci_class.create_activity key: 'jkci_class.update_time_table_class', owner: current_user, organisation_id: @organisation.id,  parameters: update_params
       render json: {success: true, slot: time_table_class.as_json}
     else
       render json: {success: false}
@@ -42,6 +44,7 @@ class TimeTableClassesController < ApplicationController
     
     time_table_class = time_table.time_table_classes.where(id: params[:id]).first
     if time_table_class && time_table_class.destroy
+      time_table.jkci_class.create_activity key: 'jkci_class.destroy_time_table_class', owner: current_user, organisation_id: @organisation.id
       render json: {success: true}
     else
       render json: {success: false}
@@ -57,6 +60,7 @@ class TimeTableClassesController < ApplicationController
     teacher = Teacher.where(id: assign_teacher_params[:teacher_id]).first
     if time_table_class && teacher
       time_table_class.update_attributes({teacher_id: teacher.id})
+      time_table.jkci_class.create_activity key: 'jkci_class.assign_time_table_class_teacher', owner: current_user, organisation_id: @organisation.id
       render json: {success: true}
     else
       render json: {success: false}
