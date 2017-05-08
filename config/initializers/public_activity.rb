@@ -8,6 +8,7 @@ PublicActivity::Activity.class_eval do
                     id: id,
                     trackable_id: trackable_id,
                     trackable_type: trackable_type,
+                    name: trackable.try(:name),
                     owner: owner.try(:email),
                     owner_type: owner_type,
                     key: activity_desc,

@@ -93,7 +93,11 @@ class ExamsController < ApplicationController
     jkci_class = get_jkci_class
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     exam = get_exam
-    activities = exam.activities.includes([:owner, :recipient]).order("id desc")
+    if exam.is_group
+      activities = PublicActivity::Activity.where(trackable_type: "Exam", trackable_id: exam.subtree_ids).includes([:owner, :recipient]).order("id desc")
+    else
+      activities = exam.activities.includes([:owner, :recipient]).order("id desc")
+    end
     render json: {success: true, activities: activities.map(&:json)}
   end
   
