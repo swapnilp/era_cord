@@ -446,7 +446,7 @@ class JkciClassesController < ApplicationController
   def get_activity
     jkci_class = JkciClass.where(id: params[:id]).first
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
-    date = Date::strptime(params[:date], "%d-%m-%Y").to_time(:utc)
+    date = Date::strptime(params[:date], "%d-%m-%Y").to_time
     activities = PublicActivity::Activity.where("((trackable_type like 'JkciClass' && trackable_id = ?) || (recipient_type like 'JkciClass' && recipient_id = ?)) && (created_at > ? && created_at < ?)", jkci_class.id, jkci_class.id, date, date + 1.day)
     
     #render json: {success: true, activities: activities.map(&:json)}
