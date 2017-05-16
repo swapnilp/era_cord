@@ -174,6 +174,7 @@ Rails.application.routes.draw do
       get 'download_presenty_catlog'
       get 'get_exam_info'
       get 'get_activities'
+      get 'get_activity'
       get 'get_dtp_info'
       get 'toggle_class_sms'
       get 'toggle_exam_sms'

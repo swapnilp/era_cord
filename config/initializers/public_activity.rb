@@ -19,6 +19,36 @@ PublicActivity::Activity.class_eval do
                     parameters: parameters
                   })
   end
+
+  def activity_json(options= {})
+    options.merge({
+                    id: id,
+                    key: activity_desc,
+                    date: created_at.strftime("%d-%b-%Y @ %I:%M %p"),
+                    owner: owner.try(:email),
+                    owner_mobile: owner.try(:mobile),
+                    url: url
+                  })
+  end
+
+  def activities_json(options = {})
+    options.merge({
+                    id: id,
+                    key: activity_desc,
+                    url: url,
+                    date: created_at.strftime("%d-%b-%Y @ %I:%M %p"),
+                  })
+    
+  end
+
+  def url
+    if key[/^exam/] == "exam"
+      "classes/#{recipient_id}/exams/#{trackable_id}/show"
+    else
+      "classes/#{trackable_id}"
+    end
+    
+  end
   
   def activity_desc
     if key == "exam.created"

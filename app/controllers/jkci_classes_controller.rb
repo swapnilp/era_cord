@@ -437,10 +437,20 @@ class JkciClassesController < ApplicationController
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     
     activities = PublicActivity::Activity.where("(trackable_type like 'JkciClass' && trackable_id = ?) || (recipient_type like 'JkciClass' && recipient_id = ?)", jkci_class.id, jkci_class.id)
-    activities_json = activities.group_by {|a| a.created_at.strftime("%d-%m-%Y") }.collect{|key, value| {key => value.map(&:json) }}.inject(:merge)
+    activities_json = activities.group_by {|a| a.created_at.strftime("%d-%m-%Y") }.collect{|key, value| {key => value.map(&:activities_json) }}.inject(:merge)
     #render json: {success: true, activities: activities.map(&:json)}
     max_activities = activities_json.values.map(&:count).max
     render json: {success: true, activities: activities_json, max_activities: max_activities}
+  end
+
+  def get_activity
+    jkci_class = JkciClass.where(id: params[:id]).first
+    return render json: {success: false, message: "Invalid Class"} unless jkci_class
+    date = Date::strptime(params[:date], "%d-%m-%Y").to_time.utc
+    activities = PublicActivity::Activity.where("((trackable_type like 'JkciClass' && trackable_id = ?) || (recipient_type like 'JkciClass' && recipient_id = ?)) && (created_at > ? && created_at < ?)", jkci_class.id, jkci_class.id, date, date + 1.day)
+    
+    #render json: {success: true, activities: activities.map(&:json)}
+    render json: {success: true, activities: activities.map(&:activity_json), class_name: jkci_class.class_name}
   end
 
   def sync_organisation_classes

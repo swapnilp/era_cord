@@ -236,6 +236,7 @@ class JkciClass < ActiveRecord::Base
   end
 
   def generate_time_table
+    self.update_attributes(class_start_time: Time.now)
     self.time_tables.find_or_initialize_by({organisation_id: self.organisation_id}).save
   end
 
