@@ -26,7 +26,7 @@ class RemovedClassStudent < ActiveRecord::Base
   end
 
   def remaining_class_fee
-    jkci_class.fee - self.collected_fee
+    jkci_class.fee.to_f - self.collected_fee.to_f
   end
 
   def accounts_json(options = {})
