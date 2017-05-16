@@ -437,7 +437,7 @@ class JkciClassesController < ApplicationController
     return render json: {success: false, message: "Invalid Class"} unless jkci_class
     
     activities = PublicActivity::Activity.where("(trackable_type like 'JkciClass' && trackable_id = ?) || (recipient_type like 'JkciClass' && recipient_id = ?)", jkci_class.id, jkci_class.id)
-    activities_json = activities.group_by {|a| a.created_at.strftime("%d-%m-%Y") }.collect{|key, value| {key => value.map(&:activities_json) }}.inject(:merge)
+    activities_json = activities.group_by {|a| a.created_at.strftime("%d-%m-%Y") }.collect{|key, value| {key => value.map(&:activities_json) }}.inject(:merge) || {}
     #render json: {success: true, activities: activities.map(&:json)}
     max_activities = activities_json.values.map(&:count).max rescue 0
     render json: {success: true, activities: activities_json, max_activities: max_activities}
