@@ -66,9 +66,9 @@ PublicActivity::Activity.class_eval do
     elsif key == "exam.publish"
       return "Exam Published"
     elsif key == "jkci_class.toggle_class_sms"
-      return "Toggle Class Sms"
+      return "Class Sms "+ (parameters["value"] == "false" ? "Disabled" : "Enabled")
     elsif key == "jkci_class.toggle_exam_sms"
-      return "Toggle Class Exam Sms"
+      return "Class Exam Sms " + (parameters["value"] == "false" ? "Disabled" : "Enabled")
     elsif key == "jkci_class.remove_students"
       return "Removed class students"
     elsif key == "jkci_class.manage_student_subject"
