@@ -122,6 +122,24 @@ class StudentsController < ApplicationController
     jkci_classes = JkciClass.active.current_org
     render json: {success: true, classes: jkci_classes.map(&:student_filter_json)}
   end
+
+  def get_exams
+    student = Student.where(id: params[:id]).first
+    if student
+      exam_catlogs = student.exam_catlogs.joins(:exam).includes({exam: [{subject: :standard}, :jkci_class]}).order("created_at desc")
+      if params[:filter].present? &&  JSON.parse(params[:filter])['dateRange'].present? && JSON.parse(params[:filter])['dateRange']['startDate'].present?
+        exam_catlogs = exam_catlogs.where("exams.exam_date >= ?", JSON.parse(params[:filter])['dateRange']['startDate'].to_time)
+      end
+      if params[:filter].present? &&  JSON.parse(params[:filter])['dateRange'].present? && JSON.parse(params[:filter])['dateRange']['endDate'].present?
+        exam_catlogs = exam_catlogs.where("exams.exam_date <= ?", JSON.parse(params[:filter])['dateRange']['endDate'].to_time)
+      end
+      exam_catlogs = exam_catlogs.page(params[:page])
+      render json: {success: true, exam_catlogs: exam_catlogs.map(&:student_info_json) , total_exams: exam_catlogs.total_count}
+    else
+       render json: {success: false}
+    end
+
+  end
   
   def get_graph_data
     student = Student.where(id: params[:id]).first
