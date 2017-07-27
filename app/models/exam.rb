@@ -100,7 +100,7 @@ class Exam < ActiveRecord::Base
   end
 
   def verify_presenty(organisation)
-    self.present_students.map(&:update_presnty)
+    self.present_students.update_all({last_present: Time.now})
     self.update_attributes({verify_absenty: true})
     Notification.verify_exam_abesnty(self.id, organisation)
     self.publish_absentee
@@ -271,7 +271,7 @@ class Exam < ActiveRecord::Base
         message = "#{exam_catlog.student.short_name} marked absent on #{self.exam_date.strftime("%d %b %y")} exam.Plz contact us. #{organisation.short_name || 'eraCord'}!!"
         url = "https://www.txtguru.in/imobile/api.php?username=#{SMSUNAME}&password=#{SMSUPASSWORD}&source=eracod&dmobile=#{exam_catlog.student.sms_mobile}&message=#{message}"
         if exam_catlog.student.sms_mobile.present? && exam_catlog.absent_sms_sent != true
-          url_arry << [url, message, exam_catlog.id, self.organisation_id, exam_catlog.student.sms_mobile]
+          url_arry << [url, message, exam_catlog.id, self.organisation_id, exam_catlog.student.sms_mobile, exam_catlog.student_id]
           #exam_catlog.update_attributes({absent_sms_sent: true})
         end
       end
