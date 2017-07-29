@@ -46,5 +46,17 @@ class ExamCatlog < ActiveRecord::Base
                     name: exam.try(:std_subject_name)
                   })
   end
+
+  def catlogs_json(options = {})
+    options.merge({
+                    id: id,
+                    date: self.exam.try(:exam_date).present? ? self.exam.exam_date.strftime("%b %d-%Y") : "",
+                    marks: marks,
+                    is_present: is_present,
+                    absent_sms_sent: absent_sms_sent,
+                    name: exam.try(:std_subject_name),
+                    exam_url: "/classes/#{self.exam.jkci_class_id}/exams/#{self.exam_id}/show"
+                  })
+  end
   
 end

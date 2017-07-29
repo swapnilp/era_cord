@@ -93,9 +93,13 @@ module OrganisationHelper
       #    raise ArgumentError, "invalid organisation object or id"
       #end
       #old_id = ( Thread.current[:organisation_id].nil? ? '%' : Thread.current[:organisation_id] )
+      if organisation.is_a? Integer
+        organisation = Organisation.where(id: organisation).first
+      end
+      
       Thread.current[:organisation_id] = organisation.present? ? organisation.root.subtree.map(&:id) : nil
       Thread.current[:current_organisation_id] = organisation.present? ? organisation.subtree.map(&:id) : nil
-      
+      Thread.current[:root_organisation_id] = organisation.present? ? organisation.root.id : nil
       #organisation = Organisation.find(organisation_id) rescue nil
       #Time.zone = organisation.time_zone || 'Singapore' rescue 'Singapore'
     end

@@ -134,7 +134,7 @@ class StudentsController < ApplicationController
         exam_catlogs = exam_catlogs.where("exams.exam_date <= ?", JSON.parse(params[:filter])['dateRange']['endDate'].to_time)
       end
       exam_catlogs = exam_catlogs.page(params[:page])
-      render json: {success: true, exam_catlogs: exam_catlogs.map(&:student_info_json) , total_exams: exam_catlogs.total_count}
+      render json: {success: true, exam_catlogs: exam_catlogs.map(&:catlogs_json) , total_exams: exam_catlogs.total_count}
     else
        render json: {success: false}
     end
