@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170624070213) do
+ActiveRecord::Schema.define(version: 20170730175242) do
 
   create_table "activities", force: :cascade do |t|
     t.integer  "trackable_id",    limit: 4
@@ -148,6 +148,15 @@ ActiveRecord::Schema.define(version: 20170624070213) do
     t.boolean  "is_followed", limit: 1,     default: false
     t.datetime "created_at",                                null: false
     t.datetime "updated_at",                                null: false
+  end
+
+  create_table "daily_presenties", force: :cascade do |t|
+    t.integer  "organisation_id", limit: 4
+    t.integer  "student_id",      limit: 4
+    t.datetime "time"
+    t.string   "swap_type",       limit: 255, default: "IN"
+    t.datetime "created_at",                                 null: false
+    t.datetime "updated_at",                                 null: false
   end
 
   create_table "daily_teaching_points", force: :cascade do |t|
