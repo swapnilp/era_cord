@@ -296,7 +296,7 @@ class JkciClass < ActiveRecord::Base
             org.class_students.where("jkci_class_id not in (?) and student_id in (?)", [self_class.id], [student.id]).destroy_all
             student.update_attributes({batch_id: self_class.batch_id, standard_id: self_class.standard_id})
           else
-            student.initl = record['initl']
+            student.initl = record['gender'].to_s.downcase == "female" ? "Miss" : "Mr"
             student.middle_name = record['middle_name']
             student.gender = record['gender']
             student.mobile = record['mobile']

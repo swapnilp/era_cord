@@ -2,7 +2,20 @@ wb = xlsx_package.workbook
 wb.add_worksheet(name: "Students") do |sheet|
   sheet.add_row  [@class_code]
   sheet.add_row  STUDENT_HEADER
+  sheet.add_data_validation("D3:D500", {
+      :type => :list,
+      :formula1 => "'DropDown Values'!A$1:C$1",
+      :showDropDown => false,
+      :showErrorMessage => true,
+      :errorTitle => '',
+      :error => 'Please use the dropdown selector to choose the value',
+      :errorStyle => :stop,
+      :showInputMessage => true,
+      :prompt => 'Choose the value from the dropdown'
+  })
   @students.each do |student|
-    sheet.add_row [student.initl, student.first_name, student.middle_name, student.last_name, student.gender, student.mobile, student.parent_name,  student.p_mobile]
+    sheet.add_row [student.first_name, student.middle_name, student.last_name, student.gender, student.mobile, student.parent_name,  student.p_mobile]
   end
 end
+months_sheet = wb.add_worksheet(:name => 'DropDown Values') { |ws| ws.sheet_protection.password = 'pa55w0rd' } 
+months_sheet.add_row ['Male', 'Female'] 

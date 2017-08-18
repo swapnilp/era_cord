@@ -6,10 +6,11 @@ class HostelsController < ApplicationController
   
   def index
     return render json: {success: false, message: "Must be root user"} unless @organisation.root?
-    
-    hostels = Hostel.all
     if params[:student_id].present?
       student = Student.where(id: params[:student_id]).first
+      hostels = Hostel.where("allow_#{(student.gender || 'male').downcase}s = ?", true)
+    else
+      hostels = Hostel.all
     end
     render json: {success: true, hostels: hostels.as_json, student_hostel: student.try(:hostel_id)}
   end
@@ -101,10 +102,10 @@ class HostelsController < ApplicationController
   end
   
   def create_params
-    params.require(:hostel).permit(:name, :gender, :rooms, :owner, :address, :average_fee, :student_occupancy, :is_service_tax, :service_tax, :months, :start_month)
+    params.require(:hostel).permit(:name, :gender, :rooms, :owner, :address, :average_fee, :student_occupancy, :is_service_tax, :service_tax, :months, :start_month, :allow_females, :allow_males)
   end
 
   def update_params
-    params.require(:hostel).permit(:name, :gender, :rooms, :owner, :address, :average_fee, :student_occupancy, :is_service_tax, :service_tax)
+    params.require(:hostel).permit(:name, :gender, :rooms, :owner, :address, :average_fee, :student_occupancy, :is_service_tax, :service_tax, :allow_females, :allow_males)
   end
 end

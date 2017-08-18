@@ -83,7 +83,9 @@ class Hostel < ActiveRecord::Base
                     service_tax: service_tax,
                     occupied_students: students_count,
                     months: months,
-                    start_month: start_month
+                    start_month: start_month,
+                    allow_males: allow_males,
+                    allow_females: allow_females
                   })
   end
 end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170730175242) do
+ActiveRecord::Schema.define(version: 20170810182033) do
 
   create_table "activities", force: :cascade do |t|
     t.integer  "trackable_id",    limit: 4
@@ -400,12 +400,14 @@ ActiveRecord::Schema.define(version: 20170730175242) do
     t.integer  "student_occupancy", limit: 4
     t.boolean  "is_service_tax",    limit: 1
     t.float    "service_tax",       limit: 24
-    t.datetime "created_at",                                null: false
-    t.datetime "updated_at",                                null: false
+    t.datetime "created_at",                                    null: false
+    t.datetime "updated_at",                                    null: false
     t.integer  "students_count",    limit: 4,   default: 0
     t.integer  "months",            limit: 4,   default: 1
     t.date     "start_date"
-    t.integer  "start_month",       limit: 4,   default: 6, null: false
+    t.integer  "start_month",       limit: 4,   default: 6,     null: false
+    t.boolean  "allow_males",       limit: 1,   default: true
+    t.boolean  "allow_females",     limit: 1,   default: false
   end
 
   create_table "jkci_classes", force: :cascade do |t|
